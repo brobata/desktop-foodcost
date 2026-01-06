@@ -1035,6 +1035,8 @@ public partial class App : Application
         services.AddScoped<IDraftItemRepository, DraftItemRepository>();
         services.AddScoped<IIngredientMatchMappingRepository, IngredientMatchMappingRepository>();
         services.AddScoped<IIngredientConversionRepository, IngredientConversionRepository>();
+        services.AddScoped<IImportMapRepository, ImportMapRepository>();
+        services.AddScoped<IImportBatchRepository, ImportBatchRepository>();
 
         // v1.5.0 - Multi-User & Collaboration Repositories
         services.AddScoped<IUserRepository, UserRepository>();
@@ -1393,7 +1395,10 @@ public partial class App : Application
                     window,
                     async () => await mainWindowViewModel!.LoadDeletedItemsCountAsync(),
                     sp.GetRequiredService<INutritionalDataService>(),
-                    sp.GetRequiredService<IIngredientConversionRepository>()
+                    sp.GetRequiredService<IIngredientConversionRepository>(),
+                    sp.GetRequiredService<IImportMapRepository>(),
+                    sp.GetRequiredService<IImportBatchRepository>(),
+                    sp.GetRequiredService<IIngredientRepository>()
                 ),
                 (window) => new RecipesViewModel(
                     sp.GetRequiredService<IRecipeService>(),

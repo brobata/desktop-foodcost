@@ -1,0 +1,350 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        xmlns:models="using:Dfc.Desktop.Models"
+        xmlns:core="using:Dfc.Core.Models"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="800"
+        x:Class="Dfc.Desktop.Views.ImportMapperWindow"
+        x:DataType="vm:ImportMapperViewModel"
+        Title="Import Ingredients"
+        Width="900" Height="800"
+        MinWidth="700" MinHeight="600"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5">
+
+    <Window.Styles>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#1976D2"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="#1565C0"/>
+        </Style>
+        <Style Selector="Button.danger">
+            <Setter Property="Background" Value="#D32F2F"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="White" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="24,16">
+            <StackPanel Spacing="4">
+                <TextBlock Text="Import Ingredients" FontSize="20" FontWeight="Bold" Foreground="#212121"/>
+                <TextBlock Text="Map columns from your file to Desktop Food Cost fields"
+                          FontSize="13" Foreground="#757575"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" Padding="24">
+            <StackPanel Spacing="20">
+
+                <!-- Loading Overlay -->
+                <Border IsVisible="{Binding IsLoading}"
+                       Background="#E3F2FD" BorderBrush="#2196F3" BorderThickness="1"
+                       CornerRadius="4" Padding="16">
+                    <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                        <ProgressBar IsIndeterminate="True" Width="100"/>
+                        <TextBlock Text="{Binding LoadingMessage}" Foreground="#1976D2" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- File Drop Zone (when no file loaded) -->
+                <Border IsVisible="{Binding !IsFileLoaded}"
+                       Background="White" BorderBrush="#BDBDBD" BorderThickness="2"
+                       CornerRadius="8" Padding="48"
+                       DragDrop.AllowDrop="True">
+                    <StackPanel Spacing="16" HorizontalAlignment="Center">
+                        <TextBlock Text="📄" FontSize="48" HorizontalAlignment="Center" Opacity="0.5"/>
+                        <TextBlock Text="Drop CSV or Excel file here"
+                                  FontSize="16" Foreground="#757575" HorizontalAlignment="Center"/>
+                        <TextBlock Text="or" Foreground="#9E9E9E" HorizontalAlignment="Center"/>
+                        <Button Content="Browse for file"
+                               Command="{Binding SelectFileCommand}"
+                               Padding="24,10" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Supported: .csv, .xlsx (max 10MB)"
+                                  FontSize="11" Foreground="#9E9E9E" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Import Result (shown after successful import) -->
+                <Border IsVisible="{Binding ShowImportResult}"
+                       Background="White" BorderBrush="#4CAF50" BorderThickness="1"
+                       CornerRadius="8" Padding="32">
+                    <StackPanel Spacing="16" HorizontalAlignment="Center">
+                        <TextBlock Text="✓" FontSize="48" Foreground="#4CAF50" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Import Complete" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+                        <StackPanel Spacing="8" HorizontalAlignment="Center">
+                            <TextBlock HorizontalAlignment="Center">
+                                <Run Text="{Binding ImportedNewCount}"/>
+                                <Run Text=" new ingredients added"/>
+                            </TextBlock>
+                            <TextBlock HorizontalAlignment="Center" IsVisible="{Binding ImportedUpdateCount}">
+                                <Run Text="{Binding ImportedUpdateCount}"/>
+                                <Run Text=" existing ingredients updated"/>
+                            </TextBlock>
+                            <TextBlock HorizontalAlignment="Center" IsVisible="{Binding ImportedSkippedCount}" Foreground="#757575">
+                                <Run Text="{Binding ImportedSkippedCount}"/>
+                                <Run Text=" items skipped"/>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <Border IsVisible="{Binding CanUndo}"
+                               Background="#FFF3E0" BorderBrush="#FF9800" BorderThickness="1"
+                               CornerRadius="4" Padding="16" Margin="0,16,0,0">
+                            <StackPanel Spacing="8" HorizontalAlignment="Center">
+                                <Button Content="Undo This Import"
+                                       Command="{Binding UndoImportCommand}"
+                                       Classes="danger" Padding="20,10"/>
+                                <TextBlock Text="{Binding UndoTimeRemaining}"
+                                          Foreground="#E65100" FontSize="12" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Button Content="Done" Command="{Binding DoneCommand}"
+                               Classes="primary" Padding="32,10" Margin="0,16,0,0"
+                               HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- File Loaded State -->
+                <StackPanel IsVisible="{Binding IsFileLoaded}" Spacing="20">
+                    <StackPanel IsVisible="{Binding !ShowImportResult}" Spacing="20">
+
+                        <!-- File Info Section -->
+                        <Border Background="White" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="4" Padding="16">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="8">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="📄" FontSize="16"/>
+                                        <TextBlock Text="{Binding FileSummary}" FontWeight="SemiBold"/>
+                                    </StackPanel>
+
+                                    <!-- Header Row Selector -->
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="Header row:" VerticalAlignment="Center" Foreground="#757575"/>
+                                        <ComboBox ItemsSource="{Binding HeaderRowOptions}"
+                                                 SelectedIndex="0"
+                                                 MinWidth="300">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="core:HeaderRowOption">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <TextBlock Text="{Binding RowNumber, StringFormat='Row {0}:'}" Width="50"/>
+                                                        <TextBlock Text="{Binding Preview}" Foreground="#616161" TextTrimming="CharacterEllipsis" MaxWidth="250"/>
+                                                        <TextBlock Text="(detected)" IsVisible="{Binding IsDetected}" Foreground="#4CAF50" FontStyle="Italic"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+
+                                    <!-- Matched Mapping Info -->
+                                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding HasMappingMatch}">
+                                        <TextBlock Text="✓" Foreground="#4CAF50"/>
+                                        <TextBlock Foreground="#4CAF50">
+                                            <Run Text="Matched saved mapping: "/>
+                                            <Run Text="{Binding MatchedSavedMapping.DisplayName}" FontWeight="SemiBold"/>
+                                        </TextBlock>
+                                        <Button Content="Edit" Command="{Binding StartEditMappingCommand}"
+                                               Padding="12,4" FontSize="12"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <Button Grid.Column="1" Content="Change file"
+                                       Command="{Binding ChangeFileCommand}"
+                                       Padding="16,8" VerticalAlignment="Top"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Column Mapping Section -->
+                        <Border Background="White" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="4" Padding="16">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Column Mapping" FontWeight="SemiBold" FontSize="14"/>
+
+                                <!-- Required Fields -->
+                                <TextBlock Text="Required Fields" FontSize="12" Foreground="#757575" Margin="0,8,0,0"/>
+
+                                <ItemsControl ItemsSource="{Binding ColumnMappings}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:ColumnMappingItem">
+                                            <StackPanel Spacing="4" Margin="0,0,0,12">
+                                                <Grid ColumnDefinitions="150,*,Auto">
+                                                    <TextBlock Grid.Column="0" Text="{Binding FieldLabel}"
+                                                              VerticalAlignment="Center" FontWeight="SemiBold"/>
+
+                                                    <ComboBox Grid.Column="1"
+                                                             ItemsSource="{Binding AvailableColumns}"
+                                                             SelectedItem="{Binding SelectedColumn}"
+                                                             MinWidth="200"/>
+
+                                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" Margin="8,0,0,0">
+                                                        <TextBlock Text="✓" Foreground="#4CAF50" IsVisible="{Binding IsValid}" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="⚠" Foreground="#F44336" IsVisible="{Binding !IsValid}" VerticalAlignment="Center"
+                                                                  ToolTip.Tip="{Binding ValidationMessage}"/>
+                                                        <Button Content="⚙" IsVisible="{Binding HasParsingOptions}"
+                                                               Command="{Binding $parent[ItemsControl].((vm:ImportMapperViewModel)DataContext).ToggleParsingOptionsCommand}"
+                                                               CommandParameter="{Binding}"
+                                                               Padding="8,4" ToolTip.Tip="Configure parsing"/>
+                                                    </StackPanel>
+                                                </Grid>
+
+                                                <!-- Sample Values -->
+                                                <TextBlock Text="{Binding SampleValues, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                          Foreground="#9E9E9E" FontSize="11" Margin="150,0,0,0"
+                                                          IsVisible="{Binding SampleValues.Count}">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding StringFormat="Sample: {0}">
+                                                            <Binding Path="SampleValues[0]" FallbackValue=""/>
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+
+                                                <!-- Parsing Options (Expandable) -->
+                                                <Border IsVisible="{Binding IsParsingExpanded}"
+                                                       Background="#FAFAFA" BorderBrush="#E0E0E0" BorderThickness="1"
+                                                       CornerRadius="4" Padding="12" Margin="150,8,0,0">
+                                                    <StackPanel Spacing="12">
+                                                        <TextBlock Text="{Binding DetectedFormatDescription}"
+                                                                  FontStyle="Italic" Foreground="#757575"/>
+
+                                                        <StackPanel Spacing="8">
+                                                            <RadioButton Content="Pack/Size in one column (6/5 LB)"
+                                                                        IsChecked="{Binding ParseMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=Combined}"
+                                                                        GroupName="ParseMode"/>
+                                                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="24,0,0,0"
+                                                                       IsVisible="{Binding ParseMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=Combined}">
+                                                                <TextBlock Text="Split character:" VerticalAlignment="Center"/>
+                                                                <TextBox Text="{Binding SplitCharacter}" Width="40"/>
+                                                            </StackPanel>
+
+                                                            <RadioButton Content="Size + Unit only (5 LB)"
+                                                                        GroupName="ParseMode"/>
+
+                                                            <RadioButton Content="Pack and Size in separate columns"
+                                                                        IsChecked="{Binding ParseMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=Separate}"
+                                                                        GroupName="ParseMode"/>
+                                                        </StackPanel>
+
+                                                        <Button Content="Apply"
+                                                               Command="{Binding $parent[ItemsControl].((vm:ImportMapperViewModel)DataContext).ApplyParsingConfigCommand}"
+                                                               CommandParameter="{Binding}"
+                                                               HorizontalAlignment="Right" Padding="16,6"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Preview Section -->
+                        <Border Background="White" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="4" Padding="16">
+                            <StackPanel Spacing="12">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="16">
+                                        <TextBlock Text="Preview" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="12" Margin="16,0,0,0">
+                                            <TextBlock VerticalAlignment="Center">
+                                                <Run Text="✓" Foreground="#4CAF50"/>
+                                                <Run Text="{Binding NewItemCount}"/>
+                                                <Run Text=" new"/>
+                                            </TextBlock>
+                                            <TextBlock VerticalAlignment="Center" IsVisible="{Binding UpdateItemCount}">
+                                                <Run Text="↻" Foreground="#2196F3"/>
+                                                <Run Text="{Binding UpdateItemCount}"/>
+                                                <Run Text=" updates"/>
+                                            </TextBlock>
+                                            <TextBlock VerticalAlignment="Center" IsVisible="{Binding WarningCount}">
+                                                <Run Text="⚠" Foreground="#FF9800"/>
+                                                <Run Text="{Binding WarningCount}"/>
+                                                <Run Text=" warnings"/>
+                                            </TextBlock>
+                                            <TextBlock VerticalAlignment="Center" IsVisible="{Binding ErrorCount}">
+                                                <Run Text="✗" Foreground="#F44336"/>
+                                                <Run Text="{Binding ErrorCount}"/>
+                                                <Run Text=" errors"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <CheckBox Grid.Column="1" Content="Show only problems"
+                                             IsChecked="{Binding ShowOnlyProblems}"/>
+                                </Grid>
+
+                                <!-- Preview DataGrid -->
+                                <DataGrid ItemsSource="{Binding FilteredPreviewItems}"
+                                         AutoGenerateColumns="False"
+                                         IsReadOnly="True"
+                                         GridLinesVisibility="Horizontal"
+                                         Height="250">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Status" Binding="{Binding StatusMessage}" Width="120"/>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*"/>
+                                        <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat='${0:F2}'}" Width="80"/>
+                                        <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="60"/>
+                                        <DataGridTextColumn Header="Unit" Binding="{Binding UnitText}" Width="60"/>
+                                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="100"/>
+                                        <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="100"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Import Options Section -->
+                        <Border Background="White" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="4" Padding="16">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Import Options" FontWeight="SemiBold" FontSize="14"/>
+
+                                <CheckBox Content="Update prices for existing items (matched by SKU)"
+                                         IsChecked="{Binding UpdateExistingItems}"/>
+
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <CheckBox Content="Save this mapping as:"
+                                             IsChecked="{Binding ShouldSaveMapping}"/>
+                                    <TextBox Text="{Binding SaveMappingName}"
+                                            IsEnabled="{Binding ShouldSaveMapping}"
+                                            MinWidth="200" Watermark="My Sysco Format"/>
+                                </StackPanel>
+
+                                <!-- New Categories Info -->
+                                <Border Background="#E8F5E9" Padding="12" CornerRadius="4"
+                                       IsVisible="{Binding NewCategories.Count}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="ℹ" Foreground="#388E3C"/>
+                                        <TextBlock Foreground="#2E7D32" TextWrapping="Wrap">
+                                            <Run Text="{Binding NewCategories.Count}"/>
+                                            <Run Text=" new categories will be created"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer Actions -->
+        <Border Grid.Row="2" Background="White" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0" Padding="24,16"
+               IsVisible="{Binding !ShowImportResult}">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <TextBlock Grid.Column="0" Text="{Binding ImportButtonText}"
+                          VerticalAlignment="Center" Foreground="#757575"/>
+                <Button Grid.Column="1" Content="Cancel"
+                       Command="{Binding CloseCommand}"
+                       Padding="24,10" Margin="0,0,12,0"/>
+                <Button Grid.Column="2" Content="{Binding ImportButtonText}"
+                       Command="{Binding ExecuteImportCommand}"
+                       IsEnabled="{Binding CanImport}"
+                       Classes="primary" Padding="24,10"/>
+            </Grid>
+        </Border>
+
+    </Grid>
+</Window>

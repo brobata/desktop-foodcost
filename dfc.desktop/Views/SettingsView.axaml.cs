@@ -31,4 +31,13 @@ public partial class SettingsView : UserControl
             await viewModel.LoadLocationsCommand.ExecuteAsync(null);
         }
     }
+
+    private async void ImportMappingsSection_Loaded(object? sender, RoutedEventArgs e)
+    {
+        // Load import mappings when the section becomes visible
+        if (DataContext is SettingsViewModel viewModel)
+        {
+            await viewModel.LoadImportMappingsCommand.ExecuteAsync(null);
+        }
+    }
 }

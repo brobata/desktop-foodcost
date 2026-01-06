@@ -72,6 +72,27 @@ public class ImportMap : BaseEntity
     public bool IsSystemMap { get; set; } // Built-in maps can't be deleted
     public Guid LocationId { get; set; }
     public Location Location { get; set; } = null!;
+
+    // User mapping management
+    /// <summary>
+    /// User-friendly display name (e.g., "My Sysco Format")
+    /// </summary>
+    public string DisplayName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// True if this mapping was saved by the user (shows in saved mappings list)
+    /// </summary>
+    public bool IsSavedByUser { get; set; }
+
+    /// <summary>
+    /// When this mapping was last used for an import
+    /// </summary>
+    public DateTime? LastUsedAt { get; set; }
+
+    /// <summary>
+    /// Number of times this mapping has been used for imports
+    /// </summary>
+    public int ImportCount { get; set; }
 }
 
 public enum QuantityParseMode

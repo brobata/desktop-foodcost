@@ -219,6 +219,14 @@
 				        CornerRadius="4"
 				        FontWeight="SemiBold"
 				        ToolTip.Tip="Add new ingredient (Insert key)"/>
+				<Button Content="📥 Import Price List"
+				        Command="{Binding ImportPriceListCommand}"
+				        Background="#2196F3"
+				        Foreground="White"
+				        Padding="16,8"
+				        CornerRadius="4"
+				        FontWeight="SemiBold"
+				        ToolTip.Tip="Import ingredients from CSV or Excel with interactive column mapping"/>
 				<Button Content="🚚 Bulk Import from Vendor"
 				        Command="{Binding BulkImportCommand}"
 				        Background="#90CAF9"

@@ -54,6 +54,11 @@ public class DfcDbContext : DbContext
     public DbSet<TeamNotification> TeamNotifications { get; set; } = null!;
     public DbSet<TeamActivityFeed> TeamActivityFeeds { get; set; } = null!;
 
+    // Import Mapper
+    public DbSet<ImportMap> ImportMaps { get; set; } = null!;
+    public DbSet<ImportBatch> ImportBatches { get; set; } = null!;
+    public DbSet<ImportBatchItem> ImportBatchItems { get; set; } = null!;
+
     public DfcDbContext(DbContextOptions<DfcDbContext> options)
         : base(options)
     {
@@ -479,6 +484,71 @@ public class DfcDbContext : DbContext
             entity.HasOne(e => e.Location)
                 .WithMany()
                 .HasForeignKey(e => e.LocationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ImportMap - Column mapping configurations for vendor imports
+        modelBuilder.Entity<ImportMap>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.MapName).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.DisplayName).HasMaxLength(200);
+            entity.Property(e => e.VendorName).HasMaxLength(200);
+            entity.Property(e => e.DetectionPattern).HasMaxLength(1000);
+            entity.Property(e => e.Delimiter).HasMaxLength(10);
+            entity.Property(e => e.NameColumn).HasMaxLength(100);
+            entity.Property(e => e.BrandColumn).HasMaxLength(100);
+            entity.Property(e => e.PriceColumn).HasMaxLength(100);
+            entity.Property(e => e.SkuColumn).HasMaxLength(100);
+            entity.Property(e => e.VendorColumn).HasMaxLength(100);
+            entity.Property(e => e.CategoryColumn).HasMaxLength(100);
+            entity.Property(e => e.CombinedQuantityColumn).HasMaxLength(100);
+            entity.Property(e => e.SplitCharacter).HasMaxLength(10);
+            entity.Property(e => e.PackColumn).HasMaxLength(100);
+            entity.Property(e => e.SizeColumn).HasMaxLength(100);
+            entity.Property(e => e.UnitColumn).HasMaxLength(100);
+            entity.Property(e => e.PriceIsPerUnitColumn).HasMaxLength(100);
+            entity.HasIndex(e => e.LocationId);
+            entity.HasIndex(e => e.IsSavedByUser);
+            entity.HasIndex(e => new { e.LocationId, e.IsSavedByUser });
+
+            entity.HasOne(e => e.Location)
+                .WithMany()
+                .HasForeignKey(e => e.LocationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ImportBatch - Tracks import operations for undo functionality
+        modelBuilder.Entity<ImportBatch>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.SourceFileName).HasMaxLength(500);
+            entity.Property(e => e.MappingUsed).HasMaxLength(200);
+            entity.HasIndex(e => e.LocationId);
+            entity.HasIndex(e => e.ImportedAt);
+            entity.HasIndex(e => e.UndoExpiresAt);
+            entity.HasIndex(e => new { e.LocationId, e.CanUndo });
+
+            entity.HasOne(e => e.Location)
+                .WithMany()
+                .HasForeignKey(e => e.LocationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ImportBatchItem - Individual items within an import batch
+        modelBuilder.Entity<ImportBatchItem>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.PreviousName).HasMaxLength(200);
+            entity.Property(e => e.PreviousVendor).HasMaxLength(200);
+            entity.Property(e => e.PreviousCategory).HasMaxLength(100);
+            entity.Property(e => e.PreviousPrice).HasPrecision(10, 4);
+            entity.HasIndex(e => e.ImportBatchId);
+            entity.HasIndex(e => e.IngredientId);
+
+            entity.HasOne(e => e.ImportBatch)
+                .WithMany(b => b.Items)
+                .HasForeignKey(e => e.ImportBatchId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

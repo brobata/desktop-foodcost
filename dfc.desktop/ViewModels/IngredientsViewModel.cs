@@ -6,6 +6,7 @@ using Dfc.Core.Models;
 using Dfc.Core.Services;
 using Dfc.Core.Repositories;
 using Dfc.Desktop.Models;
+using Dfc.Desktop.Services;
 using Dfc.Desktop.Views;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,9 @@ public partial class IngredientsViewModel : ViewModelBase
     private readonly IBatchOperationsService _batchOperationsService;
     private readonly INutritionalDataService? _nutritionalDataService;
     private readonly IIngredientConversionRepository? _conversionRepository;
+    private readonly IImportMapRepository? _importMapRepository;
+    private readonly IImportBatchRepository? _importBatchRepository;
+    private readonly IIngredientRepository? _ingredientRepository;
     private Window? _ownerWindow;
     private readonly Func<Task>? _onItemDeleted;
 
@@ -123,7 +127,7 @@ public partial class IngredientsViewModel : ViewModelBase
         _ = LoadIngredientsAsync();
     }
 
-    public IngredientsViewModel(IIngredientService ingredientService, IImportMapService importMapService, IPriceHistoryService priceHistoryService, IExcelExportService excelExportService, IValidationService validationService, IRecycleBinService recycleBinService, ICurrentLocationService currentLocationService, IStatusNotificationService notificationService, ICategoryColorService categoryColorService, IBatchOperationsService batchOperationsService, Window window, Func<Task>? onItemDeleted = null, INutritionalDataService? nutritionalDataService = null, IIngredientConversionRepository? conversionRepository = null)
+    public IngredientsViewModel(IIngredientService ingredientService, IImportMapService importMapService, IPriceHistoryService priceHistoryService, IExcelExportService excelExportService, IValidationService validationService, IRecycleBinService recycleBinService, ICurrentLocationService currentLocationService, IStatusNotificationService notificationService, ICategoryColorService categoryColorService, IBatchOperationsService batchOperationsService, Window window, Func<Task>? onItemDeleted = null, INutritionalDataService? nutritionalDataService = null, IIngredientConversionRepository? conversionRepository = null, IImportMapRepository? importMapRepository = null, IImportBatchRepository? importBatchRepository = null, IIngredientRepository? ingredientRepository = null)
     {
         _ingredientService = ingredientService;
         _importMapService = importMapService;
@@ -137,6 +141,9 @@ public partial class IngredientsViewModel : ViewModelBase
         _batchOperationsService = batchOperationsService;
         _nutritionalDataService = nutritionalDataService;
         _conversionRepository = conversionRepository;
+        _importMapRepository = importMapRepository;
+        _importBatchRepository = importBatchRepository;
+        _ingredientRepository = ingredientRepository;
         _ownerWindow = window;
         _onItemDeleted = onItemDeleted;
         _ingredients = new ObservableCollection<IngredientDisplayModel>();
@@ -497,6 +504,44 @@ public partial class IngredientsViewModel : ViewModelBase
         if (dialog.WasImported)
         {
             await LoadIngredientsAsync();
+        }
+    }
+
+    [RelayCommand]
+    private async Task ImportPriceList()
+    {
+        if (_ownerWindow == null) return;
+
+        if (_importMapRepository == null || _importBatchRepository == null || _ingredientRepository == null)
+        {
+            _notificationService.ShowWarning("Import service not available. Please restart the application.");
+            return;
+        }
+
+        try
+        {
+            var window = new ImportMapperWindow();
+            var viewModel = new ImportMapperViewModel(
+                _importMapService,
+                _importMapRepository,
+                _importBatchRepository,
+                _ingredientRepository,
+                _ingredientService,
+                _currentLocationService,
+                _notificationService,
+                () => window.Close()
+            );
+
+            window.DataContext = viewModel;
+            await window.ShowDialog(_ownerWindow);
+
+            // Refresh the ingredients list after import
+            await LoadIngredientsAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error opening import mapper: {ex}");
+            _notificationService.ShowError($"Failed to open import mapper: {ex.Message}");
         }
     }
 

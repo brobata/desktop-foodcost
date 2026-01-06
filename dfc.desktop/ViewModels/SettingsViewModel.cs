@@ -1923,4 +1923,193 @@ Unsynced Modifications: {unsyncedCount}
         }
     }
 
+    // ============================================
+    // IMPORT MAPPINGS MANAGEMENT
+    // ============================================
+
+    [ObservableProperty]
+    private System.Collections.ObjectModel.ObservableCollection<Core.Models.ImportMap> _savedImportMappings = new();
+
+    [RelayCommand]
+    private async Task LoadImportMappings()
+    {
+        try
+        {
+            var importMapRepository = _serviceProvider.GetService(typeof(IImportMapRepository)) as IImportMapRepository;
+            if (importMapRepository == null) return;
+
+            var maps = await importMapRepository.GetUserMapsAsync(_currentLocationService.CurrentLocationId);
+            SavedImportMappings.Clear();
+            foreach (var map in maps.OrderByDescending(m => m.LastUsedAt ?? m.CreatedAt))
+            {
+                SavedImportMappings.Add(map);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to load import mappings");
+        }
+    }
+
+    [RelayCommand]
+    private async Task EditImportMapping(Core.Models.ImportMap? mapping)
+    {
+        if (_ownerWindow == null || mapping == null) return;
+
+        try
+        {
+            var importMapService = _serviceProvider.GetService(typeof(IImportMapService)) as IImportMapService;
+            var importMapRepository = _serviceProvider.GetService(typeof(IImportMapRepository)) as IImportMapRepository;
+            var importBatchRepository = _serviceProvider.GetService(typeof(IImportBatchRepository)) as IImportBatchRepository;
+            var ingredientRepository = _serviceProvider.GetService(typeof(IIngredientRepository)) as IIngredientRepository;
+
+            if (importMapService == null || importMapRepository == null ||
+                importBatchRepository == null || ingredientRepository == null)
+            {
+                _notificationService.ShowWarning("Import service not available");
+                return;
+            }
+
+            // Open the import mapper window with the mapping pre-loaded
+            var window = new ImportMapperWindow();
+            var viewModel = new ImportMapperViewModel(
+                importMapService,
+                importMapRepository,
+                importBatchRepository,
+                ingredientRepository,
+                _ingredientService,
+                _currentLocationService,
+                _notificationService,
+                () => window.Close()
+            );
+
+            // Pre-load the mapping
+            viewModel.CurrentMapping = mapping;
+            viewModel.ShouldSaveMapping = true;
+            viewModel.SaveMappingName = mapping.DisplayName;
+
+            window.DataContext = viewModel;
+            await window.ShowDialog(_ownerWindow);
+
+            // Refresh the list after editing
+            await LoadImportMappings();
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to edit import mapping");
+            _notificationService.ShowError($"Failed to edit mapping: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteImportMapping(Core.Models.ImportMap? mapping)
+    {
+        if (_ownerWindow == null || mapping == null) return;
+
+        try
+        {
+            // Confirm deletion
+            var confirmDialog = new Window
+            {
+                Title = "Confirm Delete",
+                Width = 400,
+                Height = 180,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+
+            var panel = new StackPanel { Margin = new Avalonia.Thickness(20) };
+            panel.Children.Add(new TextBlock
+            {
+                Text = $"Are you sure you want to delete the mapping '{mapping.DisplayName}'?\n\n" +
+                       "This will not affect any ingredients that were imported using this mapping.",
+                Margin = new Avalonia.Thickness(0, 0, 0, 20),
+                TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                FontWeight = Avalonia.Media.FontWeight.Bold
+            });
+
+            var buttonPanel = new StackPanel
+            {
+                Orientation = Avalonia.Layout.Orientation.Horizontal,
+                Spacing = 10,
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right
+            };
+
+            var cancelButton = new Button { Content = "Cancel", Width = 80 };
+            cancelButton.Click += (s, e) => confirmDialog.Close(false);
+
+            var deleteButton = new Button
+            {
+                Content = "Delete",
+                Width = 80,
+                Background = Avalonia.Media.Brushes.Red,
+                Foreground = Avalonia.Media.Brushes.White
+            };
+            deleteButton.Click += (s, e) => confirmDialog.Close(true);
+
+            buttonPanel.Children.Add(cancelButton);
+            buttonPanel.Children.Add(deleteButton);
+            panel.Children.Add(buttonPanel);
+            confirmDialog.Content = panel;
+
+            var confirmed = await confirmDialog.ShowDialog<bool>(_ownerWindow);
+            if (!confirmed) return;
+
+            var importMapRepository = _serviceProvider.GetService(typeof(IImportMapRepository)) as IImportMapRepository;
+            if (importMapRepository == null) return;
+
+            await importMapRepository.DeleteAsync(mapping.Id);
+            await LoadImportMappings();
+            _notificationService.ShowSuccess($"Mapping '{mapping.DisplayName}' deleted");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to delete import mapping");
+            _notificationService.ShowError($"Failed to delete mapping: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task OpenImportMapper()
+    {
+        if (_ownerWindow == null) return;
+
+        try
+        {
+            var importMapService = _serviceProvider.GetService(typeof(IImportMapService)) as IImportMapService;
+            var importMapRepository = _serviceProvider.GetService(typeof(IImportMapRepository)) as IImportMapRepository;
+            var importBatchRepository = _serviceProvider.GetService(typeof(IImportBatchRepository)) as IImportBatchRepository;
+            var ingredientRepository = _serviceProvider.GetService(typeof(IIngredientRepository)) as IIngredientRepository;
+
+            if (importMapService == null || importMapRepository == null ||
+                importBatchRepository == null || ingredientRepository == null)
+            {
+                _notificationService.ShowWarning("Import service not available. Please restart the application.");
+                return;
+            }
+
+            var window = new ImportMapperWindow();
+            var viewModel = new ImportMapperViewModel(
+                importMapService,
+                importMapRepository,
+                importBatchRepository,
+                ingredientRepository,
+                _ingredientService,
+                _currentLocationService,
+                _notificationService,
+                () => window.Close()
+            );
+
+            window.DataContext = viewModel;
+            await window.ShowDialog(_ownerWindow);
+
+            // Refresh the list after importing
+            await LoadImportMappings();
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to open import mapper");
+            _notificationService.ShowError($"Failed to open import mapper: {ex.Message}");
+        }
+    }
+
 }

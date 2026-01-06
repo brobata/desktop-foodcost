@@ -328,6 +328,116 @@
 			</StackPanel>
 		</Border>
 
+		<!-- Import Mappings Section -->
+		<Border Background="White"
+		        CornerRadius="8"
+		        Padding="24"
+		        BoxShadow="0 2 8 0 #10000000"
+		        Loaded="ImportMappingsSection_Loaded">
+			<StackPanel Spacing="16">
+				<Grid ColumnDefinitions="*,Auto">
+					<StackPanel Grid.Column="0" Spacing="4">
+						<TextBlock Text="Import Mappings"
+						           FontSize="18"
+						           FontWeight="SemiBold"
+						           Foreground="#2D2D2D"/>
+						<TextBlock Text="Saved column mappings for importing vendor price lists (CSV/Excel)"
+						           Foreground="#666"
+						           FontSize="13"/>
+					</StackPanel>
+					<Button Grid.Column="1"
+					        Content="+ New Import"
+					        Command="{Binding OpenImportMapperCommand}"
+					        Background="#7AB51D"
+					        Foreground="White"
+					        Padding="16,10"
+					        CornerRadius="4"
+					        FontWeight="SemiBold"
+					        VerticalAlignment="Center"/>
+				</Grid>
+
+				<!-- No Mappings Message -->
+				<Border Background="#F8F9FA"
+				        BorderBrush="#DEE2E6"
+				        BorderThickness="1"
+				        CornerRadius="6"
+				        Padding="24"
+				        IsVisible="{Binding !SavedImportMappings.Count}">
+					<StackPanel Spacing="8" HorizontalAlignment="Center">
+						<TextBlock Text="No saved mappings yet"
+						           FontSize="14"
+						           Foreground="#666"
+						           HorizontalAlignment="Center"/>
+						<TextBlock Text="Import a price list to create your first mapping"
+						           FontSize="12"
+						           Foreground="#999"
+						           HorizontalAlignment="Center"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Mappings List -->
+				<ItemsControl ItemsSource="{Binding SavedImportMappings}"
+				              IsVisible="{Binding SavedImportMappings.Count}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border Background="#F8F9FA"
+							        BorderBrush="#DEE2E6"
+							        BorderThickness="1"
+							        CornerRadius="6"
+							        Padding="16"
+							        Margin="0,0,0,8">
+								<Grid ColumnDefinitions="*,Auto">
+									<StackPanel Grid.Column="0" Spacing="4">
+										<TextBlock Text="{Binding DisplayName}"
+										           FontSize="15"
+										           FontWeight="SemiBold"
+										           Foreground="#2D2D2D"/>
+										<StackPanel Orientation="Horizontal" Spacing="12">
+											<TextBlock FontSize="12" Foreground="#666">
+												<Run Text="Used"/>
+												<Run Text="{Binding ImportCount}"/>
+												<Run Text="times"/>
+											</TextBlock>
+											<TextBlock Text="|" Foreground="#DDD" FontSize="12"/>
+											<TextBlock FontSize="12" Foreground="#666">
+												<Run Text="Last:"/>
+												<Run Text="{Binding LastUsedAt, StringFormat='{}{0:MMM d, yyyy}', TargetNullValue='Never'}"/>
+											</TextBlock>
+										</StackPanel>
+									</StackPanel>
+									<StackPanel Grid.Column="1"
+									            Orientation="Horizontal"
+									            Spacing="8"
+									            VerticalAlignment="Center">
+										<Button Content="Edit"
+										        Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).EditImportMappingCommand}"
+										        CommandParameter="{Binding}"
+										        Background="Transparent"
+										        Foreground="#666"
+										        BorderBrush="#DDD"
+										        BorderThickness="1"
+										        Padding="12,6"
+										        CornerRadius="4"
+										        FontSize="12"/>
+										<Button Content="Delete"
+										        Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).DeleteImportMappingCommand}"
+										        CommandParameter="{Binding}"
+										        Background="Transparent"
+										        Foreground="#EF5350"
+										        BorderBrush="#EF5350"
+										        BorderThickness="1"
+										        Padding="12,6"
+										        CornerRadius="4"
+										        FontSize="12"/>
+									</StackPanel>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+		</Border>
+
 		<Border Background="White"
                 CornerRadius="8"
                 Padding="24"
