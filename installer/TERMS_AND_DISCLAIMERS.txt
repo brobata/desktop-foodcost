@@ -25,7 +25,7 @@ ALLERGEN INFORMATION DISCLAIMER
 
 CRITICAL ALLERGEN WARNING:
 
-The allergen detection, tracking, and reporting features in Freecost are
+The allergen detection, tracking, and reporting features in Desktop Food Cost are
 provided for INFORMATIONAL AND ORGANIZATIONAL PURPOSES ONLY.
 
 YOU MUST NOT RELY SOLELY ON FREECOST FOR ALLERGEN INFORMATION.
@@ -93,7 +93,7 @@ BROBATA AND FREECOST ASSUME ABSOLUTELY NO LIABILITY FOR:
 NUTRITIONAL INFORMATION DISCLAIMER
 ================================================================================
 
-Nutritional information in Freecost is USER-PROVIDED and NOT VERIFIED.
+Nutritional information in Desktop Food Cost is USER-PROVIDED and NOT VERIFIED.
 
 - The Software does not calculate nutritional values
 - Nutritional data accuracy depends entirely on user input

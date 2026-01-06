@@ -1,0 +1,195 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+        x:Class="Dfc.Desktop.Views.ImportRecipeFromUrlWindow"
+        Title="Import Recipe from URL"
+        Width="600"
+        Height="500"
+        WindowStartupLocation="CenterOwner"
+        Background="White"
+        CanResize="False">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="0">
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Background="#7AB51D"
+                Padding="24,20">
+            <StackPanel Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <TextBlock Text="🌐"
+                               FontSize="32"
+                               VerticalAlignment="Center"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Import Recipe from URL"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="White"/>
+                        <TextBlock Text="Paste a recipe URL from popular cooking websites"
+                                   FontSize="14"
+                                   Foreground="White"
+                                   Opacity="0.9"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" Padding="24">
+            <StackPanel Spacing="16">
+
+                <!-- URL Input -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Recipe URL"
+                               FontWeight="SemiBold"
+                               FontSize="14"
+                               Foreground="#2D2D2D"/>
+                    <TextBox Name="UrlTextBox"
+                             Watermark="https://www.allrecipes.com/recipe/..."
+                             FontSize="13"
+                             Padding="12,10"/>
+                </StackPanel>
+
+                <!-- Status Message -->
+                <Border Name="StatusBorder"
+                        IsVisible="False"
+                        Background="#E3F2FD"
+                        BorderBrush="#2196F3"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="12">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Name="StatusIcon"
+                                   Text="ℹ️"
+                                   FontSize="16"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Name="StatusText"
+                                   Text="Status message here"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Loading Spinner -->
+                <Border Name="LoadingBorder"
+                        IsVisible="False"
+                        Background="#F5F5F5"
+                        CornerRadius="6"
+                        Padding="24"
+                        HorizontalAlignment="Center">
+                    <StackPanel Spacing="12" HorizontalAlignment="Center">
+                        <TextBlock Text="⏳"
+                                   FontSize="48"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="Importing recipe..."
+                                   FontSize="14"
+                                   HorizontalAlignment="Center"
+                                   Foreground="#666"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Supported Websites -->
+                <Expander Header="ℹ️ Supported Websites" IsExpanded="False">
+                    <Border Background="#F9F9F9"
+                            BorderBrush="#E0E0E0"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="16"
+                            Margin="0,8,0,0">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="This feature works with recipes from these popular websites:"
+                                       FontSize="12"
+                                       Foreground="#666"
+                                       TextWrapping="Wrap"/>
+
+                            <ItemsControl Name="SupportedWebsitesList">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="White"
+                                                BorderBrush="#7AB51D"
+                                                BorderThickness="1"
+                                                CornerRadius="4"
+                                                Padding="8,4"
+                                                Margin="0,0,8,8">
+                                            <TextBlock Text="{Binding}"
+                                                       FontSize="11"
+                                                       Foreground="#2D2D2D"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock Text="💡 Tip: This feature uses Schema.org Recipe format, which is supported by most modern recipe websites."
+                                       FontSize="11"
+                                       Foreground="#666"
+                                       FontStyle="Italic"
+                                       TextWrapping="Wrap"
+                                       Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Expander>
+
+                <!-- Important Notes -->
+                <Border Background="#FFF3E0"
+                        BorderBrush="#FF9800"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="12">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="⚠️ Important Notes"
+                                   FontWeight="SemiBold"
+                                   FontSize="13"
+                                   Foreground="#E65100"/>
+                        <TextBlock FontSize="12" Foreground="#666" TextWrapping="Wrap">
+                            <Run Text="• Imported ingredients won't have costs yet - you'll need to match them to your existing ingredients"/>
+                        </TextBlock>
+                        <TextBlock FontSize="12" Foreground="#666" TextWrapping="Wrap">
+                            <Run Text="• Review the imported recipe carefully before saving"/>
+                        </TextBlock>
+                        <TextBlock FontSize="12" Foreground="#666" TextWrapping="Wrap">
+                            <Run Text="• Some websites may block automated imports"/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer -->
+        <Border Grid.Row="2"
+                Background="#F9F9F9"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,1,0,0"
+                Padding="24,16">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="12">
+                <Button Name="CancelButton"
+                        Content="Cancel"
+                        Click="OnCancel"
+                        Background="Transparent"
+                        Foreground="#666"
+                        BorderBrush="#CCCCCC"
+                        BorderThickness="1"
+                        Padding="20,8"
+                        CornerRadius="4"/>
+                <Button Name="ImportButton"
+                        Content="Import Recipe"
+                        Click="OnImport"
+                        Background="#7AB51D"
+                        Foreground="White"
+                        Padding="24,8"
+                        CornerRadius="4"
+                        FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

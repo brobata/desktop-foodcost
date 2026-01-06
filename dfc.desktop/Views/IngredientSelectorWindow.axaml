@@ -1,0 +1,98 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+        x:Class="Dfc.Desktop.Views.IngredientSelectorWindow"
+        x:DataType="vm:IngredientSelectorViewModel"
+        Title="Select Ingredient"
+        Width="500" Height="600"
+        MinWidth="400" MinHeight="400"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="White">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="20">
+
+		<!-- Search Section -->
+		<StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,16">
+			<TextBlock Text="Select Ingredient"
+			          FontSize="18"
+			          FontWeight="Bold"
+			          Foreground="#2D2D2D"/>
+
+			<Border BorderBrush="#D0D0D0"
+			       BorderThickness="1"
+			       CornerRadius="4"
+			       Padding="10"
+			       Background="#F9F9F9">
+				<Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+					<TextBlock Grid.Column="0"
+					          Text="🔍"
+					          FontSize="16"
+					          VerticalAlignment="Center"/>
+					<TextBox Grid.Column="1"
+					        Text="{Binding SearchText}"
+					        Watermark="Search ingredients..."
+					        VerticalAlignment="Center"
+					        BorderThickness="0"
+					        Background="Transparent"/>
+				</Grid>
+			</Border>
+
+			<TextBlock Foreground="#666" FontSize="12">
+				<Run Text="Showing"/>
+				<Run Text="{Binding FilteredCount}"/>
+				<Run Text="of"/>
+				<Run Text="{Binding TotalCount}"/>
+				<Run Text="ingredients"/>
+			</TextBlock>
+		</StackPanel>
+
+		<!-- Ingredients List -->
+		<Border Grid.Row="1"
+		       BorderBrush="#D0D0D0"
+		       BorderThickness="1"
+		       CornerRadius="4"
+		       Background="White">
+			<ListBox ItemsSource="{Binding FilteredIngredients}"
+			        SelectedItem="{Binding SelectedIngredient}"
+			        Background="White"
+			        Margin="0">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<Border BorderBrush="#E0E0E0"
+						       BorderThickness="0,0,0,1"
+						       Padding="12,10"
+						       Background="Transparent"
+						       DoubleTapped="Border_DoubleTapped">
+							<TextBlock Text="{Binding Name}"
+							          FontSize="14"
+							          Foreground="#2D2D2D"/>
+						</Border>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</Border>
+
+		<!-- Action Buttons -->
+		<Grid Grid.Row="2"
+		     ColumnDefinitions="*,Auto,Auto"
+		     ColumnSpacing="12"
+		     Margin="0,16,0,0">
+			<Button Grid.Column="1"
+			       Content="Cancel"
+			       Command="{Binding CancelCommand}"
+			       Padding="24,10"
+			       MinWidth="100"/>
+			<Button Grid.Column="2"
+			       Content="Select"
+			       Command="{Binding SelectCommand}"
+			       IsEnabled="{Binding SelectedIngredient, Converter={x:Static ObjectConverters.IsNotNull}}"
+			       Padding="24,10"
+			       MinWidth="100"
+			       Classes="primary"/>
+		</Grid>
+	</Grid>
+</Window>

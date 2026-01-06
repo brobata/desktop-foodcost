@@ -1,33 +1,33 @@
-; Freecost Installer Script for Inno Setup
+; Desktop Food Cost Installer Script for Inno Setup
 ; Download Inno Setup from: https://jrsoftware.org/isdl.php
 ;
 ; SECURITY NOTICE: This is a TEMPLATE file
 ; Before building the installer:
-; 1. Copy this file to FreecostSetup.iss (already in .gitignore)
+; 1. Copy this file to Desktop Food CostSetup.iss (already in .gitignore)
 ; 2. Replace YOUR_SUPABASE_URL_HERE with your actual Supabase URL
 ; 3. Replace YOUR_SUPABASE_ANON_KEY_HERE with your actual Supabase anon key
 ; 4. Replace YOUR_USDA_API_KEY_HERE with your actual USDA API key
 ; 5. Build the installer with Inno Setup
 ;
 ; This installer includes:
-; - Freecost application (self-contained with .NET 8 runtime)
+; - Desktop Food Cost application (self-contained with .NET 8 runtime)
 ; - Visual C++ Redistributable 2015-2022 (BUNDLED - no download required!)
 ; - DiagnosticCheck.bat for troubleshooting
 ; - All dependencies bundled (100% OFFLINE INSTALL - no internet required!)
 ;
 ; UPDATE-FRIENDLY FEATURES:
 ; - Detects existing installations and upgrades automatically
-; - Preserves user data in %AppData%\Freecost\ (database, settings, photos)
+; - Preserves user data in %AppData%\Desktop Food Cost\ (database, settings, photos)
 ; - Closes running app before update to avoid file locks
 ; - Cleans up old unnecessary files from previous versions
 ; - Shows upgrade confirmation message with version info
 ; - Same AppId ensures proper upgrade path (no duplicate installs)
 
-#define MyAppName "Freecost"
+#define MyAppName "Desktop Food Cost"
 #define MyAppVersion "1.0.0"
 #define MyAppPublisher "Brobata"
 #define MyAppURL "https://brobata.com/freecost"
-#define MyAppExeName "Freecost.Desktop.exe"
+#define MyAppExeName "Desktop Food Cost.Desktop.exe"
 
 [Setup]
 AppId={{8F9A7B2C-3D4E-5F6A-7B8C-9D0E1F2A3B4C}
@@ -43,8 +43,8 @@ AllowNoIcons=yes
 LicenseFile=..\LICENSE.txt
 InfoBeforeFile=..\installer\CRITICAL_WARNING.txt
 OutputDir=..\installer\output
-OutputBaseFilename=FreecostSetup-{#MyAppVersion}-x64-Complete
-SetupIconFile=..\Freecost.Desktop\Assets\appicon.ico
+OutputBaseFilename=Desktop Food CostSetup-{#MyAppVersion}-x64-Complete
+SetupIconFile=..\Desktop Food Cost.Desktop\Assets\appicon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -95,11 +95,11 @@ Source: "..\installer\BETA_v0.6_RELEASE_NOTES.md"; DestDir: "{app}"; Flags: igno
 Source: "..\installer\BETA_v0.6.1_RELEASE_NOTES.md"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Comment: "Launch Freecost Recipe Cost Management"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Comment: "Launch Desktop Food Cost Recipe Cost Management"
 Name: "{group}\Diagnostic Check"; Filename: "{app}\DiagnosticCheck.bat"; Comment: "Run diagnostic check to verify installation"
 Name: "{group}\Release Notes (v1.0)"; Filename: "{app}\v1.0_RELEASE_NOTES.md"; Comment: "View v1.0 release notes and features"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; Comment: "Launch Freecost"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; Comment: "Launch Desktop Food Cost"
 
 [Code]
 var
@@ -139,7 +139,7 @@ begin
   IsUpgrade := False;
   PreviousVersion := '';
 
-  // Check if Freecost is already installed (upgrade scenario)
+  // Check if Desktop Food Cost is already installed (upgrade scenario)
   UninstallKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{8F9A7B2C-3D4E-5F6A-7B8C-9D0E1F2A3B4C}_is1';
 
   if RegQueryStringValue(HKLM, UninstallKey, 'DisplayVersion', PreviousVersion) or
@@ -194,7 +194,7 @@ begin
     if IsUpgrade then
     begin
       Log('Upgrade completed from version ' + PreviousVersion + ' to {#MyAppVersion}');
-      MsgBox('Freecost has been updated to version {#MyAppVersion}!' + #13#10 + #13#10 +
+      MsgBox('Desktop Food Cost has been updated to version {#MyAppVersion}!' + #13#10 + #13#10 +
              'Previous version: ' + PreviousVersion + #13#10 +
              'Your data and settings have been preserved.' + #13#10 + #13#10 +
              'Old unnecessary files have been cleaned up.', mbInformation, MB_OK);

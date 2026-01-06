@@ -1,0 +1,158 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="Dfc.Desktop.Views.CostTrendAnalysisWindow"
+        x:DataType="vm:CostTrendAnalysisViewModel"
+        Title="Cost Trend Analysis"
+        Width="800"
+        Height="600"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="#F5F5F5">
+
+	<Window.Styles>
+		<Style Selector="TabItem">
+			<Setter Property="Foreground" Value="#2D2D2D"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+		</Style>
+		<Style Selector="TabItem:pointerover">
+			<Setter Property="Foreground" Value="#7AB51D"/>
+		</Style>
+		<Style Selector="TabItem:selected">
+			<Setter Property="Foreground" Value="#7AB51D"/>
+		</Style>
+
+		<!-- Prevent text from disappearing on hover -->
+		<Style Selector="DataGridCell">
+			<Setter Property="Foreground" Value="#2D2D2D"/>
+		</Style>
+		<Style Selector="DataGridCell:pointerover">
+			<Setter Property="Foreground" Value="#2D2D2D"/>
+		</Style>
+		<Style Selector="DataGridRow:pointerover DataGridCell">
+			<Setter Property="Foreground" Value="#2D2D2D"/>
+		</Style>
+	</Window.Styles>
+
+	<Grid RowDefinitions="Auto,Auto,*,Auto" Margin="24">
+
+		<!-- Header -->
+		<StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,16">
+			<TextBlock Text="Cost Trend Analysis"
+			          FontSize="24"
+			          FontWeight="Bold"
+			          Foreground="#2D2D2D"/>
+			<TextBlock Text="Category-based cost analysis and trends"
+			          FontSize="14"
+			          Foreground="#666"/>
+		</StackPanel>
+
+		<!-- Summary Stats -->
+		<Border Grid.Row="1"
+		        Background="White"
+		        CornerRadius="8"
+		        Padding="20"
+		        Margin="0,0,0,16"
+		        BoxShadow="0 2 8 0 #10000000">
+			<Grid ColumnDefinitions="*,*,*">
+				<StackPanel Grid.Column="0" Spacing="10">
+					<TextBlock Text="Ingredients" FontSize="16" FontWeight="Bold" Foreground="#2D2D2D"/>
+					<StackPanel Spacing="6">
+						<TextBlock Text="{Binding TotalIngredientCost, StringFormat='Total: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding AverageIngredientCost, StringFormat='Average: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding HighestCostIngredient, StringFormat='Highest: {0}'}" FontSize="13" Foreground="#666" TextWrapping="Wrap"/>
+					</StackPanel>
+				</StackPanel>
+				<StackPanel Grid.Column="1" Spacing="10">
+					<TextBlock Text="Recipes" FontSize="16" FontWeight="Bold" Foreground="#2D2D2D"/>
+					<StackPanel Spacing="6">
+						<TextBlock Text="{Binding TotalRecipeCost, StringFormat='Total: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding AverageRecipeCost, StringFormat='Average: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding HighestCostRecipe, StringFormat='Highest: {0}'}" FontSize="13" Foreground="#666" TextWrapping="Wrap"/>
+					</StackPanel>
+				</StackPanel>
+				<StackPanel Grid.Column="2" Spacing="10">
+					<TextBlock Text="Entrees" FontSize="16" FontWeight="Bold" Foreground="#2D2D2D"/>
+					<StackPanel Spacing="6">
+						<TextBlock Text="{Binding TotalEntreeCost, StringFormat='Total: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding AverageEntreeCost, StringFormat='Average: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding HighestCostEntree, StringFormat='Highest: {0}'}" FontSize="13" Foreground="#666" TextWrapping="Wrap"/>
+					</StackPanel>
+				</StackPanel>
+			</Grid>
+		</Border>
+
+		<!-- Trend Data -->
+		<TabControl Grid.Row="2">
+			<TabItem Header="Ingredients by Category">
+				<Border Background="White"
+				        CornerRadius="8"
+				        BoxShadow="0 2 8 0 #10000000"
+				        Padding="16">
+					<DataGrid ItemsSource="{Binding IngredientTrend}"
+					         AutoGenerateColumns="False"
+					         IsReadOnly="True"
+					         GridLinesVisibility="Horizontal"
+					         CanUserResizeColumns="True">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Category" Binding="{Binding Label}" Width="*"/>
+							<DataGridTextColumn Header="Total Cost" Binding="{Binding DisplayValue}" Width="150"/>
+							<DataGridTextColumn Header="Items" Binding="{Binding DisplayCount}" Width="100"/>
+						</DataGrid.Columns>
+					</DataGrid>
+				</Border>
+			</TabItem>
+			<TabItem Header="Recipes by Category">
+				<Border Background="White"
+				        CornerRadius="8"
+				        BoxShadow="0 2 8 0 #10000000"
+				        Padding="16">
+					<DataGrid ItemsSource="{Binding RecipeTrend}"
+					         AutoGenerateColumns="False"
+					         IsReadOnly="True"
+					         GridLinesVisibility="Horizontal"
+					         CanUserResizeColumns="True">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Category" Binding="{Binding Label}" Width="*"/>
+							<DataGridTextColumn Header="Total Cost" Binding="{Binding DisplayValue}" Width="150"/>
+							<DataGridTextColumn Header="Items" Binding="{Binding DisplayCount}" Width="100"/>
+						</DataGrid.Columns>
+					</DataGrid>
+				</Border>
+			</TabItem>
+			<TabItem Header="Entrees by Category">
+				<Border Background="White"
+				        CornerRadius="8"
+				        BoxShadow="0 2 8 0 #10000000"
+				        Padding="16">
+					<DataGrid ItemsSource="{Binding EntreeTrend}"
+					         AutoGenerateColumns="False"
+					         IsReadOnly="True"
+					         GridLinesVisibility="Horizontal"
+					         CanUserResizeColumns="True">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Category" Binding="{Binding Label}" Width="*"/>
+							<DataGridTextColumn Header="Total Cost" Binding="{Binding DisplayValue}" Width="150"/>
+							<DataGridTextColumn Header="Items" Binding="{Binding DisplayCount}" Width="100"/>
+						</DataGrid.Columns>
+					</DataGrid>
+				</Border>
+			</TabItem>
+		</TabControl>
+
+		<!-- Close Button -->
+		<Button Grid.Row="3"
+		        Content="Close"
+		        HorizontalAlignment="Right"
+		        Margin="0,16,0,0"
+		        Padding="32,10"
+		        Background="#7AB51D"
+		        Foreground="White"
+		        CornerRadius="4"
+		        FontWeight="SemiBold"
+		        Click="OnCloseClicked"/>
+	</Grid>
+</Window>

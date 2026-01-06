@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <ApplicationIcon>Assets\appicon.ico</ApplicationIcon>
+
+    <!-- Version Info - Semantic Versioning (SemVer) -->
+    <Version>0.10.0</Version>
+    <AssemblyVersion>0.10.0.0</AssemblyVersion>
+    <FileVersion>0.10.0.0</FileVersion>
+    <InformationalVersion>0.10.0</InformationalVersion>
+
+    <!-- Application Info -->
+    <Product>Desktop Food Cost</Product>
+    <Company>Desktop Food Cost</Company>
+    <Copyright>Copyright © 2025 Desktop Food Cost</Copyright>
+    <Description>Restaurant cost management and recipe costing application</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.0" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.0">
+      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
+    <PackageReference Include="EPPlus" Version="8.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.20">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.20" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
+    <PackageReference Include="QuestPDF" Version="2025.7.2" />
+    <PackageReference Include="ScottPlot.Avalonia" Version="5.0.56" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\dfc.core\dfc.core.csproj" />
+    <ProjectReference Include="..\dfc.data\dfc.data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\AddEditIngredientWindow.axaml.cs">
+      <DependentUpon>AddEditIngredientWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\AddEditRecipeWindow.axaml.cs">
+      <DependentUpon>AddEditRecipeWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

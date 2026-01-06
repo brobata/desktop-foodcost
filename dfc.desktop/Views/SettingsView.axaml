@@ -1,0 +1,680 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dfc.Desktop.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="Dfc.Desktop.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel"
+             Background="#F5F5F5">
+
+	<ScrollViewer Padding="24">
+		<StackPanel Spacing="24" MaxWidth="800">
+
+			<StackPanel Spacing="8">
+				<TextBlock Text="Settings"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="#2D2D2D"/>
+				<TextBlock Text="Configure your preferences and application settings"
+                           FontSize="14"
+                           Foreground="#666"/>
+			</StackPanel>
+
+			<!-- Cloud Sync Section - HIDDEN in local-only mode -->
+			<Border Background="White"
+			        CornerRadius="8"
+			        Padding="24"
+			        BoxShadow="0 2 8 0 #10000000"
+			        IsVisible="False">
+				<StackPanel Spacing="16">
+					<TextBlock Text="Cloud Sync &amp; Authentication"
+					           FontSize="18"
+					           FontWeight="SemiBold"
+					           Foreground="#2D2D2D"/>
+
+					<TextBlock Text="Sync your data across devices with Firebase cloud storage. Delta sync technology only uploads changes, reducing bandwidth and API usage by 70%+."
+					           Foreground="#666"
+					           TextWrapping="Wrap"/>
+
+					<!-- Signed In Card -->
+					<Border Background="#E8F5E9"
+					        BorderBrush="#7AB51D"
+					        BorderThickness="2"
+					        CornerRadius="6"
+					        Padding="16"
+					        IsVisible="{Binding IsSignedIn}">
+						<Grid ColumnDefinitions="Auto,*,Auto">
+							<TextBlock Grid.Column="0"
+							           Text="✓"
+							           FontSize="24"
+							           Foreground="#7AB51D"
+							           VerticalAlignment="Center"
+							           Margin="0,0,16,0"/>
+
+							<StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+								<TextBlock Text="Signed In"
+								           FontWeight="SemiBold"
+								           FontSize="16"
+								           Foreground="#2D2D2D"/>
+								<TextBlock Text="{Binding UserEmail}"
+								           FontSize="13"
+								           Foreground="#666"/>
+							</StackPanel>
+
+							<Button Grid.Column="2"
+							        Content="Sign Out"
+							        Command="{Binding SignOutCommand}"
+							        Background="#EF5350"
+							        Foreground="White"
+							        Padding="20,10"
+							        CornerRadius="4"
+							        FontWeight="SemiBold"
+							        VerticalAlignment="Center"/>
+						</Grid>
+					</Border>
+
+					<!-- Not Signed In Card -->
+					<Border Background="#FFF3E0"
+					        BorderBrush="#FF9800"
+					        BorderThickness="2"
+					        CornerRadius="6"
+					        Padding="16"
+					        IsVisible="{Binding !IsSignedIn}">
+						<Grid ColumnDefinitions="Auto,*,Auto">
+							<TextBlock Grid.Column="0"
+							           Text="⚠"
+							           FontSize="24"
+							           Foreground="#FF9800"
+							           VerticalAlignment="Center"
+							           Margin="0,0,16,0"/>
+
+							<StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+								<TextBlock Text="Not Signed In"
+								           FontWeight="SemiBold"
+								           FontSize="16"
+								           Foreground="#2D2D2D"/>
+								<TextBlock Text="Sign in to enable cloud sync and multi-device access"
+								           FontSize="13"
+								           Foreground="#666"/>
+							</StackPanel>
+
+							<Button Grid.Column="2"
+							        Content="Sign In"
+							        Command="{Binding SignInCommand}"
+							        Background="#2196F3"
+							        Foreground="White"
+							        Padding="20,10"
+							        CornerRadius="4"
+							        FontWeight="SemiBold"
+							        VerticalAlignment="Center"/>
+						</Grid>
+					</Border>
+
+					<!-- Sync Status (visible when signed in) -->
+					<Border Background="#F8F9FA"
+					        BorderBrush="#DEE2E6"
+					        BorderThickness="1"
+					        CornerRadius="6"
+					        Padding="16"
+					        IsVisible="{Binding IsSignedIn}">
+						<StackPanel Spacing="12">
+							<!-- Status Header -->
+							<Grid ColumnDefinitions="*,Auto">
+								<StackPanel Grid.Column="0" Spacing="4">
+									<TextBlock Text="Sync Status"
+									           FontWeight="SemiBold"
+									           FontSize="14"
+									           Foreground="#2D2D2D"/>
+									<StackPanel Orientation="Horizontal" Spacing="8">
+										<TextBlock Text="{Binding SyncStatus}"
+										           FontSize="13"
+										           FontWeight="SemiBold"
+										           Foreground="#2196F3"/>
+										<TextBlock Text="•" Foreground="#CCC"/>
+										<TextBlock FontSize="13" Foreground="#666">
+											<Run Text="Last synced:"/>
+											<Run Text="{Binding LastSyncedText}"/>
+										</TextBlock>
+									</StackPanel>
+								</StackPanel>
+
+								<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+									<Button Content="📊 Sync Monitor"
+								        Command="{Binding OpenSyncMonitorCommand}"
+								        Background="#6366F1"
+								        Foreground="White"
+								        Padding="12,8"
+								        CornerRadius="4"
+								        FontWeight="SemiBold"
+								        ToolTip.Tip="View sync status and manage pending changes"/>
+
+								</StackPanel>
+							</Grid>
+
+							<!-- Syncing Progress (visible when syncing) -->
+							<Border Background="#E3F2FD"
+							        BorderBrush="#2196F3"
+							        BorderThickness="1"
+							        CornerRadius="4"
+							        Padding="12"
+							        IsVisible="{Binding IsSyncing}">
+								<Grid ColumnDefinitions="Auto,*">
+									<TextBlock Grid.Column="0"
+									           Text="⏳"
+									           FontSize="16"
+									           Margin="0,0,8,0"/>
+									<TextBlock Grid.Column="1"
+									           Text="Syncing your data with the cloud..."
+									           FontSize="13"
+									           Foreground="#1976D2"
+									           FontWeight="SemiBold"/>
+								</Grid>
+							</Border>
+						</StackPanel>
+					</Border>
+
+					<!-- Delta Sync Info -->
+					<Border Background="#E0F2FE"
+					        BorderBrush="#0EA5E9"
+					        BorderThickness="1"
+					        CornerRadius="4"
+					        Padding="12"
+					        IsVisible="{Binding IsSignedIn}">
+						<StackPanel Spacing="6">
+							<TextBlock Text="💡 About Delta Sync"
+							          FontWeight="SemiBold"
+							          Foreground="#0369A1"
+							          FontSize="13"/>
+							<TextBlock Text="• Only modified data is synced, reducing API calls by 70%+"
+							          Foreground="#0369A1"
+							          FontSize="11"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Changes are tracked locally and synced automatically every 5 minutes"
+							          Foreground="#0369A1"
+							          FontSize="11"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• When offline, your changes are saved locally and sync when reconnected"
+							          Foreground="#0369A1"
+							          FontSize="11"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Use the Monitor dashboard to track sync performance and troubleshoot issues"
+							          Foreground="#0369A1"
+							          FontSize="11"
+							          TextWrapping="Wrap"/>
+						</StackPanel>
+					</Border>
+
+				</StackPanel>
+			</Border>
+
+		<!-- Location Management Section -->
+		<Border Background="White"
+		        CornerRadius="8"
+		        Padding="24"
+		        BoxShadow="0 2 8 0 #10000000"
+		        Loaded="LocationSection_Loaded">
+			<StackPanel Spacing="16">
+				<Grid ColumnDefinitions="*,Auto">
+					<StackPanel Grid.Column="0" Spacing="4">
+						<TextBlock Text="Location Management"
+						           FontSize="18"
+						           FontWeight="SemiBold"
+						           Foreground="#2D2D2D"/>
+						<TextBlock Text="Manage multiple locations to keep data organized by restaurant or branch"
+						           Foreground="#666"
+						           FontSize="13"/>
+					</StackPanel>
+					<Button Grid.Column="1"
+					        Content="+ Add Location"
+					        Command="{Binding AddLocationCommand}"
+					        Background="#7AB51D"
+					        Foreground="White"
+					        Padding="16,10"
+					        CornerRadius="4"
+					        FontWeight="SemiBold"
+					        VerticalAlignment="Center"/>
+				</Grid>
+
+				<!-- Current Location -->
+				<Border Background="#E8F5E9"
+				        BorderBrush="#7AB51D"
+				        BorderThickness="2"
+				        CornerRadius="6"
+				        Padding="16">
+					<Grid ColumnDefinitions="Auto,*">
+						<TextBlock Grid.Column="0"
+						           Text="📍"
+						           FontSize="24"
+						           VerticalAlignment="Center"
+						           Margin="0,0,12,0"/>
+						<StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+							<TextBlock Text="Current Location"
+							           FontSize="12"
+							           Foreground="#666"/>
+							<TextBlock Text="{Binding CurrentLocationName}"
+							           FontSize="16"
+							           FontWeight="SemiBold"
+							           Foreground="#2D2D2D"/>
+						</StackPanel>
+					</Grid>
+				</Border>
+
+				<!-- Locations List -->
+				<ItemsControl ItemsSource="{Binding Locations}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border Background="#F8F9FA"
+							        BorderBrush="#DEE2E6"
+							        BorderThickness="1"
+							        CornerRadius="6"
+							        Padding="16"
+							        Margin="0,0,0,8">
+								<Grid ColumnDefinitions="*,Auto">
+									<StackPanel Grid.Column="0" Spacing="4">
+										<TextBlock Text="{Binding Name}"
+										           FontSize="15"
+										           FontWeight="SemiBold"
+										           Foreground="#2D2D2D"/>
+										<StackPanel Orientation="Horizontal" Spacing="12">
+											<TextBlock Text="{Binding Address}"
+											           FontSize="12"
+											           Foreground="#666"
+											           IsVisible="{Binding Address, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+											<TextBlock Text="{Binding Phone}"
+											           FontSize="12"
+											           Foreground="#666"
+											           IsVisible="{Binding Phone, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+										</StackPanel>
+									</StackPanel>
+									<StackPanel Grid.Column="1"
+									            Orientation="Horizontal"
+									            Spacing="8"
+									            VerticalAlignment="Center">
+										<Button Content="Switch"
+										        Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).SwitchToLocationCommand}"
+										        CommandParameter="{Binding}"
+										        Background="#2196F3"
+										        Foreground="White"
+										        Padding="12,6"
+										        CornerRadius="4"
+										        FontSize="12"/>
+										<Button Content="Edit"
+										        Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).EditLocationCommand}"
+										        CommandParameter="{Binding}"
+										        Background="Transparent"
+										        Foreground="#666"
+										        BorderBrush="#DDD"
+										        BorderThickness="1"
+										        Padding="12,6"
+										        CornerRadius="4"
+										        FontSize="12"/>
+										<Button Content="Delete"
+										        Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).DeleteLocationCommand}"
+										        CommandParameter="{Binding}"
+										        Background="Transparent"
+										        Foreground="#EF5350"
+										        BorderBrush="#EF5350"
+										        BorderThickness="1"
+										        Padding="12,6"
+										        CornerRadius="4"
+										        FontSize="12"/>
+									</StackPanel>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+		</Border>
+
+		<Border Background="White"
+                CornerRadius="8"
+                Padding="24"
+                BoxShadow="0 2 8 0 #10000000">
+			<StackPanel Spacing="16">
+				<TextBlock Text="Database Management"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="#2D2D2D"/>
+
+				<TextBlock Text="Backup your entire database to a safe location or restore from a previous backup. This includes all ingredients, recipes, entrees, and price history."
+                           Foreground="#666"
+                           TextWrapping="Wrap"/>
+
+				<StackPanel Orientation="Horizontal" Spacing="12">
+					<Button Content="💾 Backup Database"
+                            Command="{Binding BackupDatabaseCommand}"
+                            Background="#7AB51D"
+                            Foreground="White"
+                            Padding="16,10"
+                            CornerRadius="4"
+                            FontWeight="SemiBold"/>
+
+					<Button Content="📥 Restore Database"
+                            Command="{Binding RestoreDatabaseCommand}"
+                            Background="#FF9800"
+                            Foreground="White"
+                            Padding="16,10"
+                            CornerRadius="4"
+                            FontWeight="SemiBold"/>
+
+					<Button Content="🗂️ Backup Manager"
+                            Command="{Binding OpenBackupManagerCommand}"
+                            Background="#2196F3"
+                            Foreground="White"
+                            Padding="16,10"
+                            CornerRadius="4"
+                            FontWeight="SemiBold"
+                            ToolTip.Tip="Advanced backup management with automatic backups, restore, and backup history"/>
+				</StackPanel>
+			</StackPanel>
+		</Border>
+
+		<!-- Photo Cache Section -->
+		<Border Background="White"
+		        CornerRadius="8"
+		        Padding="24"
+		        BoxShadow="0 2 8 0 #10000000">
+			<StackPanel Spacing="16">
+				<TextBlock Text="Photo Cache"
+				           FontSize="18"
+				           FontWeight="SemiBold"
+				           Foreground="#2D2D2D"/>
+
+				<TextBlock Text="Entree photos are cached locally for faster loading. Clear the cache to free up disk space."
+				           Foreground="#666"
+				           TextWrapping="Wrap"/>
+
+				<Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
+					<TextBlock Grid.Column="0"
+					           Text="Cache Size:"
+					           FontWeight="SemiBold"
+					           VerticalAlignment="Center"/>
+
+					<TextBlock Grid.Column="1"
+					           Text="{Binding CacheSize}"
+					           FontSize="16"
+					           Foreground="#7AB51D"
+					           VerticalAlignment="Center"/>
+
+					<Button Grid.Column="2"
+					        Content="🗑️ Clear Cache"
+					        Command="{Binding ClearCacheCommand}"
+					        IsEnabled="{Binding !IsCacheClearing}"
+					        Background="#EF5350"
+					        Foreground="White"
+					        Padding="16,10"
+					        CornerRadius="4"
+					        FontWeight="SemiBold"/>
+				</Grid>
+			</StackPanel>
+		</Border>
+
+		<!-- Spoony Assistant Section -->
+		<Border Background="White"
+		        CornerRadius="8"
+		        Padding="24"
+		        BoxShadow="0 2 8 0 #10000000">
+			<StackPanel Spacing="16">
+				<TextBlock Text="Spoony Assistant"
+				           FontSize="18"
+				           FontWeight="SemiBold"
+				           Foreground="#2D2D2D"/>
+
+				<TextBlock Text="Spoony is your friendly Lab assistant who provides helpful tips and guidance as you use Desktop Food Cost."
+				           Foreground="#666"
+				           TextWrapping="Wrap"/>
+
+				<Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+					<CheckBox Grid.Column="0"
+					          IsChecked="{Binding IsSpoonyEnabled}"
+					          VerticalAlignment="Center"/>
+
+					<StackPanel Grid.Column="1">
+						<TextBlock Text="Show Spoony Assistant"
+						           FontWeight="SemiBold"
+						           VerticalAlignment="Center"/>
+						<TextBlock Text="Uncheck to hide Spoony and disable all pop-up tips"
+						           FontSize="12"
+						           Foreground="#999"/>
+					</StackPanel>
+				</Grid>
+			</StackPanel>
+		</Border>
+
+		<!-- Unit Conversions Section -->
+		<Border Background="White"
+		        CornerRadius="8"
+		        Padding="24"
+		        BoxShadow="0 2 8 0 #10000000">
+			<StackPanel Spacing="16">
+				<TextBlock Text="Unit Conversions"
+				           FontSize="18"
+				           FontWeight="SemiBold"
+				           Foreground="#2D2D2D"/>
+
+				<TextBlock Text="USDA data automatically provides unit conversions for accurate recipe costing"
+				           Foreground="#666"
+				           TextWrapping="Wrap"/>
+
+				<!-- Statistics Grid -->
+				<Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+					<!-- Total Conversions -->
+					<Border Grid.Column="0" Background="#F5F5F5" CornerRadius="6" Padding="16">
+						<StackPanel Spacing="4">
+							<TextBlock Text="Total"
+							           FontSize="12"
+							           Foreground="#666"/>
+							<TextBlock Text="{Binding TotalConversions}"
+							           FontSize="22"
+							           FontWeight="Bold"
+							           Foreground="#7AB51D"/>
+						</StackPanel>
+					</Border>
+
+					<!-- USDA Conversions -->
+					<Border Grid.Column="1" Background="#F5F5F5" CornerRadius="6" Padding="16">
+						<StackPanel Spacing="4">
+							<TextBlock Text="USDA"
+							           FontSize="12"
+							           Foreground="#666"/>
+							<TextBlock Text="{Binding UsdaConversions}"
+							           FontSize="22"
+							           FontWeight="Bold"
+							           Foreground="#2196F3"/>
+						</StackPanel>
+					</Border>
+
+					<!-- User Defined -->
+					<Border Grid.Column="2" Background="#F5F5F5" CornerRadius="6" Padding="16">
+						<StackPanel Spacing="4">
+							<TextBlock Text="User Defined"
+							           FontSize="12"
+							           Foreground="#666"/>
+							<TextBlock Text="{Binding UserDefinedConversions}"
+							           FontSize="22"
+							           FontWeight="Bold"
+							           Foreground="#FF9800"/>
+						</StackPanel>
+					</Border>
+				</Grid>
+
+				<!-- Action Buttons -->
+				<StackPanel Orientation="Horizontal" Spacing="12">
+					<Button Content="📊 View All Conversions"
+					        Command="{Binding ViewConversionsCommand}"
+					        Background="#2196F3"
+					        Foreground="White"
+					        Padding="16,10"
+					        CornerRadius="4"
+					        FontWeight="SemiBold"/>
+
+					<Button Content="🔄 Refresh Statistics"
+					        Command="{Binding RefreshConversionStatsCommand}"
+					        Background="#7AB51D"
+					        Foreground="White"
+					        Padding="16,10"
+					        CornerRadius="4"
+					        FontWeight="SemiBold"/>
+				</StackPanel>
+			</StackPanel>
+		</Border>
+
+		<!-- Export & Import Section -->
+		<Border Background="White"
+		        CornerRadius="8"
+		        Padding="24"
+		        BoxShadow="0 2 8 0 #10000000">
+			<StackPanel Spacing="16">
+				<TextBlock Text="Export &amp; Import Data"
+				           FontSize="18"
+				           FontWeight="SemiBold"
+				           Foreground="#2D2D2D"/>
+
+				<TextBlock Text="Export your data to Excel format for reporting and analysis, or import data from external sources."
+				           Foreground="#666"
+				           TextWrapping="Wrap"/>
+
+				<!-- Export Options -->
+				<StackPanel Spacing="8">
+					<TextBlock Text="Select data to export:"
+					           FontWeight="SemiBold"
+					           Foreground="#2D2D2D"
+					           Margin="0,4,0,0"/>
+
+					<StackPanel Orientation="Horizontal" Spacing="16">
+						<CheckBox Content="Ingredients"
+						          IsChecked="{Binding ExportIngredients}"/>
+						<CheckBox Content="Recipes"
+						          IsChecked="{Binding ExportRecipes}"/>
+						<CheckBox Content="Menu Items"
+						          IsChecked="{Binding ExportEntrees}"/>
+					</StackPanel>
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal" Spacing="12">
+					<Button Content="📊 Export to Excel"
+					        Command="{Binding ExportDataCommand}"
+					        Background="#10B981"
+					        Foreground="White"
+					        Padding="16,10"
+					        CornerRadius="4"
+					        FontWeight="SemiBold"
+					        ToolTip.Tip="Export selected data to Excel (.xlsx) format"/>
+
+					<Button Content="📥 Import Data"
+					        Command="{Binding ImportDataCommand}"
+					        Background="#6366F1"
+					        Foreground="White"
+					        Padding="16,10"
+					        CornerRadius="4"
+					        FontWeight="SemiBold"
+					        IsEnabled="False"
+					        ToolTip.Tip="Import data from CSV or Excel (Coming Soon)"/>
+				</StackPanel>
+			</StackPanel>
+		</Border>
+
+		<!-- User Profile Section -->
+		<Border Background="White"
+                CornerRadius="8"
+                Padding="24"
+                BoxShadow="0 2 8 0 #10000000">
+			<StackPanel Spacing="16">
+				<TextBlock Text="User Profile"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="#2D2D2D"/>
+
+				<TextBlock Text="Update your profile information and restaurant details. This information helps us build our community and keep you informed about updates."
+                           Foreground="#666"
+                           TextWrapping="Wrap"/>
+
+				<Button Content="👤 Edit Profile &amp; Restaurant Info"
+                        Command="{Binding RedoOnboardingCommand}"
+                        Background="#2196F3"
+                        Foreground="White"
+                        Padding="16,10"
+                        CornerRadius="4"
+                        FontWeight="SemiBold"
+                        ToolTip.Tip="Update your name, restaurant name, contact info, and newsletter preferences"/>
+			</StackPanel>
+		</Border>
+
+		<Border Background="White"
+                    CornerRadius="8"
+                    Padding="24"
+                    BoxShadow="0 2 8 0 #10000000">
+				<StackPanel Spacing="16">
+					<TextBlock Text="Profitability Thresholds"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="#2D2D2D"/>
+
+					<TextBlock Text="Set food cost percentage thresholds (🟢 Good, 🟡 Acceptable, 🔴 Poor)"
+                               Foreground="#666"
+                               TextWrapping="Wrap"/>
+
+					<Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+						<!-- Green Threshold -->
+						<StackPanel Grid.Column="0" Spacing="8">
+							<TextBlock Text="🟢 Good (Below)"
+							          FontWeight="SemiBold"
+							          Foreground="#4CAF50"/>
+							<Grid ColumnDefinitions="*,Auto">
+								<TextBox Grid.Column="0"
+								        Text="{Binding GreenThreshold}"
+								        Watermark="e.g., 30"
+								        Height="36"
+								        VerticalContentAlignment="Center"/>
+								<TextBlock Grid.Column="1"
+								          Text="%"
+								          FontSize="14"
+								          FontWeight="SemiBold"
+								          Foreground="#4CAF50"
+								          VerticalAlignment="Center"
+								          Margin="8,0,0,0"/>
+							</Grid>
+						</StackPanel>
+
+						<!-- Yellow Threshold -->
+						<StackPanel Grid.Column="1" Spacing="8">
+							<TextBlock Text="🟡 Acceptable (Below)"
+							          FontWeight="SemiBold"
+							          Foreground="#FFC107"/>
+							<Grid ColumnDefinitions="*,Auto">
+								<TextBox Grid.Column="0"
+								        Text="{Binding YellowThreshold}"
+								        Watermark="e.g., 40"
+								        Height="36"
+								        VerticalContentAlignment="Center"/>
+								<TextBlock Grid.Column="1"
+								          Text="%"
+								          FontSize="14"
+								          FontWeight="SemiBold"
+								          Foreground="#FFC107"
+								          VerticalAlignment="Center"
+								          Margin="8,0,0,0"/>
+							</Grid>
+						</StackPanel>
+					</Grid>
+
+					<TextBlock Text="🔴 Poor threshold automatically calculated above Yellow"
+					          Foreground="#999"
+					          FontSize="12"
+					          FontStyle="Italic"/>
+				</StackPanel>
+			</Border>
+
+			<Button Content="Save Settings"
+                    Command="{Binding SaveSettingsCommand}"
+                    Background="#7AB51D"
+                    Foreground="White"
+                    Padding="24,12"
+                    CornerRadius="4"
+                    FontWeight="SemiBold"
+                    HorizontalAlignment="Right"/>
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>

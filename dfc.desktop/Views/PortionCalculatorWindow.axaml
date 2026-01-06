@@ -1,0 +1,180 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+        x:Class="Dfc.Desktop.Views.PortionCalculatorWindow"
+        x:DataType="vm:PortionCalculatorViewModel"
+        Title="Portion Sizing Calculator"
+        Width="600"
+        Height="500"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="#F5F5F5">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="24">
+
+		<!-- Header -->
+		<StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,20">
+			<TextBlock Text="📊 Portion Sizing Calculator"
+			          FontSize="24"
+			          FontWeight="Bold"
+			          Foreground="#2D2D2D"/>
+			<TextBlock Text="Calculate ingredient quantities for different portion sizes"
+			          FontSize="14"
+			          Foreground="#666"/>
+		</StackPanel>
+
+		<!-- Content -->
+		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+			<StackPanel Spacing="20">
+
+				<!-- Current Recipe Info -->
+				<Border Background="White"
+				       CornerRadius="8"
+				       Padding="20"
+				       BoxShadow="0 2 8 0 #10000000">
+					<StackPanel Spacing="16">
+						<TextBlock Text="Current Recipe"
+						          FontSize="16"
+						          FontWeight="SemiBold"
+						          Foreground="#2D2D2D"/>
+
+						<Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+							<StackPanel Grid.Column="0" Spacing="8">
+								<TextBlock Text="Recipe Name" FontSize="12" Foreground="#666"/>
+								<TextBlock Text="{Binding RecipeName}"
+								          FontSize="14"
+								          FontWeight="Medium"
+								          Foreground="#2D2D2D"/>
+							</StackPanel>
+							<StackPanel Grid.Column="1" Spacing="8">
+								<TextBlock Text="Current Yield" FontSize="12" Foreground="#666"/>
+								<TextBlock FontSize="14" FontWeight="Medium" Foreground="#2D2D2D">
+									<Run Text="{Binding OriginalYield}"/>
+									<Run Text=" "/>
+									<Run Text="{Binding YieldUnit}"/>
+								</TextBlock>
+							</StackPanel>
+						</Grid>
+					</StackPanel>
+				</Border>
+
+				<!-- Desired Portion -->
+				<Border Background="White"
+				       CornerRadius="8"
+				       Padding="20"
+				       BoxShadow="0 2 8 0 #10000000">
+					<StackPanel Spacing="16">
+						<TextBlock Text="Desired Portion"
+						          FontSize="16"
+						          FontWeight="SemiBold"
+						          Foreground="#2D2D2D"/>
+
+						<StackPanel Spacing="8">
+							<TextBlock Text="New Yield" FontSize="12" Foreground="#666"/>
+							<TextBox Text="{Binding DesiredYield}"
+							        Watermark="Enter desired yield..."
+							        Padding="12,10"
+							        FontSize="14"/>
+						</StackPanel>
+
+						<Border Background="#E8F5E9"
+						       BorderBrush="#7AB51D"
+						       BorderThickness="1"
+						       CornerRadius="6"
+						       Padding="16"
+						       IsVisible="{Binding HasScalingFactor}">
+							<StackPanel Spacing="8">
+								<TextBlock FontSize="14" FontWeight="Medium" Foreground="#2E7D32">
+									<Run Text="Scaling Factor: "/>
+									<Run Text="{Binding ScalingFactor, StringFormat='{}{0:F2}'}"/>
+									<Run Text="x"/>
+								</TextBlock>
+								<TextBlock FontSize="12" Foreground="#2E7D32">
+									<Run Text="All ingredients will be multiplied by "/>
+									<Run Text="{Binding ScalingFactor, StringFormat='{}{0:F2}'}"/>
+								</TextBlock>
+							</StackPanel>
+						</Border>
+					</StackPanel>
+				</Border>
+
+				<!-- Ingredient Adjustments -->
+				<Border Background="White"
+				       CornerRadius="8"
+				       Padding="20"
+				       BoxShadow="0 2 8 0 #10000000"
+				       IsVisible="{Binding HasIngredients}">
+					<StackPanel Spacing="16">
+						<TextBlock Text="Ingredient Adjustments"
+						          FontSize="16"
+						          FontWeight="SemiBold"
+						          Foreground="#2D2D2D"/>
+
+						<!-- Ingredient List -->
+						<Border BorderBrush="#E0E0E0"
+						       BorderThickness="1"
+						       CornerRadius="4">
+							<ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+								<ItemsControl ItemsSource="{Binding Ingredients}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Border BorderBrush="#F0F0F0"
+											       BorderThickness="0,0,0,1"
+											       Padding="12">
+												<Grid ColumnDefinitions="2*,Auto,2*" ColumnSpacing="16">
+													<StackPanel Grid.Column="0">
+														<TextBlock Text="{Binding Name}"
+														          FontSize="13"
+														          FontWeight="Medium"
+														          Foreground="#2D2D2D"/>
+													</StackPanel>
+													<TextBlock Grid.Column="1"
+													          Text="→"
+													          FontSize="16"
+													          Foreground="#999"
+													          VerticalAlignment="Center"/>
+													<StackPanel Grid.Column="2">
+														<TextBlock FontSize="13" Foreground="#7AB51D" FontWeight="Medium">
+															<Run Text="{Binding OriginalQuantity, StringFormat='{}{0:F2}'}"/>
+															<Run Text=" "/>
+															<Run Text="{Binding Unit}"/>
+															<Run Text=" → "/>
+															<Run Text="{Binding NewQuantity, StringFormat='{}{0:F2}'}"/>
+															<Run Text=" "/>
+															<Run Text="{Binding Unit}"/>
+														</TextBlock>
+													</StackPanel>
+												</Grid>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</ScrollViewer>
+						</Border>
+					</StackPanel>
+				</Border>
+
+			</StackPanel>
+		</ScrollViewer>
+
+		<!-- Buttons -->
+		<StackPanel Grid.Row="2"
+		           Orientation="Horizontal"
+		           HorizontalAlignment="Right"
+		           Spacing="12"
+		           Margin="0,20,0,0">
+			<Button Content="Close"
+			       Click="OnCloseClick"
+			       Background="#7AB51D"
+			       Foreground="White"
+			       Padding="24,10"
+			       CornerRadius="4"
+			       FontWeight="SemiBold"
+			       FontSize="14"/>
+		</StackPanel>
+
+	</Grid>
+</Window>

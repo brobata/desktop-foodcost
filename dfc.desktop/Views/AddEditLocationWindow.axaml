@@ -1,0 +1,92 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
+        x:Class="Dfc.Desktop.Views.AddEditLocationWindow"
+        x:DataType="vm:AddEditLocationViewModel"
+        Title="{Binding WindowTitle}"
+        Width="500"
+        Height="400"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="24">
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+            <TextBlock Text="{Binding WindowTitle}"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       Foreground="#2D2D2D"/>
+            <TextBlock Text="Locations help you organize data for different restaurants or branches"
+                       FontSize="14"
+                       Foreground="#666"/>
+        </StackPanel>
+
+        <!-- Form -->
+        <StackPanel Grid.Row="1" Spacing="20">
+            <!-- Location Name -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Location Name *"
+                           FontWeight="SemiBold"
+                           Foreground="#2D2D2D"/>
+                <TextBox Text="{Binding Name, Mode=TwoWay}"
+                         Watermark="e.g., Main Kitchen, Downtown Branch"
+                         Padding="12,10"
+                         CornerRadius="4"/>
+            </StackPanel>
+
+            <!-- Address -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Address"
+                           FontWeight="SemiBold"
+                           Foreground="#2D2D2D"/>
+                <TextBox Text="{Binding Address, Mode=TwoWay}"
+                         Watermark="Optional: Street address"
+                         Padding="12,10"
+                         CornerRadius="4"/>
+            </StackPanel>
+
+            <!-- Phone -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Phone"
+                           FontWeight="SemiBold"
+                           Foreground="#2D2D2D"/>
+                <TextBox Text="{Binding Phone, Mode=TwoWay}"
+                         Watermark="Optional: Contact number"
+                         Padding="12,10"
+                         CornerRadius="4"/>
+            </StackPanel>
+
+            <!-- Active Status -->
+            <CheckBox Content="Location is active"
+                      IsChecked="{Binding IsActive, Mode=TwoWay}"
+                      Margin="0,8,0,0"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="12"
+                    Margin="0,24,0,0">
+            <Button Content="Cancel"
+                    Command="{Binding CancelCommand}"
+                    Background="Transparent"
+                    Foreground="#666"
+                    BorderBrush="#DDD"
+                    BorderThickness="1"
+                    Padding="24,12"
+                    CornerRadius="4"/>
+
+            <Button Content="{Binding SaveButtonText}"
+                    Command="{Binding SaveCommand}"
+                    Background="#7AB51D"
+                    Foreground="White"
+                    Padding="24,12"
+                    CornerRadius="4"
+                    FontWeight="SemiBold"/>
+        </StackPanel>
+    </Grid>
+</Window>

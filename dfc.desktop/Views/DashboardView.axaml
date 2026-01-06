@@ -1,0 +1,356 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dfc.Desktop.ViewModels"
+             xmlns:converters="using:Dfc.Desktop.Converters"
+             xmlns:scottplot="using:ScottPlot.Avalonia"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="Dfc.Desktop.Views.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+
+	<UserControl.Resources>
+		<converters:PercentageToWidthConverter x:Key="PercentageToWidthConverter"/>
+	</UserControl.Resources>
+
+	<ScrollViewer>
+		<Grid RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,0,0,16">
+
+			<!-- Header -->
+			<Grid Grid.Row="0" Margin="0,0,0,12">
+				<StackPanel Spacing="4">
+					<TextBlock Text="Dashboard"
+							   FontSize="26"
+							   FontWeight="Bold"
+							   Foreground="#2D2D2D"/>
+					<StackPanel Orientation="Horizontal" Spacing="16">
+						<TextBlock Text="Overview of your restaurant cost management"
+								   FontSize="12"
+								   Foreground="#666"/>
+						<Button Content="🔄 Refresh"
+								Command="{Binding RefreshCommand}"
+								Background="#90CAF9"
+								Foreground="White"
+								Padding="8,4"
+								CornerRadius="4"
+								FontSize="11"
+								FontWeight="SemiBold"/>
+					</StackPanel>
+				</StackPanel>
+			</Grid>
+
+			<!-- Loading Overlay -->
+			<Border Grid.Row="1" Grid.RowSpan="3"
+			        IsVisible="{Binding IsLoading}"
+			        Background="#F0FFFFFF"
+			        ZIndex="100">
+				<StackPanel VerticalAlignment="Center"
+				           HorizontalAlignment="Center"
+				           Spacing="16">
+					<TextBlock Text="⏳"
+					          FontSize="48"
+					          HorizontalAlignment="Center"/>
+					<TextBlock Text="Loading dashboard..."
+					          FontSize="16"
+					          HorizontalAlignment="Center"
+					          Foreground="#666"/>
+				</StackPanel>
+			</Border>
+
+			<!-- Warning Cards Grid -->
+			<Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="16" Margin="0,0,0,12">
+				<!-- Validation Warnings -->
+				<Border Grid.Column="0"
+				        IsVisible="{Binding ValidationWarningCount}"
+				        Background="#FFB74D"
+				        BorderBrush="#FF9800"
+				        BorderThickness="2"
+				        CornerRadius="12"
+				        Padding="14"
+				        BoxShadow="0 2 12 0 #20000000">
+					<StackPanel Spacing="6">
+						<StackPanel Orientation="Horizontal" Spacing="10">
+							<TextBlock Text="⚠️"
+							          FontSize="24"
+							          VerticalAlignment="Center"/>
+							<TextBlock Text="{Binding ValidationWarningCount, StringFormat='{}{0} items need attention'}"
+							          FontSize="14"
+							          FontWeight="Bold"
+							          Foreground="#BF360C"
+							          VerticalAlignment="Center"/>
+						</StackPanel>
+						<StackPanel Spacing="3" Margin="34,0,0,0">
+							<TextBlock Text="{Binding MissingPrices, StringFormat='Missing prices: {0}'}"
+							          FontSize="11"
+							          Foreground="#4A2600"
+							          FontWeight="SemiBold"
+							          IsVisible="{Binding MissingPrices}"/>
+							<TextBlock Text="{Binding MissingVendors, StringFormat='No vendor: {0}'}"
+							          FontSize="11"
+							          Foreground="#4A2600"
+							          FontWeight="SemiBold"
+							          IsVisible="{Binding MissingVendors}"/>
+							<TextBlock Text="{Binding MissingCategories, StringFormat='No category: {0}'}"
+							          FontSize="11"
+							          Foreground="#4A2600"
+							          FontWeight="SemiBold"
+							          IsVisible="{Binding MissingCategories}"/>
+						</StackPanel>
+					</StackPanel>
+				</Border>
+
+				<!-- Nutritional Data Mapping Card -->
+				<Border Grid.Column="1"
+				        IsVisible="{Binding MissingNutritionalData}"
+				        Background="#E3F2FD"
+				        BorderBrush="#2196F3"
+				        BorderThickness="2"
+				        CornerRadius="12"
+				        Padding="14"
+				        BoxShadow="0 2 12 0 #20000000">
+					<StackPanel Spacing="6">
+						<StackPanel Orientation="Horizontal" Spacing="10">
+							<TextBlock Text="🌐"
+							          FontSize="24"
+							          VerticalAlignment="Center"/>
+							<TextBlock Text="{Binding MissingNutritionalData, StringFormat='{}{0} ingredients need nutritional data'}"
+							          FontSize="14"
+							          FontWeight="Bold"
+							          Foreground="#1565C0"
+							          VerticalAlignment="Center"
+							          TextWrapping="Wrap"/>
+						</StackPanel>
+						<TextBlock Text="Auto-fill from USDA database to track calories, protein, and more."
+						          FontSize="10"
+						          Foreground="#1976D2"
+						          TextWrapping="Wrap"
+						          Margin="34,0,0,0"/>
+						<StackPanel Orientation="Horizontal" Spacing="5" Margin="34,2,0,0">
+							<TextBlock Text="→"
+							          FontSize="11"
+							          FontWeight="Bold"
+							          Foreground="#4CAF50"/>
+							<TextBlock Text="Go to Ingredients → Bulk Map Nutritional Data"
+							          FontSize="10"
+							          FontWeight="SemiBold"
+							          Foreground="#4CAF50"/>
+						</StackPanel>
+					</StackPanel>
+				</Border>
+			</Grid>
+
+			<!-- Recent Activity and Price Changes -->
+			<Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="16" Margin="0,0,0,12">
+				<!-- Recent Activity -->
+				<Border Grid.Column="1"
+				        Background="White"
+				        CornerRadius="12"
+				        Padding="18"
+				        BoxShadow="0 2 12 0 #15000000">
+					<StackPanel Spacing="12">
+						<TextBlock Text="📋 Recent Activity"
+						          FontSize="16"
+						          FontWeight="Bold"
+						          Foreground="#2D2D2D"/>
+
+						<ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto">
+							<ItemsControl ItemsSource="{Binding RecentItems}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Border BorderBrush="#E0E0E0"
+										        BorderThickness="0,0,0,1"
+										        Padding="0,8"
+										        Cursor="Hand"
+										        ToolTip.Tip="Click to navigate">
+											<Border.Styles>
+												<Style Selector="Border:pointerover">
+													<Setter Property="Background" Value="#F5F5F5"/>
+												</Style>
+											</Border.Styles>
+											<Grid ColumnDefinitions="Auto,*,Auto">
+												<TextBlock Grid.Column="0"
+												          Text="{Binding Icon}"
+												          FontSize="20"
+												          VerticalAlignment="Center"
+												          Margin="0,0,10,0"/>
+												<StackPanel Grid.Column="1" Spacing="2">
+													<TextBlock Text="{Binding Name}"
+													          FontSize="12"
+													          FontWeight="SemiBold"
+													          Foreground="#2D2D2D"/>
+													<TextBlock Text="{Binding Type}"
+													          FontSize="10"
+													          Foreground="#999"/>
+												</StackPanel>
+												<StackPanel Grid.Column="2"
+												           HorizontalAlignment="Right"
+												           Spacing="1">
+													<TextBlock Text="{Binding Cost}"
+													          FontSize="12"
+													          FontWeight="Bold"
+													          Foreground="#4CAF50"
+													          HorizontalAlignment="Right"/>
+													<TextBlock Text="{Binding Date}"
+													          FontSize="9"
+													          Foreground="#999"
+													          HorizontalAlignment="Right"/>
+												</StackPanel>
+											</Grid>
+										</Border>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</ScrollViewer>
+
+						<TextBlock IsVisible="{Binding !RecentItems.Count}"
+						          Text="No recent items"
+						          FontSize="12"
+						          Foreground="#999"
+						          HorizontalAlignment="Center"
+						          Margin="0,16"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Recent Price Changes -->
+				<Border Grid.Column="0"
+				        Background="White"
+				        CornerRadius="12"
+				        Padding="18"
+				        BoxShadow="0 2 12 0 #15000000">
+					<StackPanel Spacing="12">
+						<TextBlock Text="⚠️ Recent Price Changes"
+						          FontSize="16"
+						          FontWeight="Bold"
+						          Foreground="#2D2D2D"/>
+
+						<TextBlock Text="Ingredients with price increases (last 30 days)"
+						          FontSize="10"
+						          Foreground="#666"
+						          Margin="0,-6,0,0"/>
+
+						<!-- Price Alerts List -->
+						<ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">
+							<ItemsControl ItemsSource="{Binding PriceAlerts}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Border BorderBrush="#E0E0E0"
+										        BorderThickness="0,0,0,1"
+										        Padding="0,8"
+										        Margin="0,0,0,3">
+											<Grid ColumnDefinitions="Auto,*,Auto">
+												<TextBlock Grid.Column="0"
+												          Text="📈"
+												          FontSize="18"
+												          VerticalAlignment="Center"
+												          Margin="0,0,10,0"/>
+												<StackPanel Grid.Column="1" Spacing="2">
+													<TextBlock Text="{Binding IngredientName}"
+													          FontSize="12"
+													          FontWeight="SemiBold"
+													          Foreground="#2D2D2D"/>
+													<StackPanel Orientation="Horizontal" Spacing="5">
+														<TextBlock Text="{Binding OldPrice, StringFormat='{}{0:C2}'}"
+														          FontSize="10"
+														          Foreground="#999"
+														          TextDecorations="Strikethrough"/>
+														<TextBlock Text="→"
+														          FontSize="10"
+														          Foreground="#999"/>
+														<TextBlock Text="{Binding NewPrice, StringFormat='{}{0:C2}'}"
+														          FontSize="10"
+														          Foreground="#EF5350"
+														          FontWeight="Bold"/>
+													</StackPanel>
+												</StackPanel>
+												<TextBlock Grid.Column="2"
+												          Text="{Binding PercentChange, StringFormat='+{0:F1}%'}"
+												          FontSize="12"
+												          FontWeight="Bold"
+												          Foreground="#EF5350"
+												          VerticalAlignment="Center"/>
+											</Grid>
+										</Border>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</ScrollViewer>
+
+						<!-- Empty State -->
+						<Border IsVisible="{Binding !PriceAlerts.Count}"
+						        Background="#F5F5F5"
+						        CornerRadius="8"
+						        Padding="16"
+						        Margin="0,12,0,0">
+							<StackPanel Spacing="6" HorizontalAlignment="Center">
+								<TextBlock Text="✅"
+								          FontSize="28"
+								          HorizontalAlignment="Center"/>
+								<TextBlock Text="No recent price increases"
+								          FontSize="11"
+								          Foreground="#666"
+								          HorizontalAlignment="Center"/>
+							</StackPanel>
+						</Border>
+					</StackPanel>
+				</Border>
+			</Grid>
+
+			<!-- Statistics Cards at Bottom -->
+			<Grid Grid.Row="3" ColumnDefinitions="*,*,*" ColumnSpacing="16">
+				<!-- Total Ingredients -->
+				<Border Grid.Column="0"
+				        Background="White"
+				        CornerRadius="12"
+				        Padding="18"
+				        BoxShadow="0 2 12 0 #15000000">
+					<StackPanel Spacing="6">
+						<TextBlock Text="🥕 Total Ingredients"
+						          FontSize="12"
+						          Foreground="#666"
+						          FontWeight="SemiBold"/>
+						<TextBlock Text="{Binding TotalIngredients}"
+						          FontSize="32"
+						          FontWeight="Bold"
+						          Foreground="#4CAF50"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Total Recipes -->
+				<Border Grid.Column="1"
+				        Background="White"
+				        CornerRadius="12"
+				        Padding="18"
+				        BoxShadow="0 2 12 0 #15000000">
+					<StackPanel Spacing="6">
+						<TextBlock Text="📝 Total Recipes"
+						          FontSize="12"
+						          Foreground="#666"
+						          FontWeight="SemiBold"/>
+						<TextBlock Text="{Binding TotalRecipes}"
+						          FontSize="32"
+						          FontWeight="Bold"
+						          Foreground="#2196F3"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Total Entrees -->
+				<Border Grid.Column="2"
+				        Background="White"
+				        CornerRadius="12"
+				        Padding="18"
+				        BoxShadow="0 2 12 0 #15000000">
+					<StackPanel Spacing="6">
+						<TextBlock Text="🍽️ Total Entrees"
+						          FontSize="12"
+						          Foreground="#666"
+						          FontWeight="SemiBold"/>
+						<TextBlock Text="{Binding TotalEntrees}"
+						          FontSize="32"
+						          FontWeight="Bold"
+						          Foreground="#FF9800"/>
+					</StackPanel>
+				</Border>
+			</Grid>
+		</Grid>
+	</ScrollViewer>
+</UserControl>

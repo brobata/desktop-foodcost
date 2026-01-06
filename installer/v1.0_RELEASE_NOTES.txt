@@ -1,4 +1,4 @@
-# Freecost v1.0 - Official Release
+# Desktop Food Cost v1.0 - Official Release
 
 **Release Date:** January 2025
 **Build Status:** Production Ready ✅
@@ -6,9 +6,9 @@
 
 ---
 
-## 🎉 Welcome to Freecost v1.0!
+## 🎉 Welcome to Desktop Food Cost v1.0!
 
-After months of development and refinement through 6 beta versions, we're proud to announce the **official v1.0 release** of Freecost - the complete recipe and food cost management system for restaurants and commercial kitchens.
+After months of development and refinement through 6 beta versions, we're proud to announce the **official v1.0 release** of Desktop Food Cost - the complete recipe and food cost management system for restaurants and commercial kitchens.
 
 ---
 
@@ -108,16 +108,16 @@ After months of development and refinement through 6 beta versions, we're proud 
 - Complete documentation
 
 **Installation is Simple:**
-1. Run `FreecostSetup-1.0.0-x64-Complete.exe`
+1. Run `Desktop Food CostSetup-1.0.0-x64-Complete.exe`
 2. Follow the installer wizard
-3. Launch Freecost from Start Menu or Desktop
+3. Launch Desktop Food Cost from Start Menu or Desktop
 4. Create your first user account (automatically becomes Admin)
 
 ---
 
 ## 🎯 Who Is This For?
 
-Freecost v1.0 is designed for:
+Desktop Food Cost v1.0 is designed for:
 - **Restaurant Owners** - Control food costs and maximize profitability
 - **Executive Chefs** - Standardize recipes and maintain consistency
 - **Kitchen Managers** - Track inventory and manage vendors
@@ -223,13 +223,13 @@ See `LICENSE.txt` included with installation.
 
 ## 🎊 Thank You!
 
-Thank you for choosing Freecost for your restaurant's food cost management. We're committed to building the best tool for commercial kitchens, and your feedback drives our development.
+Thank you for choosing Desktop Food Cost for your restaurant's food cost management. We're committed to building the best tool for commercial kitchens, and your feedback drives our development.
 
 **Welcome to v1.0 - Let's manage those food costs!**
 
 ---
 
-**Installation File:** `FreecostSetup-1.0.0-x64-Complete.exe`
+**Installation File:** `Desktop Food CostSetup-1.0.0-x64-Complete.exe`
 **File Size:** ~60MB
 **SHA256:** (will be generated after build)
 **Build Date:** January 2025

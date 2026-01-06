@@ -1,0 +1,184 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+        x:Class="Dfc.Desktop.Views.AboutWindow"
+        Title="About Desktop Food Cost"
+        Width="500"
+        Height="600"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="32">
+
+		<!-- Logo/Header Section -->
+		<StackPanel Grid.Row="0" Spacing="16" HorizontalAlignment="Center" Margin="0,0,0,24">
+			<Image Source="/Assets/Images/appicon.png"
+			       Width="80"
+			       Height="80"
+			       HorizontalAlignment="Center"/>
+			<TextBlock Text="Desktop Food Cost"
+			          FontSize="32"
+			          FontWeight="Bold"
+			          HorizontalAlignment="Center"
+			          Foreground="#2D2D2D"/>
+			<TextBlock Text="Restaurant Cost Management System"
+			          FontSize="14"
+			          HorizontalAlignment="Center"
+			          Foreground="#666"/>
+			<TextBlock Text="Version 1.0"
+			          FontSize="12"
+			          HorizontalAlignment="Center"
+			          Foreground="#999"/>
+		</StackPanel>
+
+		<!-- Information Section -->
+		<ScrollViewer Grid.Row="1">
+			<StackPanel Spacing="24">
+
+				<!-- Features -->
+				<Border Background="White"
+				        CornerRadius="8"
+				        Padding="20"
+				        BoxShadow="0 2 8 0 #10000000">
+					<StackPanel Spacing="12">
+						<TextBlock Text="Key Features"
+						          FontSize="16"
+						          FontWeight="Bold"
+						          Foreground="#2D2D2D"/>
+
+						<StackPanel Spacing="8" Margin="8,8,0,0">
+							<TextBlock Text="• Ingredient inventory management with price tracking"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Recipe cost calculation with scaling"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Entree breakdown and profitability analysis"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Menu planning and cost forecasting"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Shopping list generation from recipes"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Excel export for reporting"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Price history and cost trend analysis"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Allergen tracking and management"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Multi-location support"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Batch operations and keyboard shortcuts"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+						</StackPanel>
+					</StackPanel>
+				</Border>
+
+				<!-- Technology Stack -->
+				<Border Background="White"
+				        CornerRadius="8"
+				        Padding="20"
+				        BoxShadow="0 2 8 0 #10000000">
+					<StackPanel Spacing="12">
+						<TextBlock Text="Technology Stack"
+						          FontSize="16"
+						          FontWeight="Bold"
+						          Foreground="#2D2D2D"/>
+
+						<StackPanel Spacing="6" Margin="8,8,0,0">
+							<TextBlock Text="• Avalonia UI - Cross-platform desktop framework"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• .NET 8 - Modern application platform"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• Entity Framework Core - Data access"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• SQLite - Local database"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• CommunityToolkit.Mvvm - MVVM framework"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+							<TextBlock Text="• QuestPDF - PDF generation"
+							          FontSize="12"
+							          Foreground="#666"
+							          TextWrapping="Wrap"/>
+						</StackPanel>
+					</StackPanel>
+				</Border>
+
+				<!-- Credits -->
+				<Border Background="White"
+				        CornerRadius="8"
+				        Padding="20"
+				        BoxShadow="0 2 8 0 #10000000">
+					<StackPanel Spacing="12">
+						<TextBlock Text="Credits"
+						          FontSize="16"
+						          FontWeight="Bold"
+						          Foreground="#2D2D2D"/>
+
+						<TextBlock Text="Developed by Brobata with the assistance of Claude (Anthropic)"
+						          FontSize="12"
+						          Foreground="#666"
+						          TextWrapping="Wrap"
+						          Margin="8,8,0,0"/>
+
+						<TextBlock Text="Thanks to my wonderful wife for not killing me when I come to bed late. Boop."
+						          FontSize="12"
+						          FontStyle="Italic"
+						          Foreground="#999"
+						          TextWrapping="Wrap"
+						          Margin="8,8,0,0"/>
+
+						<TextBlock Text="© 2025 Desktop Food Cost. All rights reserved."
+						          FontSize="11"
+						          Foreground="#999"
+						          HorizontalAlignment="Center"
+						          Margin="0,16,0,0"/>
+					</StackPanel>
+				</Border>
+
+			</StackPanel>
+		</ScrollViewer>
+
+		<!-- Close Button -->
+		<Button Grid.Row="2"
+		        Content="Close"
+		        Click="OnCloseClicked"
+		        Background="#7AB51D"
+		        Foreground="White"
+		        Padding="32,12"
+		        CornerRadius="4"
+		        FontWeight="SemiBold"
+		        HorizontalAlignment="Center"
+		        Margin="0,24,0,0"/>
+
+	</Grid>
+</Window>

@@ -1,0 +1,121 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200"
+             x:Class="Dfc.Desktop.Controls.LoadingIndicator">
+
+    <UserControl.Styles>
+        <Style Selector="Border.spinner">
+            <Style.Animations>
+                <Animation Duration="0:0:1" IterationCount="INFINITE">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="RotateTransform.Angle" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="RotateTransform.Angle" Value="360"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Ellipse.dot1">
+            <Style.Animations>
+                <Animation Duration="0:0:1.2" IterationCount="INFINITE">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="Opacity" Value="0.3"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Ellipse.dot2">
+            <Style.Animations>
+                <Animation Duration="0:0:1.2" IterationCount="INFINITE" Delay="0:0:0.2">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="Opacity" Value="0.3"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Ellipse.dot3">
+            <Style.Animations>
+                <Animation Duration="0:0:1.2" IterationCount="INFINITE" Delay="0:0:0.4">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="Opacity" Value="0.3"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid>
+        <!-- Style 1: Spinner (default) -->
+        <Border x:Name="SpinnerStyle"
+                Width="40"
+                Height="40"
+                BorderBrush="#7AB51D"
+                BorderThickness="4"
+                CornerRadius="20"
+                Classes="spinner"
+                IsVisible="True">
+            <Border.RenderTransform>
+                <RotateTransform/>
+            </Border.RenderTransform>
+            <Border Width="36"
+                    Height="36"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    BorderThickness="4"/>
+        </Border>
+
+        <!-- Style 2: Dots -->
+        <StackPanel x:Name="DotsStyle"
+                    Orientation="Horizontal"
+                    Spacing="12"
+                    HorizontalAlignment="Center"
+                    IsVisible="False">
+            <Ellipse Width="12"
+                     Height="12"
+                     Fill="#7AB51D"
+                     Classes="dot1"/>
+            <Ellipse Width="12"
+                     Height="12"
+                     Fill="#7AB51D"
+                     Classes="dot2"/>
+            <Ellipse Width="12"
+                     Height="12"
+                     Fill="#7AB51D"
+                     Classes="dot3"/>
+        </StackPanel>
+
+        <!-- Message -->
+        <TextBlock x:Name="MessageText"
+                   Text="Loading..."
+                   FontSize="14"
+                   Foreground="#666"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Bottom"
+                   Margin="0,0,0,-30"
+                   IsVisible="False"/>
+    </Grid>
+</UserControl>

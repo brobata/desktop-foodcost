@@ -1,0 +1,596 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        xmlns:controls="using:Dfc.Desktop.Controls"
+        xmlns:models="using:Dfc.Core.Models"
+        x:Class="Dfc.Desktop.Views.AddEditIngredientWindow"
+        x:DataType="vm:AddEditIngredientViewModel"
+        Title="{Binding WindowTitle}"
+        Width="700" Height="640"
+        MinWidth="600" MinHeight="500"
+        MaxWidth="1200" MaxHeight="900"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="White">
+
+	<Window.Styles>
+		<Style Selector="TabItem">
+			<Setter Property="Foreground" Value="#2D2D2D"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+		</Style>
+		<Style Selector="TabItem:pointerover">
+			<Setter Property="Foreground" Value="#7AB51D"/>
+		</Style>
+		<Style Selector="TabItem:selected">
+			<Setter Property="Foreground" Value="#7AB51D"/>
+		</Style>
+	</Window.Styles>
+
+	<Grid RowDefinitions="*,Auto" Margin="24">
+
+		<!-- Tab Content -->
+		<TabControl Grid.Row="0">
+
+			<!-- TAB 1: INGREDIENT INFO -->
+			<TabItem Header="Ingredient Info">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<StackPanel Spacing="20" Margin="0,16,0,0">
+
+						<!-- Validation Panel -->
+						<controls:ValidationPanel ValidationResult="{Binding ValidationResult}"/>
+
+						<!-- Ingredient Name -->
+						<StackPanel Spacing="6">
+							<TextBlock FontWeight="SemiBold" Foreground="#4A4A4A">
+								<Run Text="Ingredient Name "/><Run Text="*" Foreground="#EF5350" FontWeight="Bold"/>
+							</TextBlock>
+							<TextBox x:Name="NameTextBox" Text="{Binding Name}" FontSize="14" Watermark="e.g., Chicken Breast, Boneless" TabIndex="0" AutomationProperties.Name="Ingredient Name"/>
+						</StackPanel>
+
+						<!-- Category -->
+						<StackPanel Spacing="6">
+							<TextBlock Text="Category" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+							<ComboBox ItemsSource="{Binding AvailableCategories}"
+							          SelectedItem="{Binding Category}"
+							          HorizontalAlignment="Stretch"
+							          FontSize="14"
+							          TabIndex="1"
+							          AutomationProperties.Name="Category">
+								<ComboBox.Styles>
+									<Style Selector="ComboBox:focus /template/ Border#Background">
+										<Setter Property="BorderBrush" Value="#7AB51D"/>
+										<Setter Property="BorderThickness" Value="2"/>
+									</Style>
+								</ComboBox.Styles>
+							</ComboBox>
+						</StackPanel>
+
+						<!-- Vendor Information -->
+						<Border BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="6" Padding="16" Background="#FAFAFA">
+							<StackPanel Spacing="12">
+								<TextBlock Text="Vendor Information" FontWeight="Bold" FontSize="15" Foreground="#2D2D2D"/>
+
+								<StackPanel Spacing="6">
+									<TextBlock Text="Vendor / Supplier" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+									<TextBox Text="{Binding VendorName}" FontSize="14" Watermark="e.g., Sysco, US Foods" TabIndex="2" AutomationProperties.Name="Vendor Name"/>
+								</StackPanel>
+
+								<StackPanel Spacing="6">
+									<TextBlock Text="SKU / Product Code" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+									<TextBox Text="{Binding VendorSku}" FontSize="14" Watermark="e.g., 1234567" TabIndex="3" AutomationProperties.Name="Vendor SKU"/>
+								</StackPanel>
+							</StackPanel>
+						</Border>
+
+						<!-- Purchase Information -->
+						<Border BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="6" Padding="16" Background="#E8F5E9">
+							<StackPanel Spacing="12">
+								<TextBlock Text="Purchase Information (for costing)" FontWeight="Bold" FontSize="15" Foreground="#2D2D2D"/>
+
+								<Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+									<StackPanel Grid.Column="0" Spacing="6">
+										<TextBlock FontWeight="SemiBold" Foreground="#4A4A4A">
+											<Run Text="Price "/><Run Text="*" Foreground="#EF5350" FontWeight="Bold"/>
+										</TextBlock>
+										<TextBox Text="{Binding CurrentPrice, Mode=TwoWay}" FontSize="14" Watermark="e.g., 4.99" TabIndex="4" AutomationProperties.Name="Price"/>
+									</StackPanel>
+
+									<StackPanel Grid.Column="1" Spacing="6">
+										<TextBlock FontWeight="SemiBold" Foreground="#4A4A4A">
+											<Run Text="Unit "/><Run Text="*" Foreground="#EF5350" FontWeight="Bold"/>
+										</TextBlock>
+										<ComboBox ItemsSource="{Binding AvailableUnits}"
+										          SelectedItem="{Binding SelectedUnit}"
+										          HorizontalAlignment="Stretch"
+										          TabIndex="5"
+										          AutomationProperties.Name="Unit"/>
+									</StackPanel>
+
+									<StackPanel Grid.Column="2" Spacing="6">
+										<Grid ColumnDefinitions="Auto,Auto">
+											<TextBlock Grid.Column="0" Text="Case Quantity" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+											<Border Grid.Column="1"
+											        Background="#2196F3"
+											        CornerRadius="10"
+											        Width="16"
+											        Height="16"
+											        Margin="6,0,0,0"
+											        VerticalAlignment="Center"
+											        ToolTip.Tip="Total quantity in a case (e.g., 48 for '6/8 CT'). Used to recalculate unit price when vendor case price changes.">
+												<TextBlock Text="?"
+												          Foreground="White"
+												          FontSize="11"
+												          FontWeight="Bold"
+												          HorizontalAlignment="Center"
+												          VerticalAlignment="Center"/>
+											</Border>
+										</Grid>
+										<TextBox Text="{Binding CaseQuantity, Mode=TwoWay}" FontSize="14" Watermark="e.g., 48" TabIndex="6" AutomationProperties.Name="Case Quantity"/>
+									</StackPanel>
+								</Grid>
+
+								<TextBlock Text="Enter the price per unit. Example: $4.99 per Pound (not the total invoice price)"
+								          FontSize="12"
+								          Foreground="#2E7D32"
+								          FontStyle="Italic"
+								          TextWrapping="Wrap"/>
+							</StackPanel>
+						</Border>
+
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
+
+			<!-- TAB 2: ALLERGENS -->
+			<TabItem Header="Allergens">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<StackPanel Spacing="20" Margin="0,16,0,0">
+						<controls:AllergenSelectorControl x:Name="AllergenSelector"/>
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
+
+			<!-- TAB 3: NUTRITION -->
+			<TabItem Header="Nutrition">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<StackPanel Spacing="20" Margin="0,16,0,0">
+
+						<TextBlock Text="Nutritional information per unit (optional)"
+						          FontSize="13"
+						          Foreground="#666"
+						          TextWrapping="Wrap"/>
+
+						<!-- Auto-Fill Button -->
+						<Button Content="🌐 Auto-Fill from USDA Database"
+						        Command="{Binding MapNutritionalDataCommand}"
+						        Background="#4CAF50"
+						        Foreground="White"
+						        Padding="16,12"
+						        CornerRadius="6"
+						        FontSize="14"
+						        FontWeight="SemiBold"
+						        HorizontalAlignment="Left">
+							<Button.Styles>
+								<Style Selector="Button:pointerover">
+									<Setter Property="Background" Value="#45A049"/>
+								</Style>
+							</Button.Styles>
+						</Button>
+
+						<Border BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="6" Padding="16" Background="#F3E5F5">
+							<StackPanel Spacing="12">
+								<TextBlock Text="Nutrition (per purchase unit)" FontWeight="Bold" FontSize="15" Foreground="#2D2D2D"/>
+
+								<Grid ColumnDefinitions="*,*" ColumnSpacing="12" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12">
+
+									<!-- Calories -->
+									<StackPanel Grid.Column="0" Grid.Row="0" Spacing="6">
+										<TextBlock Text="Calories" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+										<TextBox Text="{Binding CaloriesPerUnit}" FontSize="14" Watermark="e.g., 250"/>
+									</StackPanel>
+
+									<!-- Protein -->
+									<StackPanel Grid.Column="1" Grid.Row="0" Spacing="6">
+										<TextBlock Text="Protein (g)" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+										<TextBox Text="{Binding ProteinPerUnit}" FontSize="14" Watermark="e.g., 20"/>
+									</StackPanel>
+
+									<!-- Carbohydrates -->
+									<StackPanel Grid.Column="0" Grid.Row="1" Spacing="6">
+										<TextBlock Text="Carbohydrates (g)" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+										<TextBox Text="{Binding CarbohydratesPerUnit}" FontSize="14" Watermark="e.g., 15"/>
+									</StackPanel>
+
+									<!-- Fat -->
+									<StackPanel Grid.Column="1" Grid.Row="1" Spacing="6">
+										<TextBlock Text="Fat (g)" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+										<TextBox Text="{Binding FatPerUnit}" FontSize="14" Watermark="e.g., 8"/>
+									</StackPanel>
+
+									<!-- Fiber -->
+									<StackPanel Grid.Column="0" Grid.Row="2" Spacing="6">
+										<TextBlock Text="Fiber (g)" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+										<TextBox Text="{Binding FiberPerUnit}" FontSize="14" Watermark="e.g., 3"/>
+									</StackPanel>
+
+									<!-- Sugar -->
+									<StackPanel Grid.Column="1" Grid.Row="2" Spacing="6">
+										<TextBlock Text="Sugar (g)" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+										<TextBox Text="{Binding SugarPerUnit}" FontSize="14" Watermark="e.g., 5"/>
+									</StackPanel>
+
+									<!-- Sodium -->
+									<StackPanel Grid.Column="0" Grid.Row="3" Spacing="6">
+										<TextBlock Text="Sodium (mg)" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+										<TextBox Text="{Binding SodiumPerUnit}" FontSize="14" Watermark="e.g., 350"/>
+									</StackPanel>
+
+								</Grid>
+
+								<TextBlock Text="Enter nutrition values per purchase unit. These will be automatically calculated for recipes based on ingredient quantities."
+								          FontSize="12"
+								          Foreground="#6A1B9A"
+								          FontStyle="Italic"
+								          TextWrapping="Wrap"/>
+							</StackPanel>
+						</Border>
+
+					</StackPanel>
+				</ScrollViewer>
+
+		<!-- TAB 4: UNIT CONVERSIONS -->		</TabItem>
+
+		<!-- TAB 4: UNIT CONVERSIONS -->
+		<TabItem Header="Conversions">
+			<ScrollViewer VerticalScrollBarVisibility="Auto">
+				<StackPanel Spacing="20" Margin="0,16,0,0">
+
+					<!-- Conversion Status Banner -->
+					<Border Background="{Binding ConversionStatusBadgeColor}"
+							CornerRadius="8"
+							Padding="16">
+						<TextBlock Text="{Binding ConversionStatusText}"
+								   Foreground="White"
+								   FontWeight="SemiBold"
+								   FontSize="14"
+								   TextWrapping="Wrap"/>
+					</Border>
+
+					<!-- Conversions List (only visible if conversions exist) -->
+					<StackPanel Spacing="12" IsVisible="{Binding HasConversions}">
+						<TextBlock Text="Available Conversions"
+								   FontWeight="SemiBold"
+								   FontSize="14"
+								   Foreground="#2D2D2D"/>
+
+						<ItemsControl ItemsSource="{Binding UsdaConversions}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="models:IngredientConversion">
+									<Border Background="#F5F5F5"
+											BorderBrush="#E0E0E0"
+											BorderThickness="1"
+											CornerRadius="6"
+											Padding="12"
+											Margin="0,0,0,8">
+										<Grid ColumnDefinitions="Auto,*,Auto">
+											<!-- From Unit -->
+											<StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+												<TextBlock Text="{Binding FromQuantity}"
+														   FontWeight="SemiBold"
+														   Foreground="#2D2D2D"/>
+												<TextBlock Text="{Binding FromUnit}"
+														   Foreground="#666"/>
+											</StackPanel>
+
+											<!-- Arrow -->
+											<TextBlock Grid.Column="1"
+													   Text="→"
+													   HorizontalAlignment="Center"
+													   Foreground="#7AB51D"
+													   FontWeight="Bold"
+													   FontSize="16"
+													   Margin="8,0"/>
+
+											<!-- To Unit -->
+											<StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+												<TextBlock Text="{Binding ToQuantity}"
+														   FontWeight="SemiBold"
+														   Foreground="#2D2D2D"/>
+												<TextBlock Text="{Binding ToUnit}"
+														   Foreground="#666"/>
+											</StackPanel>
+										</Grid>
+									</Border>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
+
+					<!-- Info Section -->
+					<Border Background="#E8F5E9"
+							BorderBrush="#7AB51D"
+							BorderThickness="1"
+							CornerRadius="8"
+							Padding="16">
+						<StackPanel Spacing="8">
+							<TextBlock Text="ℹ️ About Unit Conversions"
+									   FontWeight="SemiBold"
+									   FontSize="14"
+									   Foreground="#2D2D2D"/>
+							<TextBlock TextWrapping="Wrap"
+									   Foreground="#4F4F4F"
+									   FontSize="13">
+								Unit conversions are automatically extracted from USDA FoodData Central when you save an ingredient. This allows recipes to automatically cost correctly even when using different units (e.g., counting items vs weighing them).
+							</TextBlock>
+							<TextBlock TextWrapping="Wrap"
+									   Foreground="#4F4F4F"
+									   FontSize="13"
+									   Margin="0,8,0,0">
+								<Run FontWeight="SemiBold">Example:</Run> If USDA data says "1 medium chicken breast = 227g", recipes can use either count or weight and still calculate costs accurately.
+							</TextBlock>
+						</StackPanel>
+					</Border>
+
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+
+		<!-- TAB 5: ADVANCED -->
+			<TabItem Header="Advanced">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<StackPanel Spacing="20" Margin="0,16,0,0">
+
+						<!-- Alternative Names (Aliases) -->
+						<Border BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="6" Padding="16" Background="#FFF8E1">
+							<StackPanel Spacing="12">
+								<Grid ColumnDefinitions="Auto,*,Auto">
+									<TextBlock Grid.Column="0"
+									          Text="Alternative Names (Search Aliases)"
+									          FontWeight="Bold"
+									          FontSize="15"
+									          Foreground="#2D2D2D"
+									          VerticalAlignment="Center"/>
+
+									<Border Grid.Column="2"
+									        Background="#FF9800"
+									        CornerRadius="12"
+									        Width="20"
+									        Height="20"
+									        VerticalAlignment="Center"
+									        ToolTip.Tip="Add aliases to make searching easier. Example: Add 'burgers' and 'patties' for '6oz Fresh 80/20 CAB Ground Beef'">
+										<TextBlock Text="?"
+										          Foreground="White"
+										          FontSize="12"
+										          FontWeight="Bold"
+										          HorizontalAlignment="Center"
+										          VerticalAlignment="Center"/>
+									</Border>
+								</Grid>
+
+								<TextBlock Text="Add nicknames or shortened versions of this ingredient name to find it faster when building recipes."
+								          FontSize="13"
+								          Foreground="#666"
+								          TextWrapping="Wrap"/>
+
+								<!-- Alias Input Row -->
+								<Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+									<TextBox Grid.Column="0"
+									        Text="{Binding NewAliasName}"
+									        FontSize="14"
+									        Watermark="e.g., burgers, patties, ground beef"/>
+									<Button Grid.Column="1"
+									        Content="➕ Add"
+									        Command="{Binding AddAliasCommand}"
+									        Background="#FF9800"
+									        Foreground="White"
+									        Padding="16,8"
+									        CornerRadius="4"
+									        FontWeight="SemiBold"
+									        FontSize="13"/>
+								</Grid>
+
+								<!-- Aliases List -->
+								<Border BorderBrush="#D0D0D0"
+								        BorderThickness="1"
+								        CornerRadius="4"
+								        Background="White"
+								        MinHeight="100"
+								        MaxHeight="180"
+								        IsVisible="{Binding Aliases.Count}">
+									<ScrollViewer VerticalScrollBarVisibility="Auto">
+										<ItemsControl ItemsSource="{Binding Aliases}">
+											<ItemsControl.ItemTemplate>
+												<DataTemplate>
+													<Border BorderBrush="#E5E5E5"
+													        BorderThickness="0,0,0,1"
+													        Padding="10,8">
+														<Grid ColumnDefinitions="*,Auto">
+															<TextBlock Grid.Column="0"
+															          Text="{Binding AliasName}"
+															          FontSize="13"
+															          VerticalAlignment="Center"/>
+															<Button Grid.Column="1"
+															        Content="🗑️"
+															        Command="{Binding $parent[ItemsControl].((vm:AddEditIngredientViewModel)DataContext).RemoveAliasCommand}"
+															        CommandParameter="{Binding}"
+															        Background="Transparent"
+															        BorderThickness="0"
+															        Padding="8,4"
+															        ToolTip.Tip="Remove alias">
+																<Button.Styles>
+																	<Style Selector="Button:pointerover">
+																		<Setter Property="Background" Value="#FFEBEE"/>
+																	</Style>
+																</Button.Styles>
+															</Button>
+														</Grid>
+													</Border>
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+									</ScrollViewer>
+								</Border>
+
+								<!-- Empty State -->
+								<StackPanel IsVisible="{Binding !Aliases.Count}"
+								           Spacing="8"
+								           Margin="0,8">
+									<TextBlock Text="📝"
+									          FontSize="32"
+									          HorizontalAlignment="Center"
+									          Opacity="0.5"/>
+									<TextBlock Text="No aliases added yet"
+									          FontSize="13"
+									          HorizontalAlignment="Center"
+									          Foreground="#999"/>
+								</StackPanel>
+							</StackPanel>
+						</Border>
+
+						<!-- Recipe Unit Conversion -->
+						<!-- HIDDEN: Now automatically configured by USDA Nutritional Data Mapper -->
+						<Border IsVisible="False" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="6" Padding="16" Background="#F0F8FF">
+							<StackPanel Spacing="12">
+								<Grid ColumnDefinitions="Auto,*,Auto">
+									<CheckBox Grid.Column="0"
+									          IsChecked="{Binding UseAlternateUnit}"
+									          Content="Recipe Unit Conversion"
+									          FontWeight="Bold"
+									          FontSize="15"
+									          Margin="0,0,8,0"/>
+
+									<Border Grid.Column="2"
+									        Background="#2196F3"
+									        CornerRadius="12"
+									        Width="20"
+									        Height="20"
+									        VerticalAlignment="Center"
+									        ToolTip.Tip="Enable this when recipes use a different unit than how you purchase. Example: You buy jalapeños by the pound, but recipes call for 'Each'. Or you buy tomato puree by the quart, but measure by the ounce in recipes.">
+										<TextBlock Text="?"
+										          Foreground="White"
+										          FontSize="12"
+										          FontWeight="Bold"
+										          HorizontalAlignment="Center"
+										          VerticalAlignment="Center"/>
+									</Border>
+								</Grid>
+
+								<TextBlock Text="Check this box if recipes use this ingredient in a different unit than how you purchase it."
+								          FontSize="13"
+								          Foreground="#666"
+								          TextWrapping="Wrap"/>
+
+								<TextBlock Text="Common examples: jalapeños (buy by lb, use 'Each'), tomato puree (buy by qt, measure by oz)"
+								          FontSize="12"
+								          Foreground="#1976D2"
+								          FontStyle="Italic"
+								          TextWrapping="Wrap"
+								          Margin="0,-8,0,0"/>
+
+								<!-- Conversion Configuration -->
+								<StackPanel Spacing="12" IsVisible="{Binding ShowConversionSection}">
+
+									<StackPanel Spacing="6">
+										<TextBlock Text="Recipe Unit (how it appears in recipes)" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+										<ComboBox ItemsSource="{Binding AlternateUnitOptions}"
+										          SelectedItem="{Binding AlternateUnit}"
+										          HorizontalAlignment="Stretch"/>
+									</StackPanel>
+
+									<Border Background="#FFF9E6" BorderBrush="#FFE082" BorderThickness="1" CornerRadius="4" Padding="12">
+										<StackPanel Spacing="8">
+											<TextBlock Text="Now tell us the conversion:"
+											          FontWeight="SemiBold"
+											          FontSize="13"
+											          Foreground="#F57F17"/>
+											<TextBlock Text="{Binding ConversionExampleText}"
+											          FontSize="12"
+											          Foreground="#666"
+											          FontStyle="Italic"
+											          TextWrapping="Wrap"/>
+										</StackPanel>
+									</Border>
+
+									<Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+										<StackPanel Grid.Column="0" Spacing="6">
+											<TextBlock Text="Quantity" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+											<TextBox Text="{Binding AlternateConversionQuantity}" Watermark="e.g., 1.0"/>
+										</StackPanel>
+
+										<StackPanel Grid.Column="1" Spacing="6">
+											<TextBlock Text="Equals (in purchase unit)" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+											<ComboBox ItemsSource="{Binding AlternateConversionUnitOptions}"
+											          SelectedItem="{Binding AlternateConversionUnit}"
+											          HorizontalAlignment="Stretch"/>
+										</StackPanel>
+									</Grid>
+
+									<!-- Conversion Preview -->
+									<Border IsVisible="{Binding ShowConversionPreview}"
+									        Background="#E8F5E9"
+									        BorderBrush="#4CAF50"
+									        BorderThickness="2"
+									        CornerRadius="4"
+									        Padding="12">
+										<StackPanel Spacing="4">
+											<TextBlock Text="✓ Conversion Preview:"
+											          Foreground="#2E7D32"
+											          FontWeight="SemiBold"
+											          FontSize="13"/>
+											<TextBlock Text="{Binding ConversionPreviewText}"
+											          Foreground="#2E7D32"
+											          FontWeight="Bold"
+											          FontSize="14"/>
+										</StackPanel>
+									</Border>
+								</StackPanel>
+							</StackPanel>
+						</Border>
+
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
+
+		</TabControl>
+
+		<!-- Error message -->
+		<Border Grid.Row="1"
+		       IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+		       Background="#FFEBEE"
+		       BorderBrush="#F44336"
+		       BorderThickness="1"
+		       CornerRadius="4"
+		       Padding="12"
+		       Margin="0,0,0,12">
+			<TextBlock Text="{Binding ErrorMessage}"
+			          Foreground="#C62828"
+			          TextWrapping="Wrap"/>
+		</Border>
+
+		<!-- Action Buttons -->
+		<Border Grid.Row="1"
+		       Margin="0,20,0,0"
+		       Padding="0,20,0,0"
+		       BorderBrush="#E5E5E5"
+		       BorderThickness="0,1,0,0">
+			<Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+				<TextBlock Grid.Column="0"
+				          VerticalAlignment="Center"
+				          FontSize="13">
+					<Run Text="*" Foreground="#EF5350" FontWeight="Bold"/><Run Text=" = Required field" Foreground="#666"/>
+				</TextBlock>
+				<Button Grid.Column="1"
+				       Content="Cancel"
+				       Command="{Binding CancelCommand}"
+				       Padding="28,11"
+				       MinWidth="110"/>
+				<Button Grid.Column="2"
+				       Content="Save Ingredient"
+				       Click="OnSaveClick"
+				       Padding="28,11"
+				       MinWidth="130"
+				       Classes="primary"/>
+			</Grid>
+		</Border>
+	</Grid>
+</Window>

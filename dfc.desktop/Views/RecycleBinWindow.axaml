@@ -1,0 +1,126 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="Dfc.Desktop.Views.RecycleBinWindow"
+        x:DataType="vm:RecycleBinViewModel"
+        Title="Recycle Bin - Deleted Items"
+        Width="800"
+        Height="600"
+        MinWidth="700" MinHeight="500"
+        MaxWidth="1400" MaxHeight="1000"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Assets/Images/appicon.png">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="24">
+
+		<!-- Header -->
+		<StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+			<TextBlock Text="🗑️ Recycle Bin"
+			          FontSize="24"
+			          FontWeight="Bold"
+			          Foreground="#2D2D2D"/>
+			<TextBlock Text="Deleted items are kept for 30 days before being permanently removed"
+			          FontSize="14"
+			          Foreground="#666"/>
+		</StackPanel>
+
+		<!-- Deleted Items List -->
+		<Border Grid.Row="1"
+		        Background="White"
+		        CornerRadius="8"
+		        Padding="16"
+		        BoxShadow="0 2 8 0 #10000000">
+			<Grid RowDefinitions="Auto,*">
+				<!-- Filter Bar -->
+				<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Margin="0,0,0,16">
+					<ComboBox Grid.Column="0"
+					         ItemsSource="{Binding ItemTypeFilters}"
+					         SelectedItem="{Binding SelectedItemTypeFilter}"
+					         MinWidth="150"/>
+					<TextBlock Grid.Column="1"
+					          Text="{Binding DeletedItems.Count, StringFormat='{}{0} items'}"
+					          VerticalAlignment="Center"
+					          Foreground="#666"/>
+					<Button Grid.Column="2"
+					        Content="🔄 Refresh"
+					        Command="{Binding RefreshCommand}"
+					        Background="#90CAF9"
+					        Foreground="White"
+					        Padding="12,6"
+					        CornerRadius="4"
+					        FontSize="12"
+					        FontWeight="SemiBold"/>
+				</Grid>
+
+				<!-- Items Grid -->
+				<DataGrid Grid.Row="1"
+				         ItemsSource="{Binding DeletedItems}"
+				         SelectedItem="{Binding SelectedItem}"
+				         IsReadOnly="True"
+				         GridLinesVisibility="Horizontal"
+				         BorderThickness="0"
+				         Background="Transparent"
+				         CanUserReorderColumns="False"
+				         CanUserResizeColumns="True"
+				         CanUserSortColumns="True"
+				         AutoGenerateColumns="False">
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="Type" Binding="{Binding TypeDisplay}" Width="1*"/>
+						<DataGridTextColumn Header="Name" Binding="{Binding EntityName}" Width="2.5*"/>
+						<DataGridTextColumn Header="Deleted" Binding="{Binding DeletedAtDisplay}" Width="1.5*"/>
+						<DataGridTextColumn Header="Expires" Binding="{Binding ExpirationDisplay}" Width="1.5*"/>
+
+						<DataGridTemplateColumn Header="Actions" Width="200" IsReadOnly="True">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<StackPanel Orientation="Horizontal" Spacing="8" Margin="8,0,0,0">
+										<Button Content="↶ Restore"
+										        Command="{Binding $parent[Window].((vm:RecycleBinViewModel)DataContext).RestoreItemCommand}"
+										        CommandParameter="{Binding}"
+										        Background="#4CAF50"
+										        Foreground="White"
+										        Padding="8,4"
+										        CornerRadius="3"
+										        FontSize="11"/>
+										<Button Content="🗑️ Delete"
+										        Command="{Binding $parent[Window].((vm:RecycleBinViewModel)DataContext).PermanentDeleteItemCommand}"
+										        CommandParameter="{Binding}"
+										        Background="#EF5350"
+										        Foreground="White"
+										        Padding="8,4"
+										        CornerRadius="3"
+										        FontSize="11"/>
+									</StackPanel>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
+				</DataGrid>
+			</Grid>
+		</Border>
+
+		<!-- Footer Buttons -->
+		<Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12" Margin="0,16,0,0">
+			<Button Grid.Column="1"
+			        Content="Empty Recycle Bin"
+			        Command="{Binding EmptyRecycleBinCommand}"
+			        Background="#EF5350"
+			        Foreground="White"
+			        Padding="16,10"
+			        CornerRadius="4"
+			        FontWeight="SemiBold"/>
+			<Button Grid.Column="2"
+			        Content="Close"
+			        Click="OnCloseClicked"
+			        Background="#90CAF9"
+			        Foreground="White"
+			        Padding="24,10"
+			        CornerRadius="4"
+			        FontWeight="SemiBold"/>
+		</Grid>
+
+	</Grid>
+</Window>

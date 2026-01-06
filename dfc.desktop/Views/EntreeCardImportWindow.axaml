@@ -1,0 +1,431 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700"
+        x:Class="Dfc.Desktop.Views.EntreeCardImportWindow"
+        x:DataType="vm:EntreeCardImportViewModel"
+        Title="Import Entree Cards"
+        Width="1100" Height="700"
+        MinWidth="900" MinHeight="600"
+        MaxWidth="1600" MaxHeight="1000"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="White">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="24">
+
+		<!-- Header -->
+		<StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,20">
+			<TextBlock Text="Import Entree Cards"
+			          FontSize="20"
+			          FontWeight="Bold"
+			          Foreground="#2D2D2D"/>
+
+			<!-- File Selection -->
+			<Border BorderBrush="#D0D0D0" BorderThickness="1" CornerRadius="4" Padding="12" Background="#F9F9F9">
+				<Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+					<TextBlock Grid.Column="0" Text="🍽️" FontSize="20" VerticalAlignment="Center"/>
+					<TextBlock Grid.Column="1"
+					          Text="{Binding SelectedFilePath, FallbackValue='No file selected'}"
+					          VerticalAlignment="Center"
+					          TextTrimming="CharacterEllipsis"/>
+					<Button Grid.Column="2"
+					       Content="Browse..."
+					       Command="{Binding BrowseFileCommand}"
+					       Padding="20,8"/>
+				</Grid>
+			</Border>
+
+			<!-- Parse Status -->
+			<Border Background="#E8F5E9"
+			       BorderBrush="#4CAF50"
+			       BorderThickness="1"
+			       CornerRadius="4"
+			       Padding="12"
+			       IsVisible="{Binding ParseStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+				<TextBlock Text="{Binding ParseStatus}"
+				          FontWeight="SemiBold"
+				          Foreground="#2E7D32"/>
+			</Border>
+
+			<!-- Error Message -->
+			<Border Background="#FFEBEE"
+			       BorderBrush="#F44336"
+			       BorderThickness="1"
+			       CornerRadius="4"
+			       Padding="12"
+			       IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+				<StackPanel Spacing="8">
+					<TextBlock Text="{Binding ErrorMessage}"
+					          Foreground="#C62828"
+					          FontWeight="SemiBold"
+					          TextWrapping="Wrap"/>
+					<ItemsControl ItemsSource="{Binding Errors}" IsVisible="{Binding Errors.Count}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding}"
+								          Foreground="#D32F2F"
+								          FontSize="11"
+								          Margin="0,2"/>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+			</Border>
+		</StackPanel>
+
+		<!-- Main Content -->
+		<Grid Grid.Row="1" ColumnDefinitions="2*,1*" ColumnSpacing="16">
+
+			<!-- Left: Entree Previews -->
+			<Border Grid.Column="0"
+			       BorderBrush="#D0D0D0"
+			       BorderThickness="1"
+			       CornerRadius="4"
+			       Background="White">
+				<Grid RowDefinitions="Auto,*">
+					<Border Grid.Row="0"
+					       Background="#F5F5F5"
+					       BorderBrush="#E0E0E0"
+					       BorderThickness="0,0,0,1"
+					       Padding="12,8">
+						<TextBlock Text="{Binding ImportSummary}"
+						          FontWeight="SemiBold"
+						          Foreground="#424242"/>
+					</Border>
+
+					<!-- Empty State -->
+					<StackPanel Grid.Row="1" IsVisible="{Binding !EntreePreviews.Count}"
+					           VerticalAlignment="Center"
+					           HorizontalAlignment="Center"
+					           Spacing="12">
+						<TextBlock Text="🍽️" FontSize="48" HorizontalAlignment="Center" Opacity="0.3"/>
+						<TextBlock Text="No file loaded"
+						          FontSize="16"
+						          Foreground="#999"
+						          HorizontalAlignment="Center"/>
+						<TextBlock Text="Select an Excel file with entree cards to begin"
+						          FontSize="13"
+						          Foreground="#BBB"
+						          HorizontalAlignment="Center"/>
+					</StackPanel>
+
+					<!-- Entree List -->
+					<ListBox Grid.Row="1" ItemsSource="{Binding EntreePreviews}"
+					        SelectedItem="{Binding SelectedEntree}"
+					        IsVisible="{Binding EntreePreviews.Count}"
+					        Background="White">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="12" Background="White">
+									<Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
+										<!-- Name and Status -->
+										<Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+											<TextBlock Grid.Column="0" Text="{Binding Name}"
+											          FontWeight="SemiBold"
+											          FontSize="14"/>
+											<Border Grid.Column="1"
+											       Background="{Binding IsValid, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#E8F5E9|#FFEBEE'}"
+											       CornerRadius="3"
+											       Padding="6,2">
+												<TextBlock Text="{Binding ValidationStatus}"
+												          FontSize="11"
+												          Foreground="{Binding IsValid, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#2E7D32|#C62828'}"/>
+											</Border>
+										</Grid>
+
+										<!-- Metadata -->
+										<TextBlock Grid.Row="1" FontSize="12" Foreground="#666">
+											<Run Text="Price:"/>
+											<Run Text="{Binding MenuPrice, StringFormat='{}{0:C2}', FallbackValue='N/A'}"/>
+											<Run Text=" • "/>
+											<Run Text="{Binding DirectIngredients.Count}"/>
+											<Run Text="ingredients"/>
+											<Run Text=" + "/>
+											<Run Text="{Binding RecipeComponents.Count}"/>
+											<Run Text="recipes"/>
+										</TextBlock>
+
+										<!-- Warnings/Errors -->
+										<StackPanel Grid.Row="2" Spacing="2" IsVisible="{Binding ValidationErrors.Count}">
+											<ItemsControl ItemsSource="{Binding ValidationErrors}">
+												<ItemsControl.ItemTemplate>
+													<DataTemplate>
+														<TextBlock Text="{Binding}"
+														          FontSize="11"
+														          Foreground="#C62828"
+														          Margin="0,1"/>
+													</DataTemplate>
+												</ItemsControl.ItemTemplate>
+											</ItemsControl>
+										</StackPanel>
+
+										<StackPanel Grid.Row="2" Spacing="2" IsVisible="{Binding ValidationWarnings.Count}">
+											<ItemsControl ItemsSource="{Binding ValidationWarnings}">
+												<ItemsControl.ItemTemplate>
+													<DataTemplate>
+														<TextBlock Text="{Binding}"
+														          FontSize="11"
+														          Foreground="#E65100"
+														          Margin="0,1"/>
+													</DataTemplate>
+												</ItemsControl.ItemTemplate>
+											</ItemsControl>
+										</StackPanel>
+									</Grid>
+								</Border>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</Grid>
+			</Border>
+
+			<!-- Right: Unmatched Items (Tabbed) -->
+			<Border Grid.Column="1"
+			       BorderBrush="#D0D0D0"
+			       BorderThickness="1"
+			       CornerRadius="4"
+			       Background="White">
+				<Grid RowDefinitions="Auto,Auto,*">
+					<Border Grid.Row="0"
+					       Background="#FFF3E0"
+					       BorderBrush="#FFB74D"
+					       BorderThickness="0,0,0,1"
+					       Padding="12,8">
+						<TextBlock FontWeight="SemiBold" Foreground="#E65100">
+							<Run Text="⚠️ Unmatched:"/>
+							<Run Text="{Binding UnmatchedIngredientCount}"/>
+							<Run Text="ingredients,"/>
+							<Run Text="{Binding UnmatchedRecipeCount}"/>
+							<Run Text="recipes"/>
+						</TextBlock>
+					</Border>
+
+					<!-- Bulk Match Button -->
+					<Border Grid.Row="1"
+					       Background="#E3F2FD"
+					       BorderBrush="#2196F3"
+					       BorderThickness="0,0,0,1"
+					       Padding="12,10"
+					       IsVisible="{Binding !!UnmatchedIngredientCount, FallbackValue=false}">
+						<Button Content="🔗 Bulk Match All"
+						       Command="{Binding BulkMatchComponentsCommand}"
+						       HorizontalAlignment="Stretch"
+						       Background="#2196F3"
+						       Foreground="White"
+						       Padding="12,8"
+						       CornerRadius="4"
+						       FontWeight="SemiBold"
+						       ToolTip.Tip="Open bulk matcher to match all unmatched ingredients and recipes at once">
+							<Button.Styles>
+								<Style Selector="Button:pointerover">
+									<Setter Property="Background" Value="#1976D2"/>
+								</Style>
+							</Button.Styles>
+						</Button>
+					</Border>
+
+					<!-- Tabs for Ingredients and Recipes -->
+					<TabControl Grid.Row="2">
+						<!-- Ingredients Tab -->
+						<TabItem Header="Ingredients">
+							<Grid>
+								<!-- Empty State -->
+								<StackPanel IsVisible="{Binding !UnmatchedIngredients.Count}"
+								           VerticalAlignment="Center"
+								           HorizontalAlignment="Center"
+								           Spacing="8">
+									<TextBlock Text="✓" FontSize="48" HorizontalAlignment="Center" Foreground="#4CAF50" Opacity="0.5"/>
+									<TextBlock Text="All ingredients matched!"
+									          FontSize="14"
+									          Foreground="#666"
+									          HorizontalAlignment="Center"/>
+								</StackPanel>
+
+								<!-- Unmatched Ingredients List -->
+								<ScrollViewer IsVisible="{Binding UnmatchedIngredients.Count}">
+								<ItemsControl ItemsSource="{Binding UnmatchedIngredients}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="12" Background="White">
+												<StackPanel Spacing="8">
+													<TextBlock Text="{Binding Name}"
+													          FontWeight="SemiBold"
+													          FontSize="13"
+													          Foreground="#C62828"/>
+
+													<TextBlock FontSize="11" Foreground="#666">
+														<Run Text="Used in"/>
+														<Run Text="{Binding UsageCount}"/>
+														<Run Text="entree(s)"/>
+													</TextBlock>
+
+													<TextBlock Text="Suggested matches:"
+													          FontSize="11"
+													          FontWeight="SemiBold"
+													          Foreground="#666"
+													          IsVisible="{Binding Suggestions.Count}"/>
+
+													<ItemsControl ItemsSource="{Binding Suggestions}">
+														<ItemsControl.ItemTemplate>
+															<DataTemplate>
+																<Button HorizontalAlignment="Stretch"
+																       HorizontalContentAlignment="Left"
+																       Padding="8,6"
+																       Margin="0,2"
+																       Background="#F5F5F5"
+																       BorderThickness="1"
+																       BorderBrush="#E0E0E0"
+																       Tag="{Binding $parent[Border].DataContext}"
+																       Click="OnIngredientSuggestionClicked"
+																       CommandParameter="{Binding}"
+																       ToolTip.Tip="Click to map this ingredient">
+																	<Grid ColumnDefinitions="*,Auto">
+																		<TextBlock Grid.Column="0"
+																		          Text="{Binding IngredientName}"
+																		          FontSize="12"/>
+																		<TextBlock Grid.Column="1"
+																		          Text="{Binding Confidence, StringFormat='{}{0:F0}%'}"
+																		          FontSize="11"
+																		          Foreground="#666"
+																		          Margin="8,0,0,0"/>
+																	</Grid>
+																</Button>
+															</DataTemplate>
+														</ItemsControl.ItemTemplate>
+													</ItemsControl>
+
+													<TextBlock Text="No suggestions - ingredient will be skipped"
+													          FontSize="11"
+													          Foreground="#999"
+													          FontStyle="Italic"
+													          IsVisible="{Binding !Suggestions.Count}"/>
+												</StackPanel>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+								</ScrollViewer>
+							</Grid>
+						</TabItem>
+
+						<!-- Recipes Tab -->
+						<TabItem Header="Recipes">
+							<Grid>
+								<!-- Empty State -->
+								<StackPanel IsVisible="{Binding !UnmatchedRecipes.Count}"
+								           VerticalAlignment="Center"
+								           HorizontalAlignment="Center"
+								           Spacing="8">
+									<TextBlock Text="✓" FontSize="48" HorizontalAlignment="Center" Foreground="#4CAF50" Opacity="0.5"/>
+									<TextBlock Text="All recipes matched!"
+									          FontSize="14"
+									          Foreground="#666"
+									          HorizontalAlignment="Center"/>
+								</StackPanel>
+
+								<!-- Unmatched Recipes List -->
+								<ScrollViewer IsVisible="{Binding UnmatchedRecipes.Count}">
+								<ItemsControl ItemsSource="{Binding UnmatchedRecipes}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="12" Background="White">
+												<StackPanel Spacing="8">
+													<TextBlock Text="{Binding Name}"
+													          FontWeight="SemiBold"
+													          FontSize="13"
+													          Foreground="#C62828"/>
+
+													<TextBlock FontSize="11" Foreground="#666">
+														<Run Text="Used in"/>
+														<Run Text="{Binding UsageCount}"/>
+														<Run Text="entree(s)"/>
+													</TextBlock>
+
+													<TextBlock Text="Suggested matches:"
+													          FontSize="11"
+													          FontWeight="SemiBold"
+													          Foreground="#666"
+													          IsVisible="{Binding Suggestions.Count}"/>
+
+													<ItemsControl ItemsSource="{Binding Suggestions}">
+														<ItemsControl.ItemTemplate>
+															<DataTemplate>
+																<Button HorizontalAlignment="Stretch"
+																       HorizontalContentAlignment="Left"
+																       Padding="8,6"
+																       Margin="0,2"
+																       Background="#F5F5F5"
+																       BorderThickness="1"
+																       BorderBrush="#E0E0E0"
+																       Tag="{Binding $parent[Border].DataContext}"
+																       Click="OnRecipeSuggestionClicked"
+																       CommandParameter="{Binding}"
+																       ToolTip.Tip="Click to map this recipe">
+																	<Grid ColumnDefinitions="*,Auto">
+																		<TextBlock Grid.Column="0"
+																		          Text="{Binding RecipeName}"
+																		          FontSize="12"/>
+																		<TextBlock Grid.Column="1"
+																		          Text="{Binding Confidence, StringFormat='{}{0:F0}%'}"
+																		          FontSize="11"
+																		          Foreground="#666"
+																		          Margin="8,0,0,0"/>
+																	</Grid>
+																</Button>
+															</DataTemplate>
+														</ItemsControl.ItemTemplate>
+													</ItemsControl>
+
+													<TextBlock Text="No suggestions - recipe will be skipped"
+													          FontSize="11"
+													          Foreground="#999"
+													          FontStyle="Italic"
+													          IsVisible="{Binding !Suggestions.Count}"/>
+												</StackPanel>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+								</ScrollViewer>
+							</Grid>
+						</TabItem>
+					</TabControl>
+				</Grid>
+			</Border>
+
+		</Grid>
+
+		<!-- Action Buttons -->
+		<Border Grid.Row="2" Margin="0,20,0,0">
+			<Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+				<ProgressBar Grid.Column="0"
+				            IsIndeterminate="True"
+				            IsVisible="{Binding IsLoading}"
+				            Height="8"
+				            VerticalAlignment="Center"/>
+				<TextBlock Grid.Column="0"
+				          Text="Processing..."
+				          VerticalAlignment="Center"
+				          Foreground="#666"
+				          FontSize="13"
+				          IsVisible="{Binding IsLoading}"
+				          Margin="0,0,12,0"/>
+				<Button Grid.Column="1"
+				       Content="Cancel"
+				       Command="{Binding CancelCommand}"
+				       Padding="28,11"
+				       MinWidth="110"/>
+				<Button Grid.Column="2"
+				       Content="Import Entrees"
+				       Command="{Binding ImportCommand}"
+				       IsEnabled="{Binding CanImport}"
+				       Padding="28,11"
+				       MinWidth="150"
+				       Classes="primary"/>
+			</Grid>
+		</Border>
+	</Grid>
+</Window>

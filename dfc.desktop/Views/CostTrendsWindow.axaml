@@ -1,0 +1,137 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        xmlns:scottplot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+        x:Class="Dfc.Desktop.Views.CostTrendsWindow"
+        x:DataType="vm:CostTrendsViewModel"
+        Title="Cost Trends Analysis"
+        Width="900"
+        Height="600"
+        WindowStartupLocation="CenterOwner"
+        Background="White">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="24">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,20">
+            <TextBlock Text="📊 Cost Trends Analysis"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       Foreground="#2D2D2D"/>
+            <TextBlock Text="{Binding IngredientName, StringFormat='Price history for: {0}'}"
+                       FontSize="16"
+                       Foreground="#666"/>
+
+            <!-- Time Range Selector -->
+            <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
+                <TextBlock Text="Time Range:"
+                           FontSize="14"
+                           Foreground="#666"
+                           VerticalAlignment="Center"/>
+                <Button Content="7 Days"
+                        Command="{Binding SetTimeRangeCommand}"
+                        CommandParameter="7"
+                        Background="#7AB51D"
+                        Foreground="White"
+                        Padding="12,6"
+                        CornerRadius="4"/>
+                <Button Content="30 Days"
+                        Command="{Binding SetTimeRangeCommand}"
+                        CommandParameter="30"
+                        Background="#7AB51D"
+                        Foreground="White"
+                        Padding="12,6"
+                        CornerRadius="4"/>
+                <Button Content="90 Days"
+                        Command="{Binding SetTimeRangeCommand}"
+                        CommandParameter="90"
+                        Background="#7AB51D"
+                        Foreground="White"
+                        Padding="12,6"
+                        CornerRadius="4"/>
+                <Button Content="1 Year"
+                        Command="{Binding SetTimeRangeCommand}"
+                        CommandParameter="365"
+                        Background="#7AB51D"
+                        Foreground="White"
+                        Padding="12,6"
+                        CornerRadius="4"/>
+                <Button Content="All Time"
+                        Command="{Binding SetTimeRangeCommand}"
+                        CommandParameter="0"
+                        Background="#7AB51D"
+                        Foreground="White"
+                        Padding="12,6"
+                        CornerRadius="4"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Chart -->
+        <Border Grid.Row="1"
+                Background="White"
+                BorderBrush="#E0E0E0"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16">
+            <scottplot:AvaPlot x:Name="CostChart"/>
+        </Border>
+
+        <!-- Statistics Panel -->
+        <Border Grid.Row="2"
+                Background="#F9F9F9"
+                BorderBrush="#E0E0E0"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16"
+                Margin="0,16,0,0">
+            <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto">
+                <!-- Average Price -->
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Text="Average Price"
+                               FontSize="12"
+                               Foreground="#999"/>
+                    <TextBlock Text="{Binding AveragePrice, StringFormat='${0:F2}'}"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="#7AB51D"/>
+                </StackPanel>
+
+                <!-- Current Price -->
+                <StackPanel Grid.Column="1" Spacing="4">
+                    <TextBlock Text="Current Price"
+                               FontSize="12"
+                               Foreground="#999"/>
+                    <TextBlock Text="{Binding CurrentPrice, StringFormat='${0:F2}'}"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="#2D2D2D"/>
+                </StackPanel>
+
+                <!-- Price Change -->
+                <StackPanel Grid.Column="2" Spacing="4">
+                    <TextBlock Text="Price Change"
+                               FontSize="12"
+                               Foreground="#999"/>
+                    <TextBlock Text="{Binding PriceChangeText}"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="{Binding PriceChangeColor}"/>
+                </StackPanel>
+
+                <!-- Data Points -->
+                <StackPanel Grid.Column="3" Spacing="4">
+                    <TextBlock Text="Data Points"
+                               FontSize="12"
+                               Foreground="#999"/>
+                    <TextBlock Text="{Binding DataPointCount}"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="#666"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,213 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        x:Class="Dfc.Desktop.Views.EditMappingDialog"
+        x:DataType="vm:EditMappingDialogViewModel"
+        Title="Edit Ingredient Mapping"
+        Width="650" Height="600"
+        MinWidth="500" MinHeight="450"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="White">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="24">
+
+		<!-- HEADER: Current Mapping Info -->
+		<Border Grid.Row="0"
+		        Background="#E8F5E9"
+		        BorderBrush="#4CAF50"
+		        BorderThickness="2"
+		        CornerRadius="8"
+		        Padding="20"
+		        Margin="0,0,0,20">
+			<StackPanel Spacing="12">
+				<TextBlock Text="Current Mapping"
+				          FontWeight="Bold"
+				          FontSize="16"
+				          Foreground="#2D2D2D"/>
+
+				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="12">
+					<!-- Import Name -->
+					<TextBlock Grid.Column="0" Grid.Row="0"
+					          Text="Import Name:"
+					          FontWeight="SemiBold"
+					          Foreground="#666"
+					          VerticalAlignment="Center"/>
+					<TextBlock Grid.Column="1" Grid.Row="0"
+					          Text="{Binding ImportName}"
+					          FontWeight="SemiBold"
+					          FontSize="14"
+					          Foreground="#2D2D2D"
+					          VerticalAlignment="Center"/>
+
+					<!-- Current Type -->
+					<TextBlock Grid.Column="0" Grid.Row="1"
+					          Text="Mapped To:"
+					          FontWeight="SemiBold"
+					          Foreground="#666"
+					          VerticalAlignment="Center"/>
+					<TextBlock Grid.Column="1" Grid.Row="1"
+					          Text="{Binding CurrentMappingType}"
+					          FontSize="13"
+					          Foreground="#7AB51D"
+					          VerticalAlignment="Center"/>
+
+					<!-- Current Name -->
+					<TextBlock Grid.Column="0" Grid.Row="2"
+					          Text="Name:"
+					          FontWeight="SemiBold"
+					          Foreground="#666"
+					          VerticalAlignment="Center"/>
+					<TextBlock Grid.Column="1" Grid.Row="2"
+					          Text="{Binding CurrentMappingName}"
+					          FontSize="14"
+					          FontWeight="Bold"
+					          Foreground="#2D2D2D"
+					          VerticalAlignment="Center"/>
+				</Grid>
+			</StackPanel>
+		</Border>
+
+		<!-- MAIN: Change Mapping Section -->
+		<Border Grid.Row="1"
+		        BorderBrush="#D0D0D0"
+		        BorderThickness="1"
+		        CornerRadius="8"
+		        Padding="16">
+			<Grid RowDefinitions="Auto,Auto,*">
+				<TextBlock Grid.Row="0"
+				          Text="Change Mapping To:"
+				          FontWeight="Bold"
+				          FontSize="15"
+				          Foreground="#2D2D2D"
+				          Margin="0,0,0,12"/>
+
+				<!-- Search Box -->
+				<Border Grid.Row="1"
+				        BorderBrush="#D0D0D0"
+				        BorderThickness="1"
+				        CornerRadius="6"
+				        Padding="12,8"
+				        Margin="0,0,0,12">
+					<Grid ColumnDefinitions="Auto,*,Auto">
+						<TextBlock Grid.Column="0"
+						          Text="🔍"
+						          FontSize="16"
+						          VerticalAlignment="Center"
+						          Margin="0,0,8,0"/>
+						<TextBox Grid.Column="1"
+						        Text="{Binding SearchText}"
+						        Watermark="Search ingredients and recipes..."
+						        BorderThickness="0"
+						        Background="Transparent"
+						        VerticalContentAlignment="Center"/>
+						<Button Grid.Column="2"
+						        Content="✕"
+						        Command="{Binding ClearSearchCommand}"
+						        Background="Transparent"
+						        BorderThickness="0"
+						        FontSize="16"
+						        Padding="8,4"
+						        IsVisible="{Binding SearchText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+					</Grid>
+				</Border>
+
+				<!-- Available Items List -->
+				<Border Grid.Row="2"
+				        BorderBrush="#E5E5E5"
+				        BorderThickness="1"
+				        CornerRadius="6">
+					<ListBox ItemsSource="{Binding FilteredAvailableItems}"
+					        SelectedItem="{Binding SelectedItem}"
+					        Background="White">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<Border BorderBrush="#F0F0F0"
+								        BorderThickness="0,0,0,1"
+								        Padding="12,10">
+									<Grid ColumnDefinitions="*,Auto">
+										<StackPanel Grid.Column="0" Spacing="4">
+											<TextBlock Text="{Binding Name}"
+											          FontWeight="SemiBold"
+											          FontSize="14"
+											          Foreground="#2D2D2D"/>
+											<TextBlock Text="{Binding TypeLabel}"
+											          FontSize="12"
+											          Foreground="#999"/>
+										</StackPanel>
+										<Border Grid.Column="1"
+										        Background="#7AB51D"
+										        CornerRadius="4"
+										        Padding="8,4"
+										        VerticalAlignment="Center">
+											<TextBlock Text="{Binding TypeLabel}"
+											          FontSize="11"
+											          Foreground="White"/>
+										</Border>
+									</Grid>
+								</Border>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</Border>
+			</Grid>
+		</Border>
+
+		<!-- FOOTER: Action Buttons -->
+		<Border Grid.Row="2"
+		        Margin="0,20,0,0"
+		        Padding="0,16,0,0"
+		        BorderBrush="#E5E5E5"
+		        BorderThickness="0,1,0,0">
+			<Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+				<!-- Delete Button (left side) -->
+				<Button Grid.Column="0"
+				        Content="🗑️ Delete Mapping"
+				        Command="{Binding DeleteMappingCommand}"
+				        Background="#F44336"
+				        Foreground="White"
+				        Padding="16,10"
+				        CornerRadius="6"
+				        FontWeight="SemiBold">
+					<Button.Styles>
+						<Style Selector="Button:pointerover">
+							<Setter Property="Background" Value="#D32F2F"/>
+						</Style>
+					</Button.Styles>
+				</Button>
+
+				<!-- Spacer -->
+				<Panel Grid.Column="1"/>
+
+				<!-- Cancel Button -->
+				<Button Grid.Column="2"
+				        Content="Cancel"
+				        Command="{Binding CancelCommand}"
+				        Padding="24,10"
+				        MinWidth="100"
+				        CornerRadius="6"/>
+
+				<!-- Change Mapping Button -->
+				<Button Grid.Column="3"
+				        Content="Change Mapping"
+				        Command="{Binding ChangeMappingCommand}"
+				        Background="#4CAF50"
+				        Foreground="White"
+				        Padding="24,10"
+				        MinWidth="150"
+				        CornerRadius="6"
+				        FontWeight="SemiBold"
+				        IsEnabled="{Binding SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}">
+					<Button.Styles>
+						<Style Selector="Button:pointerover">
+							<Setter Property="Background" Value="#45A049"/>
+						</Style>
+						<Style Selector="Button:disabled">
+							<Setter Property="Background" Value="#CCCCCC"/>
+						</Style>
+					</Button.Styles>
+				</Button>
+			</Grid>
+		</Border>
+	</Grid>
+</Window>

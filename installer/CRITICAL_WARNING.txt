@@ -2,7 +2,7 @@
                     IMPORTANT INFORMATION - PLEASE READ
 ═══════════════════════════════════════════════════════════════════════════════
 
-Welcome to Freecost v0.9 Beta!
+Welcome to Desktop Food Cost v0.9 Beta!
 
 Before installing, please review these important disclaimers about how the
 software should be used.
@@ -12,7 +12,7 @@ software should be used.
 ALLERGEN INFORMATION
 ───────────────────────────────────────────────────────────────────────────────
 
-Freecost's allergen features are designed to help you ORGANIZE and TRACK
+Desktop Food Cost's allergen features are designed to help you ORGANIZE and TRACK
 allergen data that you enter. However:
 
   • Allergen detection is based on keyword matching and may miss items

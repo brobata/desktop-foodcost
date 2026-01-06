@@ -1,0 +1,358 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dfc.Desktop.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="Dfc.Desktop.Views.EntreesView"
+             x:DataType="vm:EntreesViewModel">
+
+	<Grid RowDefinitions="Auto,Auto,Auto,Auto,*">
+
+		<StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,16">
+			<TextBlock Text="Menu Items (Entrees)"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="#2D2D2D"/>
+			<TextBlock Text="Create menu items from recipes and ingredients"
+                       FontSize="14"
+                       Foreground="#666"/>
+		</StackPanel>
+
+		<!-- Stats Panel -->
+		<Border Grid.Row="1"
+		        Background="White"
+		        CornerRadius="8"
+		        Padding="16"
+		        Margin="0,0,0,16"
+		        BoxShadow="0 2 8 0 #10000000">
+			<Grid ColumnDefinitions="*,*,*,*">
+				<StackPanel Grid.Column="0" Spacing="4">
+					<TextBlock Text="Total Items" FontSize="12" Foreground="#999"/>
+					<TextBlock Text="{Binding TotalEntrees}" FontSize="24" FontWeight="Bold" Foreground="#2D2D2D"/>
+				</StackPanel>
+				<StackPanel Grid.Column="1" Spacing="4">
+					<TextBlock Text="Menu Revenue" FontSize="12" Foreground="#999"/>
+					<TextBlock Text="{Binding TotalMenuRevenue, StringFormat='{}{0:C2}'}" FontSize="24" FontWeight="Bold" Foreground="#4CAF50"/>
+				</StackPanel>
+				<StackPanel Grid.Column="2" Spacing="4">
+					<TextBlock Text="Avg Food Cost" FontSize="12" Foreground="#999"/>
+					<TextBlock Text="{Binding AverageFoodCost, StringFormat='{}{0:C2}'}" FontSize="24" FontWeight="Bold" Foreground="#FF9800"/>
+				</StackPanel>
+				<StackPanel Grid.Column="3" Spacing="4">
+					<TextBlock Text="Avg Cost %" FontSize="12" Foreground="#999"/>
+					<TextBlock Text="{Binding AverageFoodCostPercent, StringFormat='{}{0:F1}%'}" FontSize="24" FontWeight="Bold" Foreground="#2196F3"/>
+				</StackPanel>
+			</Grid>
+		</Border>
+
+		<Border Grid.Row="2"
+                Background="White"
+                CornerRadius="8"
+                Padding="16"
+                Margin="0,0,0,16"
+                BoxShadow="0 2 8 0 #10000000">
+			<Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+				<ComboBox Grid.Column="0"
+				         ItemsSource="{Binding QuickFilterOptions}"
+				         SelectedItem="{Binding SelectedQuickFilter}"
+				         MinWidth="160"
+				         VerticalAlignment="Center"
+				         ToolTip.Tip="Quick filters">
+					<ComboBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding}" FontSize="12"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
+				<TextBox Grid.Column="1"
+                         Text="{Binding SearchText}"
+                         Watermark="Search menu items..."
+                         MinWidth="300"
+                         VerticalAlignment="Center"/>
+				<StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            Spacing="8">
+					<!-- Batch Operations Panel -->
+					<Border IsVisible="{Binding SelectedEntrees.Count}"
+					        Background="#FFF3E0"
+					        CornerRadius="4"
+					        Padding="12,8"
+					        Margin="0,0,8,0">
+						<StackPanel Orientation="Horizontal" Spacing="8">
+							<TextBlock Text="{Binding SelectedEntrees.Count, StringFormat='{}{0} selected'}"
+							          FontWeight="SemiBold"
+							          VerticalAlignment="Center"
+							          Foreground="#E65100"/>
+							<Button Content="✓ All"
+							        Command="{Binding SelectAllCommand}"
+							        Background="#FFB74D"
+							        Foreground="White"
+							        Padding="8,4"
+							        CornerRadius="3"
+							        FontSize="11"/>
+							<Button Content="✕ Clear"
+							        Command="{Binding ClearSelectionCommand}"
+							        Background="#90A4AE"
+							        Foreground="White"
+							        Padding="8,4"
+							        CornerRadius="3"
+							        FontSize="11"/>
+							<Button Content="📋 Duplicate"
+							        Command="{Binding BatchDuplicateCommand}"
+							        Background="#64B5F6"
+							        Foreground="White"
+							        Padding="8,4"
+							        CornerRadius="3"
+							        FontSize="11"/>
+							<Button Content="🗑️ Delete"
+							        Command="{Binding BatchDeleteCommand}"
+							        Background="#EF5350"
+							        Foreground="White"
+							        Padding="8,4"
+							        CornerRadius="3"
+							        FontSize="11"/>
+						</StackPanel>
+					</Border>
+					<Button Content="🔍 Filters"
+                            Background="#B39DDB"
+                            Foreground="White"
+                            Padding="16,8"
+                            CornerRadius="4"
+                            FontWeight="SemiBold">
+						<Button.Flyout>
+							<Flyout Placement="Bottom">
+								<StackPanel Width="250" Spacing="12">
+									<TextBlock Text="Filter by Allergen"
+									          FontWeight="Bold"
+									          FontSize="14"
+									          Foreground="#2D2D2D"/>
+									<ScrollViewer MaxHeight="300"
+									             HorizontalScrollBarVisibility="Disabled"
+									             VerticalScrollBarVisibility="Auto">
+										<ItemsControl ItemsSource="{Binding AvailableAllergens}">
+											<ItemsControl.ItemTemplate>
+												<DataTemplate>
+													<CheckBox Content="{Binding Name}"
+													         IsChecked="{Binding IsSelected}"
+													         Margin="0,0,0,8"
+													         FontSize="12"/>
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+									</ScrollViewer>
+									<Button Content="Clear All"
+									       Command="{Binding ClearAllFiltersCommand}"
+									       Background="#EF9A9A"
+									       Foreground="White"
+									       Padding="12,6"
+									       CornerRadius="4"
+									       HorizontalAlignment="Stretch"
+									       FontWeight="SemiBold"/>
+								</StackPanel>
+							</Flyout>
+						</Button.Flyout>
+					</Button>
+				</StackPanel>
+			</Grid>
+		</Border>
+
+		<!-- Action Buttons Row -->
+		<Border Grid.Row="3"
+		        Background="White"
+		        CornerRadius="8"
+		        Padding="16"
+		        Margin="0,0,0,16"
+		        BoxShadow="0 2 8 0 #10000000">
+			<StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Left">
+				<Button Content="➕ Add Menu Item"
+				        Command="{Binding AddEntreeCommand}"
+				        Background="#7AB51D"
+				        Foreground="White"
+				        Padding="16,8"
+				        CornerRadius="4"
+				        FontWeight="SemiBold"/>
+				<Button Content="🍽️ Import Entree Cards"
+				        Command="{Binding ImportEntreeCardsCommand}"
+				        Background="#FF6F00"
+				        Foreground="White"
+				        Padding="16,8"
+				        CornerRadius="4"
+				        FontWeight="SemiBold"
+				        ToolTip.Tip="Import entree cards from Excel (multi-tab workbook - requires login)"
+				        IsVisible="{Binding IsAuthenticated}"/>
+			</StackPanel>
+		</Border>
+
+		<Border Grid.Row="4"
+                Background="White"
+                CornerRadius="8"
+                BoxShadow="0 2 8 0 #10000000"
+                Padding="16">
+			<Grid>
+				<!-- Loading Spinner -->
+				<Border IsVisible="{Binding IsLoading}"
+				        Background="#80FFFFFF"
+				        ZIndex="100">
+					<StackPanel VerticalAlignment="Center"
+					           HorizontalAlignment="Center"
+					           Spacing="16">
+						<TextBlock Text="⏳"
+						          FontSize="48"
+						          HorizontalAlignment="Center"/>
+						<TextBlock Text="Loading entrees..."
+						          FontSize="16"
+						          HorizontalAlignment="Center"
+						          Foreground="#666"/>
+					</StackPanel>
+				</Border>
+
+				<!-- DataGrid -->
+				<DataGrid Name="EntreesDataGrid"
+				         ItemsSource="{Binding Entrees}"
+				         IsVisible="{Binding Entrees.Count}"
+				         SelectedItem="{Binding SelectedEntree}"
+				         AutoGenerateColumns="False"
+				         IsReadOnly="True"
+				         GridLinesVisibility="Horizontal"
+				         CanUserResizeColumns="True"
+				         CanUserSortColumns="True"
+				         SelectionMode="Extended"
+				         SelectionChanged="OnSelectionChanged"
+				         DoubleTapped="OnDataGridDoubleTapped">
+
+					<DataGrid.ContextMenu>
+						<ContextMenu>
+							<MenuItem Header="🥧 Cost Breakdown" Click="OnViewCostBreakdown"/>
+							<Separator/>
+							<MenuItem Header="✏️ Edit Menu Item" Click="OnEditEntree"/>
+							<MenuItem Header="🗑️ Delete Menu Item" Click="OnDeleteEntree"/>
+						</ContextMenu>
+					</DataGrid.ContextMenu>
+
+					<DataGrid.Columns>
+						<DataGridTemplateColumn Header="Status" Width="60" IsReadOnly="True">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding StatusIcon}"
+											  FontSize="18"
+											  VerticalAlignment="Center"
+											  HorizontalAlignment="Center"
+											  ToolTip.Tip="{Binding StatusTooltip}"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+						<DataGridTemplateColumn Header="Profit" Width="60" IsReadOnly="True">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding ProfitabilityIcon}"
+											  FontSize="18"
+											  VerticalAlignment="Center"
+											  HorizontalAlignment="Center"
+											  ToolTip.Tip="{Binding ProfitabilityTooltip}"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+						<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="5*"/>
+						<DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="1.3*"/>
+						<DataGridTextColumn Header="Menu Price" Binding="{Binding MenuPrice}" Width="0.9*"/>
+						<DataGridTextColumn Header="Food Cost" Binding="{Binding FoodCost}" Width="0.9*"/>
+						<DataGridTextColumn Header="Food Cost %" Binding="{Binding FoodCostPercent}" Width="1*"/>
+						<DataGridTextColumn Header="Components" Binding="{Binding ComponentCount}" Width="0.8*"/>
+
+						<DataGridTemplateColumn Header="Actions" Width="180" IsReadOnly="True">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<StackPanel Orientation="Horizontal" Spacing="4" Margin="8,0,24,0" VerticalAlignment="Center">
+										<Button Content="✏️"
+												Command="{Binding $parent[UserControl].((vm:EntreesViewModel)DataContext).EditEntreeCommand}"
+												CommandParameter="{Binding Entree}"
+												Background="Transparent"
+												BorderThickness="0"
+												ToolTip.Tip="Edit menu item">
+											<Button.Styles>
+												<Style Selector="Button:pointerover">
+													<Setter Property="Background" Value="#E8F5E9"/>
+												</Style>
+											</Button.Styles>
+										</Button>
+										<Button Content="📋"
+												Command="{Binding $parent[UserControl].((vm:EntreesViewModel)DataContext).DuplicateEntreeCommand}"
+												CommandParameter="{Binding Entree}"
+												Background="Transparent"
+												BorderThickness="0"
+												ToolTip.Tip="Duplicate menu item">
+											<Button.Styles>
+												<Style Selector="Button:pointerover">
+													<Setter Property="Background" Value="#E3F2FD"/>
+												</Style>
+											</Button.Styles>
+										</Button>
+										<Button Content="📊"
+												Click="OnViewCostBreakdown"
+												Background="Transparent"
+												BorderThickness="0"
+												ToolTip.Tip="Cost breakdown">
+											<Button.Styles>
+												<Style Selector="Button:pointerover">
+													<Setter Property="Background" Value="#FFF9C4"/>
+												</Style>
+											</Button.Styles>
+										</Button>
+										<Button Content="🗑️"
+												Command="{Binding $parent[UserControl].((vm:EntreesViewModel)DataContext).DeleteEntreeCommand}"
+												CommandParameter="{Binding Entree}"
+												Background="Transparent"
+												BorderThickness="0"
+												ToolTip.Tip="Delete menu item">
+											<Button.Styles>
+												<Style Selector="Button:pointerover">
+													<Setter Property="Background" Value="#FFEBEE"/>
+												</Style>
+											</Button.Styles>
+										</Button>
+									</StackPanel>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
+				</DataGrid>
+
+				<!-- Empty State -->
+				<StackPanel IsVisible="{Binding !Entrees.Count}"
+				           VerticalAlignment="Center"
+				           HorizontalAlignment="Center"
+				           Spacing="16"
+				           Margin="0,80,0,0">
+					<TextBlock Text="🍽️"
+					          FontSize="64"
+					          HorizontalAlignment="Center"
+					          Opacity="0.3"/>
+					<TextBlock Text="No menu items yet"
+					          FontSize="20"
+					          FontWeight="SemiBold"
+					          HorizontalAlignment="Center"
+					          Foreground="#999"/>
+					<TextBlock Text="Build entrees from your recipes to complete your menu"
+					          FontSize="14"
+					          HorizontalAlignment="Center"
+					          Foreground="#AAA"
+					          TextWrapping="Wrap"
+					          TextAlignment="Center"
+					          MaxWidth="300"/>
+					<Button Content="➕ Add Your First Menu Item"
+					       Command="{Binding AddEntreeCommand}"
+					       Background="#7AB51D"
+					       Foreground="White"
+					       Padding="16,10"
+					       CornerRadius="6"
+					       FontWeight="SemiBold"
+					       HorizontalAlignment="Center"
+					       Margin="0,8,0,0"/>
+				</StackPanel>
+			</Grid>
+		</Border>
+	</Grid>
+</UserControl>

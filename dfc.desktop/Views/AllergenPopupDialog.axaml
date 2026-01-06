@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:Dfc.Desktop.Controls"
+        x:Class="Dfc.Desktop.Views.AllergenPopupDialog"
+        Title="Select Allergens"
+        Width="600" Height="500"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="White">
+
+    <Grid RowDefinitions="*,Auto" Margin="20">
+        <!-- Allergen Selector Control -->
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <controls:AllergenSelectorControl x:Name="AllergenSelector"/>
+        </ScrollViewer>
+
+        <!-- Buttons -->
+        <Border Grid.Row="1" Margin="0,20,0,0" Padding="0,20,0,0" BorderBrush="#E5E5E5" BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                <Button Grid.Column="1" Content="Cancel" Click="OnCancel" Padding="28,11" MinWidth="110"/>
+                <Button Grid.Column="2" Content="Save" Click="OnSave" Padding="28,11" MinWidth="110" Classes="primary"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

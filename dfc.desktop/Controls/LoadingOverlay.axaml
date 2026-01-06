@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:Dfc.Desktop.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="Dfc.Desktop.Controls.LoadingOverlay"
+             x:Name="Root">
+
+    <Grid IsVisible="{Binding #Root.IsLoading}">
+        <!-- Semi-transparent background -->
+        <Border Background="#CC000000" Opacity="0.3"/>
+
+        <!-- Loading indicator card -->
+        <Border Background="White"
+                CornerRadius="16"
+                Padding="40"
+                BoxShadow="0 10 40 5 #88000000"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                MinWidth="200">
+            <StackPanel Spacing="20" HorizontalAlignment="Center">
+                <controls:LoadingIndicator x:Name="Indicator"
+                                          Style="{Binding #Root.LoadingStyle}"
+                                          HorizontalAlignment="Center"/>
+
+                <TextBlock x:Name="MessageText"
+                           Text="{Binding #Root.Message}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="#2D2D2D"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

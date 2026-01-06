@@ -1,0 +1,172 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
+        x:Class="Dfc.Desktop.Views.UpdateNotificationWindow"
+        x:DataType="vm:UpdateNotificationViewModel"
+        Title="Update Available - Desktop Food Cost"
+        Width="800"
+        Height="650"
+        MaxWidth="1000"
+        MaxHeight="900"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5"
+        CanResize="False">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="32">
+
+		<!-- Header Section -->
+		<StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,20">
+			<TextBlock Text="Desktop Food Cost Update Available"
+			          FontSize="22"
+			          FontWeight="Bold"
+			          Foreground="#2D2D2D"/>
+
+			<StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding IsUpdateAvailable}">
+				<TextBlock FontSize="14" Foreground="#666">
+					<Run Text="Current:"/>
+					<Run Text="{Binding CurrentVersion}" FontWeight="SemiBold"/>
+				</TextBlock>
+				<TextBlock Text="→" FontSize="14" Foreground="#7AB51D" FontWeight="Bold"/>
+				<TextBlock FontSize="14" Foreground="#666">
+					<Run Text="New:"/>
+					<Run Text="{Binding LatestVersion}" FontWeight="Bold" Foreground="#7AB51D"/>
+				</TextBlock>
+				<TextBlock Text="{Binding PublishedDate, StringFormat='(Released {0})'}"
+				          FontSize="12"
+				          Foreground="#999"
+				          VerticalAlignment="Center"
+				          Margin="8,0,0,0"/>
+			</StackPanel>
+		</StackPanel>
+
+		<!-- Content Section -->
+		<ScrollViewer Grid.Row="1" IsVisible="{Binding IsUpdateAvailable}">
+			<StackPanel Spacing="16">
+
+				<!-- Release Notes -->
+				<Border Background="White"
+				        CornerRadius="8"
+				        Padding="24"
+				        BoxShadow="0 2 8 0 #10000000">
+					<StackPanel Spacing="12">
+						<TextBlock Text="What's New"
+						          FontSize="16"
+						          FontWeight="Bold"
+						          Foreground="#2D2D2D"/>
+
+						<ScrollViewer MaxHeight="400">
+							<TextBlock Text="{Binding ReleaseNotes}"
+							          FontSize="13"
+							          Foreground="#444"
+							          TextWrapping="Wrap"
+							          LineHeight="20"/>
+						</ScrollViewer>
+					</StackPanel>
+				</Border>
+
+				<!-- Download Progress -->
+				<Border Background="White"
+				        CornerRadius="8"
+				        Padding="20"
+				        BoxShadow="0 2 8 0 #10000000"
+				        IsVisible="{Binding IsDownloading}">
+					<StackPanel Spacing="12">
+						<StackPanel Orientation="Horizontal" Spacing="8">
+							<TextBlock Text="⬇️"
+							          FontSize="16"/>
+							<TextBlock Text="Downloading Update..."
+							          FontSize="16"
+							          FontWeight="Bold"
+							          Foreground="#2D2D2D"/>
+						</StackPanel>
+
+						<ProgressBar Value="{Binding DownloadProgress}"
+						            Maximum="100"
+						            Height="8"
+						            Foreground="#7AB51D"
+						            Background="#E0E0E0"
+						            Margin="8,8,0,0"/>
+
+						<TextBlock Text="{Binding DownloadProgress, StringFormat='{}{0:F0}% complete'}"
+						          FontSize="12"
+						          Foreground="#666"
+						          HorizontalAlignment="Center"/>
+					</StackPanel>
+				</Border>
+
+			</StackPanel>
+		</ScrollViewer>
+
+		<!-- No Update Message -->
+		<Border Grid.Row="1"
+		        Background="White"
+		        CornerRadius="8"
+		        Padding="32"
+		        BoxShadow="0 2 8 0 #10000000"
+		        HorizontalAlignment="Center"
+		        VerticalAlignment="Center"
+		        IsVisible="{Binding !IsUpdateAvailable}">
+			<StackPanel Spacing="16" HorizontalAlignment="Center">
+				<TextBlock Text="✅"
+				          FontSize="48"
+				          HorizontalAlignment="Center"/>
+				<TextBlock Text="You're up to date!"
+				          FontSize="18"
+				          FontWeight="Bold"
+				          HorizontalAlignment="Center"
+				          Foreground="#2D2D2D"/>
+				<TextBlock Text="{Binding StatusMessage}"
+				          FontSize="12"
+				          HorizontalAlignment="Center"
+				          Foreground="#666"
+				          TextWrapping="Wrap"
+				          MaxWidth="400"/>
+			</StackPanel>
+		</Border>
+
+		<!-- Action Buttons -->
+		<StackPanel Grid.Row="2"
+		           Orientation="Horizontal"
+		           Spacing="12"
+		           HorizontalAlignment="Center"
+		           Margin="0,24,0,0">
+
+			<!-- Download & Install Button -->
+			<Button Content="{Binding DownloadButtonText}"
+			        Command="{Binding DownloadAndInstallCommand}"
+			        Background="#7AB51D"
+			        Foreground="White"
+			        Padding="32,12"
+			        CornerRadius="4"
+			        FontWeight="SemiBold"
+			        IsVisible="{Binding IsUpdateAvailable}"
+			        IsEnabled="{Binding !IsDownloading}"/>
+
+			<!-- Remind Me Later Button -->
+			<Button Content="Remind Me Later"
+			        Command="{Binding RemindLaterCommand}"
+			        Background="White"
+			        Foreground="#666"
+			        BorderBrush="#DDD"
+			        BorderThickness="1"
+			        Padding="24,12"
+			        CornerRadius="4"
+			        IsVisible="{Binding IsUpdateAvailable}"
+			        IsEnabled="{Binding !IsDownloading}"/>
+
+			<!-- Close Button (when no update) -->
+			<Button Content="Close"
+			        Command="{Binding CloseCommand}"
+			        Background="#7AB51D"
+			        Foreground="White"
+			        Padding="32,12"
+			        CornerRadius="4"
+			        FontWeight="SemiBold"
+			        IsVisible="{Binding !IsUpdateAvailable}"/>
+		</StackPanel>
+
+	</Grid>
+</Window>

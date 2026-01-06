@@ -31,17 +31,17 @@ npm-debug.log*
 # Environment and secrets
 .env
 .env.*
-**/appsettings.json
-**/appsettings.*.json
+!.env.example
 
 # Installer
-installer/FreecostSetup.iss
+installer/DfcSetup.iss
 installer/output/
 installer/*.exe
 
 # Operating System
 .DS_Store
 Thumbs.db
+ehthumbs.db
 
 # Backup files
 *.bak
@@ -49,10 +49,27 @@ Thumbs.db
 *.tmp
 *.backup
 
-# Internal documentation
-docs/
-.archive/
+# Database files (local development)
+*.db
+*.db-shm
+*.db-wal
+
+# Test results
+TestResults/
+*.trx
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# Claude Code
+.claude/
 .claude-context*
+
+# Internal documentation
+docs/internal/
+.archive/
 
 # Temporary files
 /nul

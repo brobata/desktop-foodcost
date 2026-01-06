@@ -1,0 +1,98 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dfc.Desktop.ViewModels"
+        xmlns:enums="using:Dfc.Core.Enums"
+        x:Class="Dfc.Desktop.Views.RelinkComponentDialog"
+        x:DataType="vm:RelinkComponentDialogViewModel"
+        Title="Relink Component"
+        Width="550" Height="650"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="White">
+	<Grid Margin="24" RowDefinitions="Auto,Auto,Auto,*,Auto,Auto">
+
+		<!-- Header -->
+		<StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,20">
+			<TextBlock Text="Relink Component" FontSize="20" FontWeight="Bold" Foreground="#2D2D2D"/>
+			<TextBlock Text="{Binding ComponentName}" FontSize="14" Foreground="#666" TextWrapping="Wrap"/>
+			<TextBlock Text="Select a new ingredient or recipe to link this component to:" FontSize="13" Foreground="#666" TextWrapping="Wrap"/>
+		</StackPanel>
+
+		<!-- Type Selection (Ingredient or Recipe) -->
+		<StackPanel Grid.Row="1" Spacing="8" Margin="0,0,0,20">
+			<TextBlock Text="Link to:" FontWeight="SemiBold" FontSize="14" Foreground="#2D2D2D"/>
+			<StackPanel Orientation="Horizontal" Spacing="12">
+				<RadioButton Content="Ingredient"
+				            IsChecked="{Binding IsIngredientSelected}"
+				            GroupName="ComponentType"
+				            FontSize="14"/>
+				<RadioButton Content="Recipe"
+				            IsChecked="{Binding IsRecipeSelected}"
+				            GroupName="ComponentType"
+				            FontSize="14"/>
+			</StackPanel>
+		</StackPanel>
+
+		<!-- Search Box -->
+		<StackPanel Grid.Row="2" Spacing="8" Margin="0,0,0,12">
+			<TextBlock Text="Search:" FontWeight="SemiBold" FontSize="14" Foreground="#2D2D2D"/>
+			<TextBox Text="{Binding SearchText}"
+			         Watermark="Type to search..."
+			         Padding="12,10"
+			         FontSize="14"/>
+		</StackPanel>
+
+		<!-- Items List -->
+		<Border Grid.Row="3"
+		        BorderBrush="#D0D0D0"
+		        BorderThickness="1"
+		        CornerRadius="6"
+		        Margin="0,0,0,20">
+			<ListBox ItemsSource="{Binding FilteredItems}"
+			         DisplayMemberBinding="{Binding Name}"
+			         SelectedItem="{Binding SelectedItem}"
+			         SelectionMode="Single"
+			         Background="White"/>
+		</Border>
+
+		<!-- Quantity and Unit Inputs -->
+		<Grid Grid.Row="4"
+		      ColumnDefinitions="*,*"
+		      Margin="0,0,0,20"
+		      IsVisible="{Binding SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}">
+			<StackPanel Grid.Column="0" Margin="0,0,10,0" Spacing="7">
+				<TextBlock Text="Quantity" FontWeight="SemiBold" FontSize="14" Foreground="#2D2D2D"/>
+				<TextBox Text="{Binding Quantity}"
+				         Watermark="Enter quantity"
+				         Padding="12,10"
+				         FontSize="14"/>
+			</StackPanel>
+
+			<StackPanel Grid.Column="1" Margin="10,0,0,0" Spacing="7">
+				<TextBlock Text="Unit" FontWeight="SemiBold" FontSize="14" Foreground="#2D2D2D"/>
+				<ComboBox ItemsSource="{Binding Units}"
+				          SelectedItem="{Binding SelectedUnit, Mode=TwoWay, FallbackValue={x:Static enums:UnitType.Ounce}}"
+				          Padding="12,10"
+				          FontSize="14"/>
+			</StackPanel>
+		</Grid>
+
+		<!-- Buttons -->
+		<Border Grid.Row="5" Padding="0,20,0,0" BorderBrush="#E5E5E5" BorderThickness="0,1,0,0">
+			<StackPanel Orientation="Horizontal"
+			            HorizontalAlignment="Right"
+			            Spacing="12">
+				<Button Content="Cancel"
+				        Command="{Binding CancelCommand}"
+				        Padding="28,11"
+				        MinWidth="110"/>
+				<Button Content="Relink"
+				        Command="{Binding RelinkCommand}"
+				        Padding="28,11"
+				        MinWidth="110"
+				        Classes="primary"
+				        IsEnabled="{Binding SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+			</StackPanel>
+		</Border>
+	</Grid>
+</Window>

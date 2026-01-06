@@ -12,12 +12,12 @@ Copy the template and add your credentials:
 
 ```bash
 cd C:\Projects\installer
-copy FreecostSetup.iss.template FreecostSetup.iss
+copy Desktop Food CostSetup.iss.template Desktop Food CostSetup.iss
 ```
 
 ### Step 2: Add Your Credentials
 
-Open `FreecostSetup.iss` in a text editor and replace the placeholders:
+Open `Desktop Food CostSetup.iss` in a text editor and replace the placeholders:
 
 **Line ~202:** Replace `YOUR_SUPABASE_URL_HERE` with your Supabase URL
 ```pascal
@@ -54,25 +54,25 @@ RegWriteStringValue(HKCU, 'Environment', 'USDA_API_KEY', 'your-usda-key')
 1. Publish the application:
    ```bash
    cd C:\Projects
-   dotnet publish Freecost.Desktop/Freecost.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o publish/win-x64
+   dotnet publish Desktop Food Cost.Desktop/Desktop Food Cost.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o publish/win-x64
    ```
 
 2. Compile the installer with Inno Setup:
    ```bash
-   "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "C:\Projects\installer\FreecostSetup.iss"
+   "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "C:\Projects\installer\Desktop Food CostSetup.iss"
    ```
 
 3. The installer will be created at:
    ```
-   C:\Projects\installer\output\FreecostSetup-1.0.0-x64-Complete.exe
+   C:\Projects\installer\output\Desktop Food CostSetup-1.0.0-x64-Complete.exe
    ```
 
 ## Important Notes
 
-- ✅ `FreecostSetup.iss` is in `.gitignore` and will NOT be committed
-- ✅ `FreecostSetup.iss.template` is the version-controlled template
+- ✅ `Desktop Food CostSetup.iss` is in `.gitignore` and will NOT be committed
+- ✅ `Desktop Food CostSetup.iss.template` is the version-controlled template
 - ✅ The compiled `.exe` installer can be uploaded to GitHub Releases
-- ⚠️ Never commit the actual `FreecostSetup.iss` file with credentials!
+- ⚠️ Never commit the actual `Desktop Food CostSetup.iss` file with credentials!
 
 ## Rotating Credentials
 
@@ -82,7 +82,7 @@ If credentials are exposed:
    - Go to Supabase Dashboard → Settings → API
    - Reset the anon/public key
 
-2. **Update FreecostSetup.iss** with the new key
+2. **Update Desktop Food CostSetup.iss** with the new key
 
 3. **Rebuild the installer** and distribute the new version
 
