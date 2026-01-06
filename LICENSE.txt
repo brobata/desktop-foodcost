@@ -1,0 +1,56 @@
+FREECOST SOFTWARE LICENSE AGREEMENT
+
+Copyright (c) 2025 Brobata. All Rights Reserved.
+
+By installing and using Freecost, you agree to the following terms:
+
+1. GRANT OF LICENSE
+   You are granted a personal, non-transferable license to use this software
+   for legitimate restaurant management purposes.
+
+2. RESTRICTIONS
+   - Do not reverse engineer, decompile, or disassemble the software
+   - Do not copy, distribute, or resell the software
+   - Do not modify or create derivative works
+   - Do not remove copyright notices or proprietary markings
+   - Do not use the software for illegal purposes
+
+3. OWNERSHIP
+   This software is proprietary and confidential. All intellectual property
+   rights belong to Brobata. This license does not grant you any ownership
+   rights.
+
+4. BASIC PRINCIPLE
+   In simple terms: Don't be a jerk. Don't steal this software. Don't try to
+   hack it or resell it. Use it legitimately for your restaurant business.
+
+5. TERMINATION
+   This license terminates automatically if you violate any terms. Upon
+   termination, you must uninstall and delete all copies of the software.
+
+6. WARRANTY DISCLAIMER
+   THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. USE AT
+   YOUR OWN RISK.
+
+===============================================================================
+ADDITIONAL DISCLAIMERS FOR FREECOST
+===============================================================================
+
+ALLERGEN DISCLAIMER: Freecost's allergen information is for organizational
+purposes only. DO NOT rely solely on this software for allergen information.
+Always verify with ingredient suppliers. Brobata assumes NO LIABILITY for
+allergic reactions, injuries, or deaths resulting from allergen information.
+
+COST CALCULATION DISCLAIMER: Cost calculations are estimates only. Actual costs
+may vary due to price fluctuations, waste, and other factors. Brobata assumes
+NO LIABILITY for financial losses resulting from pricing decisions based on
+this software.
+
+NUTRITIONAL INFORMATION DISCLAIMER: Nutritional information is user-provided
+and not verified. Brobata assumes NO LIABILITY for accuracy of nutritional
+information.
+
+BETA SOFTWARE WARNING: This is beta software that may contain bugs and errors.
+Data loss may occur. Use at your own risk.
+
+See TERMS_AND_DISCLAIMERS.txt for complete terms and conditions.

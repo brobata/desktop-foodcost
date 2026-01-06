@@ -1,0 +1,284 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="640"
+        x:Class="Freecost.Desktop.Views.RecipeCostAnalysisWindow"
+        x:DataType="vm:RecipeCostAnalysisViewModel"
+        Title="Recipe Cost Analysis"
+        Width="800"
+        Height="640"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="24">
+
+		<!-- Header -->
+		<StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,20">
+			<TextBlock Text="💰 Recipe Cost Analysis"
+			          FontSize="24"
+			          FontWeight="Bold"
+			          Foreground="#2D2D2D"/>
+			<TextBlock FontSize="14" Foreground="#666">
+				<Run Text="Analyzing: "/>
+				<Run Text="{Binding RecipeName}" FontWeight="SemiBold"/>
+			</TextBlock>
+		</StackPanel>
+
+		<!-- Content -->
+		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+			<StackPanel Spacing="20">
+
+				<!-- Summary Cards -->
+				<Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
+					<!-- Total Cost Card -->
+					<Border Grid.Column="0"
+					       Background="White"
+					       CornerRadius="8"
+					       Padding="20"
+					       BoxShadow="0 2 8 0 #10000000">
+						<StackPanel Spacing="8">
+							<TextBlock Text="Total Recipe Cost"
+							          FontSize="12"
+							          Foreground="#666"/>
+							<TextBlock Text="{Binding TotalCost, StringFormat='{}{0:C2}'}"
+							          FontSize="28"
+							          FontWeight="Bold"
+							          Foreground="#FF9800"/>
+							<TextBlock Text="{Binding Yield, StringFormat='for {0} servings'}"
+							          FontSize="11"
+							          Foreground="#999"/>
+						</StackPanel>
+					</Border>
+
+					<!-- Cost Per Serving Card -->
+					<Border Grid.Column="1"
+					       Background="White"
+					       CornerRadius="8"
+					       Padding="20"
+					       BoxShadow="0 2 8 0 #10000000">
+						<StackPanel Spacing="8">
+							<TextBlock Text="Cost Per Serving"
+							          FontSize="12"
+							          Foreground="#666"/>
+							<TextBlock Text="{Binding CostPerServing, StringFormat='{}{0:C2}'}"
+							          FontSize="28"
+							          FontWeight="Bold"
+							          Foreground="#2196F3"/>
+							<TextBlock Text="per unit"
+							          FontSize="11"
+							          Foreground="#999"/>
+						</StackPanel>
+					</Border>
+
+					<!-- Profitability Card -->
+					<Border Grid.Column="2"
+					       Background="White"
+					       CornerRadius="8"
+					       Padding="20"
+					       BoxShadow="0 2 8 0 #10000000">
+						<StackPanel Spacing="8">
+							<TextBlock Text="Target Profit (30%)"
+							          FontSize="12"
+							          Foreground="#666"/>
+							<TextBlock Text="{Binding SuggestedSellingPrice, StringFormat='{}{0:C2}'}"
+							          FontSize="28"
+							          FontWeight="Bold"
+							          Foreground="#4CAF50"/>
+							<TextBlock Text="suggested price per serving"
+							          FontSize="11"
+							          Foreground="#999"/>
+						</StackPanel>
+					</Border>
+				</Grid>
+
+				<!-- Profitability Calculator -->
+				<Border Background="White"
+				       CornerRadius="8"
+				       Padding="20"
+				       BoxShadow="0 2 8 0 #10000000">
+					<StackPanel Spacing="16">
+						<TextBlock Text="Profitability Calculator"
+						          FontSize="16"
+						          FontWeight="SemiBold"
+						          Foreground="#2D2D2D"/>
+
+						<Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
+							<!-- Target Food Cost % -->
+							<StackPanel Grid.Column="0" Spacing="8">
+								<TextBlock Text="Target Food Cost %" FontSize="12" Foreground="#666"/>
+								<TextBox Text="{Binding TargetFoodCostPercent}"
+								        Watermark="30"
+								        Padding="12,10"
+								        FontSize="14"/>
+							</StackPanel>
+
+							<!-- Suggested Selling Price -->
+							<StackPanel Grid.Column="1" Spacing="8">
+								<TextBlock Text="Selling Price (per serving)" FontSize="12" Foreground="#666"/>
+								<TextBox Text="{Binding SellingPrice}"
+								        Watermark="Enter price..."
+								        Padding="12,10"
+								        FontSize="14"/>
+							</StackPanel>
+
+							<!-- Actual Food Cost % -->
+							<StackPanel Grid.Column="2" Spacing="8">
+								<TextBlock Text="Actual Food Cost %" FontSize="12" Foreground="#666"/>
+								<TextBlock Text="{Binding ActualFoodCostPercent, StringFormat='{}{0:F1}%'}"
+								          Padding="12,10"
+								          FontSize="14"
+								          FontWeight="Medium"
+								          Foreground="{Binding FoodCostColor}"/>
+							</StackPanel>
+						</Grid>
+
+						<!-- Profitability Metrics -->
+						<Border Background="#F5F5F5"
+						       BorderBrush="#E0E0E0"
+						       BorderThickness="1"
+						       CornerRadius="6"
+						       Padding="16"
+						       IsVisible="{Binding HasSellingPrice}">
+							<Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
+								<StackPanel Grid.Column="0" Spacing="4">
+									<TextBlock Text="Gross Profit" FontSize="11" Foreground="#666"/>
+									<TextBlock Text="{Binding GrossProfit, StringFormat='{}{0:C2}'}"
+									          FontSize="18"
+									          FontWeight="SemiBold"
+									          Foreground="#4CAF50"/>
+								</StackPanel>
+								<StackPanel Grid.Column="1" Spacing="4">
+									<TextBlock Text="Profit Margin" FontSize="11" Foreground="#666"/>
+									<TextBlock Text="{Binding ProfitMargin, StringFormat='{}{0:F1}%'}"
+									          FontSize="18"
+									          FontWeight="SemiBold"
+									          Foreground="#1976D2"/>
+								</StackPanel>
+								<StackPanel Grid.Column="2" Spacing="4">
+									<TextBlock Text="Markup" FontSize="11" Foreground="#666"/>
+									<TextBlock Text="{Binding Markup, StringFormat='{}{0:F1}%'}"
+									          FontSize="18"
+									          FontWeight="SemiBold"
+									          Foreground="#9C27B0"/>
+								</StackPanel>
+							</Grid>
+						</Border>
+					</StackPanel>
+				</Border>
+
+				<!-- Cost Breakdown -->
+				<Border Background="White"
+				       CornerRadius="8"
+				       Padding="20"
+				       BoxShadow="0 2 8 0 #10000000">
+					<StackPanel Spacing="16">
+						<TextBlock Text="Cost Breakdown by Ingredient"
+						          FontSize="16"
+						          FontWeight="SemiBold"
+						          Foreground="#2D2D2D"/>
+
+						<!-- Ingredients Table -->
+						<Border BorderBrush="#E0E0E0"
+						       BorderThickness="1"
+						       CornerRadius="4">
+							<ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
+								<ItemsControl ItemsSource="{Binding IngredientCosts}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Border BorderBrush="#F0F0F0"
+											       BorderThickness="0,0,0,1"
+											       Padding="16,12">
+												<Grid ColumnDefinitions="3*,1.5*,1*,1*" ColumnSpacing="16">
+													<TextBlock Grid.Column="0"
+													          Text="{Binding Name}"
+													          FontSize="13"
+													          VerticalAlignment="Center"/>
+													<TextBlock Grid.Column="1"
+													          FontSize="12"
+													          Foreground="#666"
+													          VerticalAlignment="Center">
+														<Run Text="{Binding Quantity, StringFormat='{}{0:F2}'}"/>
+														<Run Text=" "/>
+														<Run Text="{Binding Unit}"/>
+													</TextBlock>
+													<TextBlock Grid.Column="2"
+													          Text="{Binding Cost, StringFormat='{}{0:C2}'}"
+													          FontSize="13"
+													          FontWeight="Medium"
+													          VerticalAlignment="Center"/>
+													<TextBlock Grid.Column="3"
+													          Text="{Binding Percentage, StringFormat='{}{0:F1}%'}"
+													          FontSize="12"
+													          Foreground="#1976D2"
+													          HorizontalAlignment="Right"
+													          VerticalAlignment="Center"/>
+												</Grid>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</ScrollViewer>
+						</Border>
+
+						<!-- Top Expenses -->
+						<Border Background="#FFF3E0"
+						       BorderBrush="#FFB74D"
+						       BorderThickness="1"
+						       CornerRadius="6"
+						       Padding="16">
+							<StackPanel Spacing="8">
+								<TextBlock Text="💡 Cost Optimization Tips"
+								          FontWeight="SemiBold"
+								          FontSize="13"
+								          Foreground="#E65100"/>
+								<TextBlock FontSize="12" Foreground="#666">
+									<Run Text="Top 3 expensive ingredients account for "/>
+									<Run Text="{Binding Top3Percentage, StringFormat='{}{0:F1}%'}" FontWeight="SemiBold"/>
+									<Run Text=" of total cost."/>
+								</TextBlock>
+								<ItemsControl ItemsSource="{Binding TopExpenses}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<TextBlock FontSize="12" Foreground="#666" Margin="0,2">
+												<Run Text="• "/>
+												<Run Text="{Binding}" FontWeight="Medium"/>
+											</TextBlock>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</StackPanel>
+						</Border>
+					</StackPanel>
+				</Border>
+
+			</StackPanel>
+		</ScrollViewer>
+
+		<!-- Buttons -->
+		<StackPanel Grid.Row="2"
+		           Orientation="Horizontal"
+		           HorizontalAlignment="Right"
+		           Spacing="12"
+		           Margin="0,20,0,0">
+			<Button Content="Export to Excel"
+			       Command="{Binding ExportCommand}"
+			       Background="#4CAF50"
+			       Foreground="White"
+			       Padding="24,10"
+			       CornerRadius="4"
+			       FontWeight="SemiBold"
+			       FontSize="14"/>
+			<Button Content="Close"
+			       Click="OnCloseClick"
+			       Background="#90A4AE"
+			       Foreground="White"
+			       Padding="24,10"
+			       CornerRadius="4"
+			       FontWeight="SemiBold"
+			       FontSize="14"/>
+		</StackPanel>
+
+	</Grid>
+</Window>

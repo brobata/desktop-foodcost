@@ -1,0 +1,227 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+        x:Class="Freecost.Desktop.Views.BulkIngredientMatcherWindow"
+        x:DataType="vm:BulkIngredientMatcherViewModel"
+        Title="Bulk Ingredient Matcher"
+        Width="1000" Height="700"
+        MinWidth="800" MinHeight="600"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="White">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="20">
+
+		<!-- Header Section -->
+		<Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+			<StackPanel Grid.Column="0" Spacing="8">
+				<TextBlock Text="Bulk Ingredient Matcher"
+				          FontSize="20"
+				          FontWeight="Bold"
+				          Foreground="#2D2D2D"/>
+				<TextBlock Foreground="#666" FontSize="13">
+					<Run Text="Select an item on the left, then click what it matches to on the right."/>
+				</TextBlock>
+				<TextBlock Foreground="#666" FontSize="12">
+					<Run Text="{Binding UnmatchedCount}"/>
+					<Run Text="items remaining to match"/>
+				</TextBlock>
+			</StackPanel>
+
+			<Button Grid.Column="1"
+			       Content="Done"
+			       Command="{Binding DoneCommand}"
+			       Padding="32,12"
+			       VerticalAlignment="Top"
+			       Classes="primary"/>
+		</Grid>
+
+		<!-- Two Column Layout -->
+		<Grid Grid.Row="1" ColumnDefinitions="*,16,*">
+
+			<!-- LEFT COLUMN: Items Needing Matching -->
+			<Border Grid.Column="0"
+			       BorderBrush="#D0D0D0"
+			       BorderThickness="1"
+			       CornerRadius="4"
+			       Background="White">
+				<Grid RowDefinitions="Auto,*">
+					<!-- Header -->
+					<Border Grid.Row="0"
+					       Background="#F5F5F5"
+					       BorderBrush="#D0D0D0"
+					       BorderThickness="0,0,0,1"
+					       Padding="12">
+						<TextBlock Text="Items to Match"
+						          FontWeight="SemiBold"
+						          FontSize="14"
+						          Foreground="#2D2D2D"/>
+					</Border>
+
+					<!-- List -->
+					<ListBox Grid.Row="1"
+					        ItemsSource="{Binding UnmatchedItems}"
+					        SelectedItem="{Binding SelectedUnmatchedItem}"
+					        Background="White"
+					        SelectionMode="Single">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<Border BorderBrush="#E0E0E0"
+								       BorderThickness="0,0,0,1"
+								       Padding="12,10"
+								       Background="Transparent">
+									<Grid ColumnDefinitions="*,Auto">
+										<TextBlock Grid.Column="0"
+										          Text="{Binding ImportName}"
+										          FontSize="14"
+										          Foreground="#2D2D2D"
+										          VerticalAlignment="Center"/>
+										<TextBlock Grid.Column="1"
+										          Text="✓"
+										          FontSize="16"
+										          Foreground="#4CAF50"
+										          VerticalAlignment="Center"
+										          IsVisible="{Binding IsMatched}"/>
+									</Grid>
+								</Border>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</Grid>
+			</Border>
+
+			<!-- RIGHT COLUMN: Available Ingredients/Recipes -->
+			<Border Grid.Column="2"
+			       BorderBrush="#D0D0D0"
+			       BorderThickness="1"
+			       CornerRadius="4"
+			       Background="White">
+				<Grid RowDefinitions="Auto,Auto,*">
+					<!-- Header -->
+					<Border Grid.Row="0"
+					       Background="#F5F5F5"
+					       BorderBrush="#D0D0D0"
+					       BorderThickness="0,0,0,1"
+					       Padding="12">
+						<TextBlock Text="Match To"
+						          FontWeight="SemiBold"
+						          FontSize="14"
+						          Foreground="#2D2D2D"/>
+					</Border>
+
+					<!-- Search Box -->
+					<Border Grid.Row="1"
+					       BorderBrush="#D0D0D0"
+					       BorderThickness="0,0,0,1"
+					       Padding="12"
+					       Background="White">
+						<Border BorderBrush="#BDBDBD"
+						       BorderThickness="1"
+						       CornerRadius="4"
+						       Padding="8"
+						       Background="#FAFAFA">
+							<Grid ColumnDefinitions="Auto,*,Auto">
+								<TextBlock Grid.Column="0"
+								          Text="🔍"
+								          FontSize="14"
+								          VerticalAlignment="Center"
+								          Margin="0,0,8,0"/>
+								<TextBox Grid.Column="1"
+								        Text="{Binding SearchText}"
+								        Watermark="Search ingredients and recipes..."
+								        VerticalAlignment="Center"
+								        BorderThickness="0"
+								        Background="Transparent"/>
+								<Button Grid.Column="2"
+								       Content="×"
+								       Command="{Binding ClearSearchCommand}"
+								       IsVisible="{Binding SearchText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+								       Padding="8,4"
+								       FontSize="16"
+								       Background="Transparent"
+								       BorderThickness="0"/>
+							</Grid>
+						</Border>
+					</Border>
+
+					<!-- List -->
+					<ListBox Grid.Row="2"
+					        ItemsSource="{Binding FilteredAvailableItems}"
+					        SelectedItem="{Binding SelectedAvailableItem}"
+					        Background="White"
+					        SelectionMode="Single">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<Border BorderBrush="#E0E0E0"
+								       BorderThickness="0,0,0,1"
+								       Padding="12,10"
+								       Background="Transparent"
+								       DoubleTapped="AvailableItem_DoubleTapped">
+									<Grid ColumnDefinitions="*,Auto">
+										<StackPanel Grid.Column="0">
+											<TextBlock Text="{Binding Name}"
+											          FontSize="14"
+											          Foreground="#2D2D2D"/>
+											<TextBlock Text="{Binding TypeLabel}"
+											          FontSize="11"
+											          Foreground="#999"
+											          Margin="0,2,0,0"/>
+										</StackPanel>
+										<Button Grid.Column="1"
+										       Content="Match"
+										       Command="{Binding $parent[ListBox].((vm:BulkIngredientMatcherViewModel)DataContext).MatchCommand}"
+										       CommandParameter="{Binding}"
+										       IsEnabled="{Binding $parent[ListBox].((vm:BulkIngredientMatcherViewModel)DataContext).SelectedUnmatchedItem, Converter={x:Static ObjectConverters.IsNotNull}}"
+										       Padding="16,6"
+										       FontSize="12"
+										       Classes="accent"/>
+									</Grid>
+								</Border>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</Grid>
+			</Border>
+
+		</Grid>
+
+		<!-- Status Bar -->
+		<Border Grid.Row="2"
+		       Background="#F9F9F9"
+		       BorderBrush="#E0E0E0"
+		       BorderThickness="0,1,0,0"
+		       Padding="12"
+		       Margin="0,20,0,0">
+			<Grid ColumnDefinitions="*,Auto">
+				<TextBlock Grid.Column="0"
+				          FontSize="12"
+				          Foreground="#666"
+				          VerticalAlignment="Center">
+					<Run Text="Showing"/>
+					<Run Text="{Binding FilteredCount}"/>
+					<Run Text="of"/>
+					<Run Text="{Binding TotalAvailableCount}"/>
+					<Run Text="items"/>
+				</TextBlock>
+
+				<StackPanel Grid.Column="1"
+				           Orientation="Horizontal"
+				           Spacing="12">
+					<TextBlock Text="{Binding MatchedCount}"
+					          FontWeight="SemiBold"
+					          FontSize="12"
+					          Foreground="#4CAF50"
+					          VerticalAlignment="Center"/>
+					<TextBlock Text="matched"
+					          FontSize="12"
+					          Foreground="#666"
+					          VerticalAlignment="Center"/>
+				</StackPanel>
+			</Grid>
+		</Border>
+
+	</Grid>
+</Window>

@@ -1,0 +1,92 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:services="clr-namespace:Freecost.Core.Services;assembly=Freecost.Core"
+             x:Class="Freecost.Desktop.Controls.ValidationPanel">
+
+	<StackPanel Spacing="8">
+		<!-- Errors Section -->
+		<Border Name="ErrorsPanel"
+		       Background="#FFEBEE"
+		       BorderBrush="#E57373"
+		       BorderThickness="1"
+		       CornerRadius="6"
+		       Padding="12"
+		       IsVisible="False">
+			<StackPanel Spacing="8">
+				<TextBlock Text="❌ Errors - Please fix these issues:"
+				          FontWeight="SemiBold"
+				          FontSize="13"
+				          Foreground="#C62828"/>
+				<ItemsControl Name="ErrorsList">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate DataType="services:ValidationError">
+							<TextBlock FontSize="12" Foreground="#D32F2F" Margin="0,2">
+								<Run Text="• "/>
+								<Run Text="{Binding Field}" FontWeight="SemiBold"/>
+								<Run Text=": "/>
+								<Run Text="{Binding Message}"/>
+							</TextBlock>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+		</Border>
+
+		<!-- Warnings Section -->
+		<Border Name="WarningsPanel"
+		       Background="#FFF9E6"
+		       BorderBrush="#FFE082"
+		       BorderThickness="1"
+		       CornerRadius="6"
+		       Padding="12"
+		       IsVisible="False">
+			<StackPanel Spacing="8">
+				<TextBlock Text="⚠️ Warnings - Consider addressing these:"
+				          FontWeight="SemiBold"
+				          FontSize="13"
+				          Foreground="#F57F17"/>
+				<ItemsControl Name="WarningsList">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate DataType="services:ValidationWarning">
+							<TextBlock FontSize="12" Foreground="#F57F17" Margin="0,2" TextWrapping="Wrap">
+								<Run Text="• "/>
+								<Run Text="{Binding Field}" FontWeight="SemiBold"/>
+								<Run Text=": "/>
+								<Run Text="{Binding Message}"/>
+							</TextBlock>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+		</Border>
+
+		<!-- Info Section -->
+		<Border Name="InfosPanel"
+		       Background="#E3F2FD"
+		       BorderBrush="#90CAF9"
+		       BorderThickness="1"
+		       CornerRadius="6"
+		       Padding="12"
+		       IsVisible="False">
+			<StackPanel Spacing="8">
+				<TextBlock Text="ℹ️ Suggestions - Tips to improve this recipe:"
+				          FontWeight="SemiBold"
+				          FontSize="13"
+				          Foreground="#1976D2"/>
+				<ItemsControl Name="InfosList">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate DataType="services:ValidationInfo">
+							<TextBlock FontSize="12" Foreground="#1565C0" Margin="0,2" TextWrapping="Wrap">
+								<Run Text="• "/>
+								<Run Text="{Binding Field}" FontWeight="SemiBold"/>
+								<Run Text=": "/>
+								<Run Text="{Binding Message}"/>
+							</TextBlock>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+		</Border>
+	</StackPanel>
+
+</UserControl>

@@ -1,0 +1,218 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        x:Class="Freecost.Desktop.Views.AddRecipeIngredientWindow"
+        x:DataType="vm:AddRecipeIngredientViewModel"
+        Title="Add Ingredient to Recipe"
+        Width="550"
+        Height="450"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="White">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="28">
+
+		<!-- Error Message -->
+		<Border Grid.Row="0"
+                Background="#FFEBEE"
+                CornerRadius="6"
+                Padding="14,12"
+                Margin="0,0,0,20"
+                IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+			<TextBlock Text="{Binding ErrorMessage}"
+                       Foreground="#C62828"
+                       FontWeight="SemiBold"
+                       FontSize="14"
+                       TextWrapping="Wrap"/>
+		</Border>
+
+		<!-- Form Content -->
+		<StackPanel Grid.Row="1" Spacing="18">
+
+			<!-- Ingredient Selector -->
+			<StackPanel Spacing="7">
+				<TextBlock Text="Ingredient *"
+                           FontWeight="SemiBold"
+                           FontSize="14"
+                           Foreground="#2D2D2D"/>
+				<ComboBox ItemsSource="{Binding AvailableIngredients}"
+                          SelectedItem="{Binding SelectedIngredient}"
+                          Background="White"
+                          BorderBrush="#D0D0D0"
+                          Padding="12,10"
+                          FontSize="14"
+                          CornerRadius="4"
+                          HorizontalAlignment="Stretch">
+					<ComboBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Name}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+					<ComboBox.Styles>
+						<Style Selector="ComboBox:focus /template/ Border#Background">
+							<Setter Property="BorderBrush" Value="#7AB51D"/>
+							<Setter Property="BorderThickness" Value="2"/>
+						</Style>
+						<Style Selector="ComboBox:pointerover /template/ Border#Background">
+							<Setter Property="BorderBrush" Value="#B0B0B0"/>
+						</Style>
+					</ComboBox.Styles>
+				</ComboBox>
+			</StackPanel>
+
+			<!-- Quantity and Unit -->
+			<Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+
+				<!-- Quantity -->
+				<StackPanel Grid.Column="0" Spacing="7">
+					<TextBlock Text="Quantity *"
+                               FontWeight="SemiBold"
+                               FontSize="14"
+                               Foreground="#2D2D2D"/>
+					<TextBox Text="{Binding Quantity}"
+                             Watermark="e.g., 2.5"
+                             Background="White"
+                             BorderBrush="#D0D0D0"
+                             Padding="12,10"
+                             FontSize="14"
+                             CornerRadius="4">
+						<TextBox.Styles>
+							<Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+								<Setter Property="BorderBrush" Value="#7AB51D"/>
+								<Setter Property="BorderThickness" Value="2"/>
+							</Style>
+							<Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+								<Setter Property="BorderBrush" Value="#B0B0B0"/>
+							</Style>
+						</TextBox.Styles>
+					</TextBox>
+				</StackPanel>
+
+				<!-- Unit -->
+				<StackPanel Grid.Column="1" Spacing="7">
+					<TextBlock Text="Unit *"
+                               FontWeight="SemiBold"
+                               FontSize="14"
+                               Foreground="#2D2D2D"/>
+					<ComboBox ItemsSource="{Binding AvailableUnits}"
+                              SelectedItem="{Binding SelectedUnit}"
+                              Background="White"
+                              BorderBrush="#D0D0D0"
+                              Padding="12,10"
+                              FontSize="14"
+                              CornerRadius="4"
+                              HorizontalAlignment="Stretch">
+						<ComboBox.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+						<ComboBox.Styles>
+							<Style Selector="ComboBox:focus /template/ Border#Background">
+								<Setter Property="BorderBrush" Value="#7AB51D"/>
+								<Setter Property="BorderThickness" Value="2"/>
+							</Style>
+							<Style Selector="ComboBox:pointerover /template/ Border#Background">
+								<Setter Property="BorderBrush" Value="#B0B0B0"/>
+							</Style>
+						</ComboBox.Styles>
+					</ComboBox>
+				</StackPanel>
+
+			</Grid>
+
+			<!-- Display Text (Optional) -->
+			<StackPanel Spacing="7">
+				<TextBlock Text="Display Text (Optional)"
+                           FontWeight="SemiBold"
+                           FontSize="14"
+                           Foreground="#2D2D2D"/>
+				<TextBox Text="{Binding DisplayText}"
+                         Watermark="e.g., '1/4 cup' or '2 tablespoons'"
+                         Background="White"
+                         BorderBrush="#D0D0D0"
+                         Padding="12,10"
+                         FontSize="14"
+                         CornerRadius="4">
+					<TextBox.Styles>
+						<Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+							<Setter Property="BorderBrush" Value="#7AB51D"/>
+							<Setter Property="BorderThickness" Value="2"/>
+						</Style>
+						<Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+							<Setter Property="BorderBrush" Value="#B0B0B0"/>
+						</Style>
+					</TextBox.Styles>
+				</TextBox>
+				<TextBlock Text="Leave blank to use quantity and unit"
+                           FontSize="12"
+                           Foreground="#666"
+                           Margin="0,-5,0,0"/>
+			</StackPanel>
+
+		</StackPanel>
+
+		<!-- Buttons -->
+		<Border Grid.Row="2"
+                Margin="0,24,0,0"
+                Padding="0,20,0,0"
+                BorderBrush="#E5E5E5"
+                BorderThickness="0,1,0,0">
+			<Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+
+				<TextBlock Grid.Column="0"
+                           Text="* Required fields"
+                           FontSize="13"
+                           Foreground="#666"
+                           VerticalAlignment="Center"/>
+
+				<Button Grid.Column="1"
+                        Content="Cancel"
+                        Command="{Binding CancelCommand}"
+                        Background="White"
+                        Foreground="#666"
+                        BorderBrush="#D0D0D0"
+                        BorderThickness="1"
+                        Padding="28,11"
+                        MinWidth="110"
+                        CornerRadius="4"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Cursor="Hand">
+					<Button.Styles>
+						<Style Selector="Button:pointerover /template/ ContentPresenter">
+							<Setter Property="Background" Value="#F5F5F5"/>
+						</Style>
+						<Style Selector="Button:pressed /template/ ContentPresenter">
+							<Setter Property="Background" Value="#E8E8E8"/>
+						</Style>
+					</Button.Styles>
+				</Button>
+
+				<Button Grid.Column="2"
+                        Content="Add Ingredient"
+                        Command="{Binding SaveCommand}"
+                        Background="#7AB51D"
+                        Foreground="White"
+                        Padding="28,11"
+                        MinWidth="150"
+                        CornerRadius="4"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Cursor="Hand"
+                        ToolTip.Tip="Add this ingredient to the recipe">
+					<Button.Styles>
+						<Style Selector="Button:pointerover /template/ ContentPresenter">
+							<Setter Property="Background" Value="#6AA518"/>
+						</Style>
+						<Style Selector="Button:pressed /template/ ContentPresenter">
+							<Setter Property="Background" Value="#5A9510"/>
+						</Style>
+					</Button.Styles>
+				</Button>
+
+			</Grid>
+		</Border>
+
+	</Grid>
+</Window>

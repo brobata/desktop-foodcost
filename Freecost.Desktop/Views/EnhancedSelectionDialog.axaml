@@ -1,0 +1,54 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        xmlns:enums="using:Freecost.Core.Enums"
+        x:Class="Freecost.Desktop.Views.EnhancedSelectionDialog"
+        x:DataType="vm:EnhancedSelectionDialogViewModel"
+        Title="{Binding Title}"
+        Width="450" Height="600"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+	<Grid Margin="20" RowDefinitions="*,Auto,Auto">
+		<!-- Items List -->
+		<ListBox Name="ItemsListBox"
+                 Grid.Row="0"
+                 ItemsSource="{Binding Items}"
+                 DisplayMemberBinding="{Binding Name}"
+                 SelectedItem="{Binding SelectedItem}"
+                 SelectionMode="Single"
+                 Margin="0,0,0,20"/>
+
+		<!-- Quantity and Unit Inputs -->
+		<Grid Grid.Row="1"
+              ColumnDefinitions="*,*"
+              Margin="0,0,0,20"
+              IsVisible="{Binding SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}">
+			<StackPanel Grid.Column="0" Margin="0,0,10,0">
+				<TextBlock Text="Quantity" Margin="0,0,0,5"/>
+				<TextBox Text="{Binding Quantity}"
+                         Watermark="Enter quantity"/>
+			</StackPanel>
+
+			<StackPanel Grid.Column="1" Margin="10,0,0,0">
+				<TextBlock Text="Unit" Margin="0,0,0,5"/>
+				<ComboBox ItemsSource="{Binding Units}"
+                          SelectedItem="{Binding SelectedUnit, Mode=TwoWay, FallbackValue={x:Static enums:UnitType.Ounce}}"/>
+			</StackPanel>
+		</Grid>
+
+		<!-- Buttons -->
+		<StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="10">
+			<Button Content="Cancel"
+                    Width="80"
+                    Click="OnCancel"/>
+			<Button Content="Add"
+                    Width="80"
+                    Classes="Primary"
+                    Click="OnAdd"
+                    IsEnabled="{Binding SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+		</StackPanel>
+	</Grid>
+</Window>

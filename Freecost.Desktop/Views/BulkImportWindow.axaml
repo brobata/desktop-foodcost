@@ -1,0 +1,217 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="640"
+        x:Class="Freecost.Desktop.Views.BulkImportWindow"
+        x:DataType="vm:BulkImportViewModel"
+        Title="Bulk Import Ingredients"
+        Width="800" Height="640"
+        MinWidth="700" MinHeight="550"
+        MaxWidth="1600" MaxHeight="1000"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="White">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="24">
+
+		<!-- Header -->
+		<StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,20">
+			<TextBlock Text="Bulk Import Ingredients"
+			          FontSize="20"
+			          FontWeight="Bold"
+			          Foreground="#2D2D2D"/>
+
+			<!-- File Selection -->
+			<Border BorderBrush="#D0D0D0" BorderThickness="1" CornerRadius="4" Padding="12" Background="#F9F9F9">
+				<Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+					<TextBlock Grid.Column="0" Text="📁" FontSize="20" VerticalAlignment="Center"/>
+					<TextBlock Grid.Column="1"
+					          Text="{Binding SelectedFilePath, FallbackValue='No file selected'}"
+					          VerticalAlignment="Center"
+					          TextTrimming="CharacterEllipsis"/>
+					<Button Grid.Column="2"
+					       Content="Browse..."
+					       Command="{Binding BrowseFileCommand}"
+					       Padding="20,8"/>
+				</Grid>
+			</Border>
+
+			<!-- Auto-Detected Vendor -->
+			<Border Background="#E8F5E9"
+			       BorderBrush="#4CAF50"
+			       BorderThickness="1"
+			       CornerRadius="4"
+			       Padding="12"
+			       IsVisible="{Binding DetectedVendor, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+				<StackPanel Spacing="4">
+					<TextBlock FontWeight="SemiBold" Foreground="#2E7D32">
+						<Run Text="✓ Auto-detected vendor:"/>
+						<Run Text="{Binding DetectedVendor}"/>
+					</TextBlock>
+					<TextBlock Text="{Binding DetectionInfo}"
+					          FontSize="12"
+					          Foreground="#666"/>
+				</StackPanel>
+			</Border>
+
+			<!-- Error Message -->
+			<Border Background="#FFEBEE"
+			       BorderBrush="#F44336"
+			       BorderThickness="1"
+			       CornerRadius="4"
+			       Padding="12"
+			       IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+				<StackPanel Spacing="8">
+					<TextBlock Text="{Binding ErrorMessage}"
+					          Foreground="#C62828"
+					          FontWeight="SemiBold"
+					          TextWrapping="Wrap"/>
+					<ItemsControl ItemsSource="{Binding Errors}" IsVisible="{Binding Errors.Count}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding}"
+								          Foreground="#D32F2F"
+								          FontSize="11"
+								          Margin="0,2"/>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+			</Border>
+		</StackPanel>
+
+		<!-- Preview Grid -->
+		<Border Grid.Row="1"
+		       BorderBrush="#D0D0D0"
+		       BorderThickness="1"
+		       CornerRadius="4"
+		       Background="White">
+			<Grid RowDefinitions="Auto,Auto,*">
+				<!-- Validation Summary -->
+				<Border Grid.Row="0"
+				       Background="#F5F5F5"
+				       BorderBrush="#E0E0E0"
+				       BorderThickness="0,0,0,1"
+				       Padding="12,8"
+				       IsVisible="{Binding PreviewIngredients.Count}">
+					<Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="20">
+						<TextBlock Grid.Column="0"
+						          Text="{Binding ValidationSummary}"
+						          FontWeight="SemiBold"
+						          Foreground="#424242"
+						          VerticalAlignment="Center"/>
+						<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+							<TextBlock Text="✓" Foreground="#2E7D32" FontWeight="Bold"/>
+							<TextBlock Text="{Binding ValidCount}" Foreground="#2E7D32" FontWeight="SemiBold"/>
+							<TextBlock Text="valid" Foreground="#666"/>
+						</StackPanel>
+						<StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6">
+							<TextBlock Text="⚠️" FontWeight="Bold"/>
+							<TextBlock Text="{Binding WarningCount}" Foreground="#E65100" FontWeight="SemiBold"/>
+							<TextBlock Text="warnings" Foreground="#666"/>
+						</StackPanel>
+						<StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="6">
+							<TextBlock Text="❌" FontWeight="Bold"/>
+							<TextBlock Text="{Binding ErrorCount}" Foreground="#C62828" FontWeight="SemiBold"/>
+							<TextBlock Text="errors" Foreground="#666"/>
+						</StackPanel>
+					</Grid>
+				</Border>
+
+				<!-- Warnings Panel -->
+				<Border Grid.Row="1"
+				       Background="#FFF3E0"
+				       BorderBrush="#FFB74D"
+				       BorderThickness="0,0,0,1"
+				       Padding="12"
+				       IsVisible="{Binding Warnings.Count}">
+					<StackPanel Spacing="4">
+						<TextBlock Text="⚠️ Warnings" FontWeight="SemiBold" Foreground="#E65100" FontSize="12"/>
+						<ItemsControl ItemsSource="{Binding Warnings}" MaxHeight="80">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding}"
+									          Foreground="#E65100"
+									          FontSize="11"
+									          Margin="0,2"
+									          TextWrapping="Wrap"/>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
+				</Border>
+
+				<!-- Empty State -->
+				<StackPanel Grid.Row="2" IsVisible="{Binding !PreviewIngredients.Count}"
+				           VerticalAlignment="Center"
+				           HorizontalAlignment="Center"
+				           Spacing="12">
+					<TextBlock Text="📦" FontSize="48" HorizontalAlignment="Center" Opacity="0.3"/>
+					<TextBlock Text="No file loaded"
+					          FontSize="16"
+					          Foreground="#999"
+					          HorizontalAlignment="Center"/>
+					<TextBlock Text="Select a CSV or Excel file to preview ingredients"
+					          FontSize="13"
+					          Foreground="#BBB"
+					          HorizontalAlignment="Center"/>
+				</StackPanel>
+
+				<!-- Data Grid -->
+				<DataGrid Grid.Row="2" ItemsSource="{Binding PreviewIngredients}"
+				         IsVisible="{Binding PreviewIngredients.Count}"
+				         AutoGenerateColumns="False"
+				         IsReadOnly="True"
+				         GridLinesVisibility="Horizontal"
+				         CanUserResizeColumns="True"
+				         HeadersVisibility="Column">
+					<DataGrid.Columns>
+						<DataGridTemplateColumn Header="Status" Width="70">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Border Background="{Binding StatusColor}" Padding="4,2" CornerRadius="3">
+										<TextBlock Text="{Binding StatusIcon}"
+										          FontSize="12"
+										          HorizontalAlignment="Center"
+										          ToolTip.Tip="{Binding ValidationTooltip}"/>
+									</Border>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+						<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="3*"/>
+						<DataGridTextColumn Header="Case Price" Binding="{Binding DisplayPrice}" Width="1.2*"/>
+						<DataGridTextColumn Header="Quantity" Binding="{Binding DisplayQuantity}" Width="1.2*"/>
+						<DataGridTextColumn Header="Vendor" Binding="{Binding VendorName}" Width="1.5*"/>
+						<DataGridTextColumn Header="SKU" Binding="{Binding VendorSku}" Width="1*"/>
+						<DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="1.5*"/>
+					</DataGrid.Columns>
+				</DataGrid>
+			</Grid>
+		</Border>
+
+		<!-- Action Buttons -->
+		<Border Grid.Row="2" Margin="0,20,0,0">
+			<Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+				<TextBlock Grid.Column="0"
+				          Text="{Binding ImportSummary}"
+				          VerticalAlignment="Center"
+				          Foreground="#666"
+				          FontSize="13"/>
+				<Button Grid.Column="1"
+				       Content="Cancel"
+				       Command="{Binding CancelCommand}"
+				       Padding="28,11"
+				       MinWidth="110"/>
+				<Button Grid.Column="2"
+				       Content="Import"
+				       Command="{Binding ImportCommand}"
+				       IsEnabled="{Binding CanImport}"
+				       Padding="28,11"
+				       MinWidth="130"
+				       Classes="primary"/>
+			</Grid>
+		</Border>
+	</Grid>
+</Window>

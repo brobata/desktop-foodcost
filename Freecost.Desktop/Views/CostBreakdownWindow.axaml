@@ -1,0 +1,150 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="Freecost.Desktop.Views.CostBreakdownWindow"
+        x:DataType="vm:CostBreakdownViewModel"
+        Title="Cost Breakdown"
+        Width="800"
+        Height="600"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Assets/Images/appicon.png">
+
+	<Grid RowDefinitions="Auto,*,Auto" Margin="24">
+
+		<!-- Header -->
+		<StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+			<TextBlock Text="🥧 Cost Breakdown"
+			          FontSize="24"
+			          FontWeight="Bold"
+			          Foreground="#2D2D2D"/>
+			<TextBlock Text="{Binding ItemName}"
+			          FontSize="16"
+			          FontWeight="SemiBold"
+			          Foreground="#666"/>
+			<Grid ColumnDefinitions="Auto,*,Auto">
+				<TextBlock Grid.Column="0"
+				          Text="{Binding ItemType}"
+				          FontSize="12"
+				          Foreground="#999"/>
+				<TextBlock Grid.Column="2"
+				          Text="{Binding TotalCost, StringFormat='Total Cost: {0}'}"
+				          FontSize="12"
+				          FontWeight="SemiBold"
+				          Foreground="#2196F3"/>
+			</Grid>
+		</StackPanel>
+
+		<!-- Chart and Legend Area -->
+		<Grid Grid.Row="1" ColumnDefinitions="1.2*,*">
+
+			<!-- Pie Chart -->
+			<Border Grid.Column="0"
+			        Background="White"
+			        CornerRadius="8"
+			        Padding="16"
+			        BoxShadow="0 2 8 0 #10000000"
+			        Margin="0,0,12,0">
+				<Grid>
+					<!-- No Data Message -->
+					<StackPanel IsVisible="{Binding !HasData}"
+					           VerticalAlignment="Center"
+					           HorizontalAlignment="Center"
+					           Spacing="16">
+						<TextBlock Text="📊"
+						          FontSize="64"
+						          HorizontalAlignment="Center"/>
+						<TextBlock Text="No cost data available"
+						          FontSize="20"
+						          FontWeight="SemiBold"
+						          HorizontalAlignment="Center"
+						          Foreground="#2D2D2D"/>
+						<TextBlock Text="Add ingredients to see cost breakdown"
+						          FontSize="14"
+						          HorizontalAlignment="Center"
+						          Foreground="#666"
+						          TextAlignment="Center"
+						          MaxWidth="300"
+						          TextWrapping="Wrap"/>
+					</StackPanel>
+
+					<!-- Pie Chart (will be added in code-behind) -->
+					<Border x:Name="PieChartContainer"
+					        IsVisible="{Binding HasData}"/>
+				</Grid>
+			</Border>
+
+			<!-- Legend and Details -->
+			<Border Grid.Column="1"
+			        Background="White"
+			        CornerRadius="8"
+			        Padding="16"
+			        BoxShadow="0 2 8 0 #10000000">
+				<ScrollViewer>
+					<StackPanel Spacing="12">
+						<TextBlock Text="Component Breakdown"
+						          FontSize="14"
+						          FontWeight="SemiBold"
+						          Foreground="#2D2D2D"
+						          Margin="0,0,0,8"/>
+
+						<ItemsControl ItemsSource="{Binding BreakdownItems}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Border Padding="12,8"
+									        Background="#F8F8F8"
+									        CornerRadius="4"
+									        Margin="0,0,0,8">
+										<Grid RowDefinitions="Auto,Auto">
+											<!-- Name and Percentage -->
+											<Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+												<TextBlock Grid.Column="0"
+												          Text="{Binding Name}"
+												          FontSize="13"
+												          FontWeight="SemiBold"
+												          TextTrimming="CharacterEllipsis"
+												          ToolTip.Tip="{Binding Name}"/>
+												<TextBlock Grid.Column="1"
+												          Text="{Binding PercentageDisplay}"
+												          FontSize="13"
+												          FontWeight="Bold"
+												          Foreground="#2196F3"/>
+											</Grid>
+
+											<!-- Cost -->
+											<Grid Grid.Row="1" Margin="0,4,0,0">
+												<TextBlock Text="{Binding CostDisplay}"
+												          FontSize="12"
+												          Foreground="#666"/>
+											</Grid>
+										</Grid>
+									</Border>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
+				</ScrollViewer>
+			</Border>
+		</Grid>
+
+		<!-- Footer -->
+		<Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,16,0,0">
+			<TextBlock Grid.Column="0"
+			          Text="💡 Tip: Use this to identify the most expensive components"
+			          FontSize="11"
+			          Foreground="#999"
+			          VerticalAlignment="Center"/>
+			<Button Grid.Column="1"
+			        Content="Close"
+			        Click="OnCloseClicked"
+			        Background="#90CAF9"
+			        Foreground="White"
+			        Padding="24,10"
+			        CornerRadius="4"
+			        FontWeight="SemiBold"/>
+		</Grid>
+
+	</Grid>
+</Window>

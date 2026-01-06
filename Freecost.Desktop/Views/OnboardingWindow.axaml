@@ -1,0 +1,379 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        x:Class="Freecost.Desktop.Views.OnboardingWindow"
+        x:DataType="vm:OnboardingViewModel"
+        Title="Welcome to Freecost"
+        Width="900" Height="700"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        CanResize="True"
+        Background="White">
+
+	<Grid RowDefinitions="Auto,*,Auto">
+
+		<!-- Header -->
+		<Border Grid.Row="0" Background="#7AB51D" Padding="24,16">
+			<StackPanel Spacing="6">
+				<TextBlock Text="Welcome to Freecost! 👋"
+				          FontSize="24"
+				          FontWeight="Bold"
+				          Foreground="White"/>
+				<TextBlock Text="Let's get you set up in a few quick steps"
+				          FontSize="13"
+				          Foreground="White"
+				          Opacity="0.9"/>
+			</StackPanel>
+		</Border>
+
+		<!-- Content (No ScrollViewer) -->
+		<StackPanel Grid.Row="1" Margin="32,20">
+
+			<!-- Step Indicator -->
+			<Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="12" Margin="0,0,0,20">
+				<!-- Step 1 -->
+				<Border Grid.Column="0"
+				       Background="{Binding CurrentStep, Converter={StaticResource StepIndicatorConverter}, ConverterParameter=0}"
+				       BorderBrush="{Binding CurrentStep, Converter={StaticResource StepBorderConverter}, ConverterParameter=0}"
+				       BorderThickness="2"
+				       CornerRadius="8"
+				       Padding="16,12">
+					<StackPanel Spacing="4" HorizontalAlignment="Center">
+						<TextBlock Text="1️⃣" FontSize="24" HorizontalAlignment="Center"/>
+						<TextBlock Text="Welcome" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Step 2 -->
+				<Border Grid.Column="1"
+				       Background="{Binding CurrentStep, Converter={StaticResource StepIndicatorConverter}, ConverterParameter=1}"
+				       BorderBrush="{Binding CurrentStep, Converter={StaticResource StepBorderConverter}, ConverterParameter=1}"
+				       BorderThickness="2"
+				       CornerRadius="8"
+				       Padding="16,12">
+					<StackPanel Spacing="4" HorizontalAlignment="Center">
+						<TextBlock Text="👤" FontSize="24" HorizontalAlignment="Center"/>
+						<TextBlock Text="Your Info" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Step 3 -->
+				<Border Grid.Column="2"
+				       Background="{Binding CurrentStep, Converter={StaticResource StepIndicatorConverter}, ConverterParameter=2}"
+				       BorderBrush="{Binding CurrentStep, Converter={StaticResource StepBorderConverter}, ConverterParameter=2}"
+				       BorderThickness="2"
+				       CornerRadius="8"
+				       Padding="16,12">
+					<StackPanel Spacing="4" HorizontalAlignment="Center">
+						<TextBlock Text="📚" FontSize="24" HorizontalAlignment="Center"/>
+						<TextBlock Text="Tutorial" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Step 4 -->
+				<Border Grid.Column="3"
+				       Background="{Binding CurrentStep, Converter={StaticResource StepIndicatorConverter}, ConverterParameter=3}"
+				       BorderBrush="{Binding CurrentStep, Converter={StaticResource StepBorderConverter}, ConverterParameter=3}"
+				       BorderThickness="2"
+				       CornerRadius="8"
+				       Padding="16,12">
+					<StackPanel Spacing="4" HorizontalAlignment="Center">
+						<TextBlock Text="🎉" FontSize="24" HorizontalAlignment="Center"/>
+						<TextBlock Text="Ready" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+					</StackPanel>
+				</Border>
+			</Grid>
+
+			<!-- Step 0: Welcome -->
+			<StackPanel IsVisible="{Binding CurrentStep, Converter={StaticResource IntEqualityConverter}, ConverterParameter=0}"
+			           Spacing="16">
+				<TextBlock Text="Welcome to Freecost"
+				          FontSize="22"
+				          FontWeight="Bold"
+				          Foreground="#2D2D2D"/>
+
+				<TextBlock Text="Freecost helps restaurant owners and food service professionals manage recipes, calculate costs, and track profitability."
+				          FontSize="14"
+				          TextWrapping="Wrap"
+				          Foreground="#555"/>
+
+				<Border Background="#E8F5E9" BorderBrush="#4CAF50" BorderThickness="2" CornerRadius="8" Padding="16">
+					<StackPanel Spacing="12">
+						<TextBlock Text="✨ Key Features:" FontSize="18" FontWeight="Bold" Foreground="#2E7D32"/>
+
+						<StackPanel Spacing="10">
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+								<TextBlock Grid.Column="0" Text="📦" FontSize="20"/>
+								<TextBlock Grid.Column="1" Text="Ingredient Management - Track costs, vendors, and pricing" TextWrapping="Wrap" FontSize="14"/>
+							</Grid>
+
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+								<TextBlock Grid.Column="0" Text="🍳" FontSize="20"/>
+								<TextBlock Grid.Column="1" Text="Recipe Costing - Calculate exact costs per serving" TextWrapping="Wrap" FontSize="14"/>
+							</Grid>
+
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+								<TextBlock Grid.Column="0" Text="🍽️" FontSize="20"/>
+								<TextBlock Grid.Column="1" Text="Menu Engineering - Build entrees and track profitability" TextWrapping="Wrap" FontSize="14"/>
+							</Grid>
+
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+								<TextBlock Grid.Column="0" Text="📊" FontSize="20"/>
+								<TextBlock Grid.Column="1" Text="Analytics Dashboard - Monitor costs and trends" TextWrapping="Wrap" FontSize="14"/>
+							</Grid>
+
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+								<TextBlock Grid.Column="0" Text="📥" FontSize="20"/>
+								<TextBlock Grid.Column="1" Text="Bulk Import - Import ingredients from vendor spreadsheets" TextWrapping="Wrap" FontSize="14"/>
+							</Grid>
+						</StackPanel>
+					</StackPanel>
+				</Border>
+
+				<TextBlock Text="Let's get started! Click 'Next' to tell us about yourself."
+				          FontSize="14"
+				          FontStyle="Italic"
+				          Foreground="#666"
+				          TextAlignment="Center"
+				          Margin="0,12,0,0"/>
+			</StackPanel>
+
+			<!-- Step 1: User Info -->
+			<StackPanel IsVisible="{Binding CurrentStep, Converter={StaticResource IntEqualityConverter}, ConverterParameter=1}"
+			           Spacing="16">
+				<TextBlock Text="Tell Us About Yourself"
+				          FontSize="22"
+				          FontWeight="Bold"
+				          Foreground="#2D2D2D"/>
+
+				<TextBlock Text="We need basic info to keep you updated with tips and connect you with other Freecost users. All fields are required."
+				          FontSize="15"
+				          TextWrapping="Wrap"
+				          Foreground="#555"/>
+
+				<StackPanel Spacing="16">
+					<!-- First Name and Last Name on one row -->
+					<Grid ColumnDefinitions="*,12,*">
+						<StackPanel Grid.Column="0" Spacing="6">
+							<TextBlock Text="First Name *" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+							<TextBox Text="{Binding FirstName}"
+							        Watermark="e.g., John"
+							        FontSize="14"
+							        Height="40"/>
+						</StackPanel>
+
+						<StackPanel Grid.Column="2" Spacing="6">
+							<TextBlock Text="Last Name *" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+							<TextBox Text="{Binding LastName}"
+							        Watermark="e.g., Smith"
+							        FontSize="14"
+							        Height="40"/>
+						</StackPanel>
+					</Grid>
+
+					<StackPanel Spacing="6">
+						<TextBlock Text="Restaurant/Business Name *" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+						<TextBox Text="{Binding RestaurantName}"
+						        Watermark="e.g., Joe's Diner, Acme Catering"
+						        FontSize="14"
+						        Height="40"/>
+					</StackPanel>
+
+					<StackPanel Spacing="6">
+						<TextBlock Text="Email Address *" FontWeight="SemiBold" Foreground="#4A4A4A"/>
+						<TextBox Text="{Binding Email}"
+						        Watermark="e.g., chef@restaurant.com"
+						        FontSize="14"
+						        Height="40"/>
+						<!-- Email validation error message -->
+						<TextBlock Text="{Binding EmailError}"
+						          Foreground="Red"
+						          FontSize="12"
+						          IsVisible="{Binding EmailError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+					</StackPanel>
+				</StackPanel>
+
+				<Border Background="#E3F2FD" BorderBrush="#2196F3" BorderThickness="2" CornerRadius="6" Padding="20">
+					<StackPanel Spacing="10">
+						<TextBlock TextWrapping="Wrap" FontSize="14" Foreground="#333">
+							<Run Text="The only data shared with us is your name, restaurant name, and email address. All other information in this app is stored locally for offline users. If you don't want to share that basic info with us, go back to your spreadsheets."/>
+						</TextBlock>
+						<TextBlock Text="-Chef"
+						          FontStyle="Italic"
+						          Foreground="#1565C0"
+						          FontSize="14"
+						          HorizontalAlignment="Right"/>
+					</StackPanel>
+				</Border>
+			</StackPanel>
+
+			<!-- Step 2: Tutorial Choice -->
+			<StackPanel IsVisible="{Binding CurrentStep, Converter={StaticResource IntEqualityConverter}, ConverterParameter=2}"
+			           Spacing="16">
+				<TextBlock Text="Want a Guided Tour? 📚"
+				          FontSize="22"
+				          FontWeight="Bold"
+				          Foreground="#2D2D2D"/>
+
+				<TextBlock Text="We can walk you through all of Freecost's features with an interactive tutorial, or you can jump right in and explore on your own."
+				          FontSize="15"
+				          TextWrapping="Wrap"
+				          Foreground="#555"/>
+
+				<Border Background="#E8F5E9" BorderBrush="#4CAF50" BorderThickness="2" CornerRadius="8" Padding="24">
+					<StackPanel Spacing="20">
+						<!-- Option 1: Yes, show me around -->
+						<RadioButton GroupName="TutorialChoice"
+						            IsChecked="{Binding WantsTutorial}"
+						            Padding="16">
+							<Border Background="White"
+							       BorderBrush="#7AB51D"
+							       BorderThickness="2"
+							       CornerRadius="8"
+							       Padding="20">
+								<StackPanel Spacing="12">
+									<TextBlock Text="✨ Yes, show me around!"
+									          FontSize="18"
+									          FontWeight="Bold"
+									          Foreground="#2E7D32"/>
+									<TextBlock Text="Get a guided walkthrough of ingredients, recipes, entrees, and more. Perfect for first-time users!"
+									          FontSize="14"
+									          TextWrapping="Wrap"
+									          Foreground="#555"/>
+								</StackPanel>
+							</Border>
+						</RadioButton>
+
+						<!-- Option 2: No thanks, I'll explore -->
+						<RadioButton GroupName="TutorialChoice"
+						            IsChecked="{Binding !WantsTutorial}"
+						            Padding="16">
+							<Border Background="White"
+							       BorderBrush="#BDBDBD"
+							       BorderThickness="2"
+							       CornerRadius="8"
+							       Padding="20">
+								<StackPanel Spacing="12">
+									<TextBlock Text="🚀 No thanks, I'll explore on my own"
+									          FontSize="18"
+									          FontWeight="Bold"
+									          Foreground="#424242"/>
+									<TextBlock Text="Jump straight into Freecost and discover features at your own pace."
+									          FontSize="14"
+									          TextWrapping="Wrap"
+									          Foreground="#555"/>
+								</StackPanel>
+							</Border>
+						</RadioButton>
+					</StackPanel>
+				</Border>
+
+				<Border Background="#FFF9E6" BorderBrush="#FFB74D" BorderThickness="1" CornerRadius="6" Padding="16">
+					<StackPanel Spacing="8" Orientation="Horizontal">
+						<TextBlock Text="💡" FontSize="18" VerticalAlignment="Center"/>
+						<TextBlock Text="You can always access the tutorial later from Settings → Help &amp; Tutorial"
+						          FontSize="13"
+						          TextWrapping="Wrap"
+						          Foreground="#666"
+						          VerticalAlignment="Center"/>
+					</StackPanel>
+				</Border>
+			</StackPanel>
+
+			<!-- Step 3: Ready -->
+			<StackPanel IsVisible="{Binding CurrentStep, Converter={StaticResource IntEqualityConverter}, ConverterParameter=3}"
+			           Spacing="16">
+				<TextBlock Text="You're All Set! 🎉"
+				          FontSize="22"
+				          FontWeight="Bold"
+				          Foreground="#2D2D2D"
+				          TextAlignment="Center"/>
+
+				<TextBlock Text="Freecost is ready to help you manage your recipes and costs."
+				          FontSize="15"
+				          TextWrapping="Wrap"
+				          Foreground="#555"
+				          TextAlignment="Center"/>
+
+				<Border Background="#E8F5E9" BorderBrush="#4CAF50" BorderThickness="2" CornerRadius="8" Padding="20">
+					<StackPanel Spacing="14">
+						<TextBlock Text="🚀 Next Steps:" FontSize="18" FontWeight="Bold" Foreground="#2E7D32" TextAlignment="Center"/>
+
+						<StackPanel Spacing="10">
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+								<TextBlock Grid.Column="0" Text="1️⃣" FontSize="20"/>
+								<TextBlock Grid.Column="1" Text="Add your first ingredients (use Bulk Import for vendor spreadsheets)" TextWrapping="Wrap" FontSize="14" VerticalAlignment="Center"/>
+							</Grid>
+
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+								<TextBlock Grid.Column="0" Text="2️⃣" FontSize="20"/>
+								<TextBlock Grid.Column="1" Text="Create recipes and calculate costs per serving" TextWrapping="Wrap" FontSize="14" VerticalAlignment="Center"/>
+							</Grid>
+
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+								<TextBlock Grid.Column="0" Text="3️⃣" FontSize="20"/>
+								<TextBlock Grid.Column="1" Text="Build entrees with your recipes and set menu prices" TextWrapping="Wrap" FontSize="14" VerticalAlignment="Center"/>
+							</Grid>
+
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+								<TextBlock Grid.Column="0" Text="4️⃣" FontSize="20"/>
+								<TextBlock Grid.Column="1" Text="Monitor profitability in the Dashboard" TextWrapping="Wrap" FontSize="14" VerticalAlignment="Center"/>
+							</Grid>
+						</StackPanel>
+					</StackPanel>
+				</Border>
+
+				<Border Background="#FFF9E6" BorderBrush="#FFB74D" BorderThickness="1" CornerRadius="6" Padding="16">
+					<StackPanel Spacing="8">
+						<TextBlock Text="💡 Need Help?" FontWeight="Bold" Foreground="#E65100"/>
+						<TextBlock Text="Check out Settings → Help for quick start guides, keyboard shortcuts, and tips."
+						          FontSize="13"
+						          TextWrapping="Wrap"
+						          Foreground="#666"/>
+					</StackPanel>
+				</Border>
+			</StackPanel>
+
+		</StackPanel>
+
+		<!-- Footer Navigation -->
+		<Border Grid.Row="2" Background="#F5F5F5" BorderBrush="#D0D0D0" BorderThickness="0,1,0,0" Padding="24,16">
+			<Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+				<!-- Quit Button (Left) -->
+				<Button Grid.Column="0"
+				       Content="Quit"
+				       Click="OnQuitClick"
+				       Padding="24,10"
+				       MinWidth="100"
+				       Background="#E0E0E0"
+				       Foreground="#666"
+				       ToolTip.Tip="Exit setup and close application"/>
+
+				<!-- Step Indicator (Center) -->
+				<TextBlock Grid.Column="1"
+				          Text="{Binding CurrentStep, StringFormat='Step {0} of 3'}"
+				          VerticalAlignment="Center"
+				          HorizontalAlignment="Center"
+				          FontSize="13"
+				          Foreground="#666"/>
+
+				<!-- Previous Button -->
+				<Button Grid.Column="2"
+				       Content="Previous"
+				       Command="{Binding PreviousCommand}"
+				       IsEnabled="{Binding CanGoPrevious}"
+				       Padding="24,10"
+				       MinWidth="100"/>
+
+				<!-- Next/Finish Button -->
+				<Button Grid.Column="3"
+				       Content="{Binding NextButtonText}"
+				       Click="OnNextOrFinishClick"
+				       IsEnabled="{Binding CanGoNext}"
+				       Padding="24,10"
+				       MinWidth="120"
+				       Classes="primary"/>
+			</Grid>
+		</Border>
+	</Grid>
+</Window>

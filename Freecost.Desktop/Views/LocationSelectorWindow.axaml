@@ -1,0 +1,182 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+        x:Class="Freecost.Desktop.Views.LocationSelectorWindow"
+        x:DataType="vm:LocationSelectorViewModel"
+        Title="Select Location"
+        Width="500" Height="450"
+        MinWidth="450" MinHeight="400"
+        WindowStartupLocation="CenterOwner"
+        CanResize="false"
+        Background="#F5F5F5">
+
+	<Grid>
+		<!-- Background gradient -->
+		<Border Opacity="0.05">
+			<Border.Background>
+				<LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+					<GradientStop Color="#7AB51D" Offset="0"/>
+					<GradientStop Color="#667EEA" Offset="1"/>
+				</LinearGradientBrush>
+			</Border.Background>
+		</Border>
+
+		<!-- Main content -->
+		<ScrollViewer HorizontalScrollBarVisibility="Disabled"
+		             VerticalScrollBarVisibility="Auto">
+			<StackPanel Margin="40,30" Spacing="24" MaxWidth="420">
+
+				<!-- Header -->
+				<StackPanel Spacing="8" HorizontalAlignment="Center">
+					<TextBlock Text="🏢"
+					          FontSize="48"
+					          HorizontalAlignment="Center"/>
+					<TextBlock Text="Select Your Location"
+					          FontSize="24"
+					          FontWeight="Bold"
+					          HorizontalAlignment="Center"
+					          Foreground="#2D2D2D"/>
+					<TextBlock Text="Choose which restaurant location you want to work with"
+					          FontSize="14"
+					          HorizontalAlignment="Center"
+					          Foreground="#666"
+					          TextWrapping="Wrap"
+					          TextAlignment="Center"/>
+				</StackPanel>
+
+				<!-- Error message banner -->
+				<Border IsVisible="{Binding ErrorMessage, Converter={x:Static ObjectConverters.IsNotNull}}"
+				        Background="#FFEBEE"
+				        BorderBrush="#EF5350"
+				        BorderThickness="1"
+				        CornerRadius="6"
+				        Padding="12">
+					<TextBlock Text="{Binding ErrorMessage}"
+					          TextWrapping="Wrap"
+					          Foreground="#C62828"
+					          FontSize="13"/>
+				</Border>
+
+				<!-- Loading indicator -->
+				<Border IsVisible="{Binding IsLoading}"
+				       Background="#E3F2FD"
+				       CornerRadius="6"
+				       Padding="16">
+					<StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+						<TextBlock Text="⏳" FontSize="16"/>
+						<TextBlock Text="Loading locations..."
+						          Foreground="#1976D2"
+						          FontSize="14"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Locations list -->
+				<Border Background="White"
+				       CornerRadius="8"
+				       Padding="0"
+				       BoxShadow="0 2 8 0 #10000000"
+				       IsVisible="{Binding !IsLoading}">
+					<ListBox ItemsSource="{Binding Locations}"
+					        SelectedItem="{Binding SelectedLocation}"
+					        Background="Transparent"
+					        BorderThickness="0"
+					        Padding="0"
+					        DoubleTapped="OnLocationDoubleClicked">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<Border Padding="16,12"
+								       Background="Transparent"
+								       CornerRadius="4"
+								       Margin="4">
+									<Grid ColumnDefinitions="Auto,*,Auto">
+										<!-- Offline location icon (disk) -->
+										<Border Grid.Column="0"
+										        Background="#FFF3E0"
+										        CornerRadius="20"
+										        Width="40"
+										        Height="40"
+										        Margin="0,0,16,0"
+										        IsVisible="{Binding UserId, Converter={x:Static ObjectConverters.IsNull}}">
+											<TextBlock Text="💾"
+											          FontSize="20"
+											          HorizontalAlignment="Center"
+											          VerticalAlignment="Center"/>
+										</Border>
+
+										<!-- Online location icon (cloud) -->
+										<Border Grid.Column="0"
+										        Background="#E8F5E9"
+										        CornerRadius="20"
+										        Width="40"
+										        Height="40"
+										        Margin="0,0,16,0"
+										        IsVisible="{Binding UserId, Converter={x:Static ObjectConverters.IsNotNull}}">
+											<TextBlock Text="☁️"
+											          FontSize="20"
+											          HorizontalAlignment="Center"
+											          VerticalAlignment="Center"/>
+										</Border>
+
+										<StackPanel Grid.Column="1" Spacing="4">
+											<StackPanel Orientation="Horizontal" Spacing="8">
+												<TextBlock Text="{Binding Name}"
+												          FontWeight="SemiBold"
+												          FontSize="15"
+												          Foreground="#2D2D2D"/>
+												<!-- Offline badge -->
+												<Border Background="#FF9800"
+												        CornerRadius="3"
+												        Padding="6,2"
+												        VerticalAlignment="Center"
+												        IsVisible="{Binding UserId, Converter={x:Static ObjectConverters.IsNull}}">
+													<TextBlock Text="Local"
+													          FontSize="10"
+													          Foreground="White"
+													          FontWeight="SemiBold"/>
+												</Border>
+											</StackPanel>
+											<TextBlock Text="{Binding Address}"
+											          FontSize="12"
+											          Foreground="#666"
+											          TextWrapping="Wrap"
+											          IsVisible="{Binding Address, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+											<!-- Description for offline location -->
+											<TextBlock Text="Local data only - not synced to cloud"
+											          FontSize="11"
+											          Foreground="#FF9800"
+											          FontStyle="Italic"
+											          IsVisible="{Binding UserId, Converter={x:Static ObjectConverters.IsNull}}"/>
+										</StackPanel>
+
+										<TextBlock Grid.Column="2"
+										          Text="✓"
+										          FontSize="20"
+										          Foreground="#7AB51D"
+										          VerticalAlignment="Center"
+										          IsVisible="False"/>
+									</Grid>
+								</Border>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+						<ListBox.Styles>
+							<Style Selector="ListBoxItem">
+								<Setter Property="Padding" Value="0"/>
+								<Setter Property="Margin" Value="0"/>
+							</Style>
+							<Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+								<Setter Property="Background" Value="#E8F5E9"/>
+							</Style>
+							<Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+								<Setter Property="Background" Value="#F5F5F5"/>
+							</Style>
+						</ListBox.Styles>
+					</ListBox>
+				</Border>
+
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
+</Window>

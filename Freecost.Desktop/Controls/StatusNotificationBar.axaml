@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
+             x:Class="Freecost.Desktop.Controls.StatusNotificationBar">
+
+	<Border Background="#F5F5F5"
+	        BorderBrush="#E0E0E0"
+	        BorderThickness="0,1,0,0"
+	        Padding="12,8">
+		<Grid ColumnDefinitions="*,Auto">
+
+			<!-- Status Message Area -->
+			<StackPanel Grid.Column="0"
+			           Orientation="Horizontal"
+			           Spacing="8"
+			           VerticalAlignment="Center">
+
+				<!-- Status Icon -->
+				<TextBlock x:Name="StatusIcon"
+				          FontSize="14"
+				          VerticalAlignment="Center"
+				          IsVisible="False"/>
+
+				<!-- Status Message -->
+				<TextBlock x:Name="StatusMessage"
+				          FontSize="12"
+				          VerticalAlignment="Center"
+				          TextTrimming="CharacterEllipsis"/>
+			</StackPanel>
+
+			<!-- Right Side: Stoplight Indicator -->
+			<StackPanel Grid.Column="1"
+			           Orientation="Horizontal"
+			           Spacing="8"
+			           VerticalAlignment="Center">
+
+				<!-- Build Number -->
+				<TextBlock x:Name="BuildNumber"
+				          FontSize="10"
+				          Foreground="#999"
+				          VerticalAlignment="Center"
+				          Margin="0,0,8,0"/>
+
+				<!-- Stoplight Indicator -->
+				<Border x:Name="StoplightBorder"
+				       Width="20"
+				       Height="20"
+				       CornerRadius="10"
+				       Background="#4CAF50"
+				       ToolTip.Tip="System Status: All Good">
+					<TextBlock Text="●"
+					          FontSize="16"
+					          Foreground="White"
+					          HorizontalAlignment="Center"
+					          VerticalAlignment="Center"/>
+				</Border>
+
+				<!-- Close Button (for dismissing notifications) -->
+				<Button x:Name="DismissButton"
+				       Content="✕"
+				       Width="24"
+				       Height="24"
+				       Padding="0"
+				       Background="Transparent"
+				       BorderThickness="0"
+				       FontSize="14"
+				       IsVisible="False"
+				       Click="OnDismissClicked"/>
+			</StackPanel>
+		</Grid>
+	</Border>
+</UserControl>

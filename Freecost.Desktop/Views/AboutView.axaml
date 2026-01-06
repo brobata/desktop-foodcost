@@ -1,0 +1,171 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Freecost.Desktop.ViewModels"
+             x:Class="Freecost.Desktop.Views.AboutView"
+             x:DataType="vm:AboutViewModel">
+
+    <Design.DataContext>
+        <vm:AboutViewModel/>
+    </Design.DataContext>
+
+    <ScrollViewer>
+        <StackPanel Margin="32" Spacing="24" MaxWidth="800">
+
+            <!-- Header -->
+            <StackPanel Spacing="12">
+                <TextBlock Text="About Freecost"
+                          FontSize="28"
+                          FontWeight="Bold"
+                          Foreground="#2D2D2D"/>
+
+                <TextBlock Text="Recipe &amp; Food Cost Management System"
+                          FontSize="14"
+                          Foreground="#666"/>
+            </StackPanel>
+
+            <!-- Creator Info -->
+            <Border Background="White"
+                    CornerRadius="12"
+                    Padding="24"
+                    BoxShadow="0 2 8 0 #10000000">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="👨‍🍳 Made by a Chef, for Chefs"
+                              FontSize="18"
+                              FontWeight="Bold"
+                              Foreground="#7AB51D"/>
+
+                    <TextBlock TextWrapping="Wrap"
+                              LineHeight="24"
+                              Foreground="#444">
+                        <Run Text="Freecost was created by a chef who understands the daily challenges of costing, planning, and profitability. This tool was born from countless hours in the kitchen, dealing with suppliers, reps, and partners/owners. Every feature is designed with real-world culinary workflows in mind to keep you focused on what really matters."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Support Section -->
+            <Border Background="#F9FFF5"
+                    BorderBrush="#7AB51D"
+                    BorderThickness="2"
+                    CornerRadius="12"
+                    Padding="24">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="☕ Support Development"
+                              FontSize="18"
+                              FontWeight="Bold"
+                              Foreground="#7AB51D"/>
+
+                    <TextBlock TextWrapping="Wrap"
+                              LineHeight="22"
+                              Foreground="#444">
+                        <Run Text="If Freecost has helped streamline your kitchen operations, consider buying me a coffee! Your support helps me continue improving this tool and adding new features for our culinary community."/>
+                    </TextBlock>
+
+                    <Button Content="☕ Buy Me a Coffee"
+                            Command="{Binding OpenPayPalCommand}"
+                            Background="#7AB51D"
+                            Foreground="White"
+                            Padding="24,12"
+                            CornerRadius="6"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            HorizontalContentAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Quick Actions -->
+            <Border Background="White"
+                    CornerRadius="12"
+                    Padding="24"
+                    BoxShadow="0 2 8 0 #10000000">
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Command="{Binding OpenInstagramCommand}"
+                            Background="White"
+                            BorderBrush="#DDD"
+                            BorderThickness="1"
+                            Padding="16,12"
+                            CornerRadius="6"
+                            HorizontalContentAlignment="Center">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="📷"
+                                      FontSize="24"
+                                      HorizontalAlignment="Center"/>
+                            <TextBlock Text="Follow Us"
+                                      FontSize="12"
+                                      FontWeight="SemiBold"
+                                      HorizontalAlignment="Center"
+                                      Foreground="#2D2D2D"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="1"
+                            Command="{Binding OpenBugReportCommand}"
+                            Background="White"
+                            BorderBrush="#DDD"
+                            BorderThickness="1"
+                            Padding="16,12"
+                            CornerRadius="6"
+                            HorizontalContentAlignment="Center">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="🐛"
+                                      FontSize="24"
+                                      HorizontalAlignment="Center"/>
+                            <TextBlock Text="Report a Bug"
+                                      FontSize="12"
+                                      FontWeight="SemiBold"
+                                      HorizontalAlignment="Center"
+                                      Foreground="#2D2D2D"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="2"
+                            Command="{Binding CheckForUpdatesCommand}"
+                            Background="White"
+                            BorderBrush="#DDD"
+                            BorderThickness="1"
+                            Padding="16,12"
+                            CornerRadius="6"
+                            HorizontalContentAlignment="Center">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="🔄"
+                                      FontSize="24"
+                                      HorizontalAlignment="Center"/>
+                            <TextBlock Text="Check Updates"
+                                      FontSize="12"
+                                      FontWeight="SemiBold"
+                                      HorizontalAlignment="Center"
+                                      Foreground="#2D2D2D"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Special Thanks -->
+            <Border Background="White"
+                    CornerRadius="12"
+                    Padding="24"
+                    BoxShadow="0 2 8 0 #10000000">
+                <TextBlock TextWrapping="Wrap"
+                          FontSize="14"
+                          Foreground="#444"
+                          LineHeight="22"
+                          TextAlignment="Center">
+                    <Run Text="Special thanks to my wonderful wife for her patience and support during the countless late nights spent building this app. Boop!"/>
+                </TextBlock>
+            </Border>
+
+            <!-- Version Info -->
+            <Border Background="White"
+                    CornerRadius="12"
+                    Padding="24"
+                    BoxShadow="0 2 8 0 #10000000">
+                <TextBlock Text="{Binding VersionInfo}"
+                          FontSize="13"
+                          Foreground="#999"
+                          HorizontalAlignment="Center"/>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

@@ -1,0 +1,253 @@
+; Freecost Installer Script for Inno Setup
+; Download Inno Setup from: https://jrsoftware.org/isdl.php
+;
+; SECURITY NOTICE: This is a TEMPLATE file
+; Before building the installer:
+; 1. Copy this file to FreecostSetup.iss (already in .gitignore)
+; 2. Replace YOUR_SUPABASE_URL_HERE with your actual Supabase URL
+; 3. Replace YOUR_SUPABASE_ANON_KEY_HERE with your actual Supabase anon key
+; 4. Replace YOUR_USDA_API_KEY_HERE with your actual USDA API key
+; 5. Build the installer with Inno Setup
+;
+; This installer includes:
+; - Freecost application (self-contained with .NET 8 runtime)
+; - Visual C++ Redistributable 2015-2022 (BUNDLED - no download required!)
+; - DiagnosticCheck.bat for troubleshooting
+; - All dependencies bundled (100% OFFLINE INSTALL - no internet required!)
+;
+; UPDATE-FRIENDLY FEATURES:
+; - Detects existing installations and upgrades automatically
+; - Preserves user data in %AppData%\Freecost\ (database, settings, photos)
+; - Closes running app before update to avoid file locks
+; - Cleans up old unnecessary files from previous versions
+; - Shows upgrade confirmation message with version info
+; - Same AppId ensures proper upgrade path (no duplicate installs)
+
+#define MyAppName "Freecost"
+#define MyAppVersion "1.0.0"
+#define MyAppPublisher "Brobata"
+#define MyAppURL "https://brobata.com/freecost"
+#define MyAppExeName "Freecost.Desktop.exe"
+
+[Setup]
+AppId={{8F9A7B2C-3D4E-5F6A-7B8C-9D0E1F2A3B4C}
+AppName={#MyAppName}
+AppVersion={#MyAppVersion}
+AppPublisher={#MyAppPublisher}
+AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}
+AppUpdatesURL={#MyAppURL}
+DefaultDirName={autopf}\{#MyAppName}
+DefaultGroupName={#MyAppName}
+AllowNoIcons=yes
+LicenseFile=..\LICENSE.txt
+InfoBeforeFile=..\installer\CRITICAL_WARNING.txt
+OutputDir=..\installer\output
+OutputBaseFilename=FreecostSetup-{#MyAppVersion}-x64-Complete
+SetupIconFile=..\Freecost.Desktop\Assets\appicon.ico
+Compression=lzma
+SolidCompression=yes
+WizardStyle=modern
+PrivilegesRequired=lowest
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+DisableProgramGroupPage=yes
+UsePreviousAppDir=yes
+; Show what's being installed
+DisableWelcomePage=no
+DisableReadyPage=no
+; Update/Upgrade Configuration
+UninstallDisplayIcon={app}\{#MyAppExeName}
+UninstallDisplayName={#MyAppName}
+VersionInfoVersion={#MyAppVersion}
+VersionInfoCompany={#MyAppPublisher}
+VersionInfoDescription={#MyAppName} Installer
+VersionInfoProductName={#MyAppName}
+VersionInfoProductVersion={#MyAppVersion}
+; Close running app before update
+CloseApplications=yes
+CloseApplicationsFilter=*.exe
+RestartApplications=no
+
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "setenvvars"; Description: "Configure Supabase credentials (required for authentication)"; GroupDescription: "Authentication Setup:"; Flags: checkedonce
+Name: "setusdakey"; Description: "Configure USDA Nutritional Data API (enables auto-populate nutrition data)"; GroupDescription: "Nutritional Data Setup:"; Flags: checkedonce
+
+[Files]
+; Main application files (includes .NET 8 runtime - self-contained)
+Source: "..\publish\win-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+; Visual C++ Redistributable (BUNDLED - no internet required!)
+Source: "..\installer\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall
+
+; Diagnostic and troubleshooting tools
+Source: "..\DiagnosticCheck.bat"; DestDir: "{app}"; Flags: ignoreversion
+
+; Documentation
+Source: "..\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\installer\v1.0_RELEASE_NOTES.md"; DestDir: "{app}"; Flags: ignoreversion isreadme
+Source: "..\installer\BETA_v0.6_RELEASE_NOTES.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\installer\BETA_v0.6.1_RELEASE_NOTES.md"; DestDir: "{app}"; Flags: ignoreversion
+
+[Icons]
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Comment: "Launch Freecost Recipe Cost Management"
+Name: "{group}\Diagnostic Check"; Filename: "{app}\DiagnosticCheck.bat"; Comment: "Run diagnostic check to verify installation"
+Name: "{group}\Release Notes (v1.0)"; Filename: "{app}\v1.0_RELEASE_NOTES.md"; Comment: "View v1.0 release notes and features"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; Comment: "Launch Freecost"
+
+[Code]
+var
+  IsUpgrade: Boolean;
+  PreviousVersion: String;
+
+function VCRedistNeedsInstall: Boolean;
+var
+  Version: String;
+begin
+  // Check if Visual C++ 2015-2022 Redistributable (x64) is installed
+  // Check multiple registry keys as different versions use different keys
+  if RegQueryStringValue(HKEY_LOCAL_MACHINE,
+    'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64', 'Version', Version) then
+  begin
+    Result := False; // Already installed
+    Log('VC++ Redistributable already installed: ' + Version);
+  end
+  else if RegQueryStringValue(HKEY_LOCAL_MACHINE,
+    'SOFTWARE\Microsoft\DevDiv\vc\Servicing\14.0\RuntimeMinimum', 'Version', Version) then
+  begin
+    Result := False; // Already installed
+    Log('VC++ Redistributable already installed: ' + Version);
+  end
+  else
+  begin
+    Result := True; // Not installed, will install from bundled file
+    Log('VC++ Redistributable not found, will install from bundled file');
+  end;
+end;
+
+function InitializeSetup(): Boolean;
+var
+  UninstallKey: String;
+begin
+  Result := True;
+  IsUpgrade := False;
+  PreviousVersion := '';
+
+  // Check if Freecost is already installed (upgrade scenario)
+  UninstallKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{8F9A7B2C-3D4E-5F6A-7B8C-9D0E1F2A3B4C}_is1';
+
+  if RegQueryStringValue(HKLM, UninstallKey, 'DisplayVersion', PreviousVersion) or
+     RegQueryStringValue(HKCU, UninstallKey, 'DisplayVersion', PreviousVersion) then
+  begin
+    IsUpgrade := True;
+    Log('Detected existing installation: ' + PreviousVersion);
+    Log('This is an upgrade installation');
+  end
+  else
+  begin
+    Log('This is a fresh installation');
+  end;
+end;
+
+procedure CleanupOldFiles();
+var
+  AppDir: String;
+begin
+  AppDir := ExpandConstant('{app}');
+
+  // Clean up old release notes from previous versions
+  if FileExists(AppDir + '\BETA_v0.6_RELEASE_NOTES.md') then
+  begin
+    DeleteFile(AppDir + '\BETA_v0.6_RELEASE_NOTES.md');
+    Log('Removed old file: BETA_v0.6_RELEASE_NOTES.md');
+  end;
+
+  if FileExists(AppDir + '\BETA_v0.6.1_RELEASE_NOTES.md') then
+  begin
+    DeleteFile(AppDir + '\BETA_v0.6.1_RELEASE_NOTES.md');
+    Log('Removed old file: BETA_v0.6.1_RELEASE_NOTES.md');
+  end;
+
+  // Clean up old temporary files if any exist
+  if FileExists(AppDir + '\temp.db') then
+  begin
+    DeleteFile(AppDir + '\temp.db');
+    Log('Removed temporary database file');
+  end;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  // Clean up old files after installation
+  if CurStep = ssPostInstall then
+  begin
+    Log('Running post-installation cleanup...');
+    CleanupOldFiles();
+
+    // Show upgrade message if this was an update
+    if IsUpgrade then
+    begin
+      Log('Upgrade completed from version ' + PreviousVersion + ' to {#MyAppVersion}');
+      MsgBox('Freecost has been updated to version {#MyAppVersion}!' + #13#10 + #13#10 +
+             'Previous version: ' + PreviousVersion + #13#10 +
+             'Your data and settings have been preserved.' + #13#10 + #13#10 +
+             'Old unnecessary files have been cleaned up.', mbInformation, MB_OK);
+    end;
+  end;
+
+  if (CurStep = ssPostInstall) and WizardIsTaskSelected('setenvvars') then
+  begin
+    Log('Setting Supabase environment variables...');
+
+    // IMPORTANT: Replace these placeholders with your actual credentials before building!
+    // See the header comments for instructions
+    if RegWriteStringValue(HKCU, 'Environment', 'SUPABASE_URL', 'YOUR_SUPABASE_URL_HERE') and
+       RegWriteStringValue(HKCU, 'Environment', 'SUPABASE_ANON_KEY', 'YOUR_SUPABASE_ANON_KEY_HERE') then
+    begin
+      Log('Supabase credentials configured successfully.');
+
+      // Broadcast WM_SETTINGCHANGE to notify applications of environment variable change
+      // This allows running applications to pick up the new environment variables
+      // Note: New processes will automatically see the new variables
+    end
+    else
+    begin
+      Log('Warning: Failed to set environment variables.');
+      MsgBox('Warning: Failed to Configure Supabase credentials. You may need to set them manually.' + #13#10 + #13#10 +
+             'Please set these environment variables:' + #13#10 +
+             'SUPABASE_URL' + #13#10 +
+             'SUPABASE_ANON_KEY', mbError, MB_OK);
+    end;
+  end;
+
+  if (CurStep = ssPostInstall) and WizardIsTaskSelected('setusdakey') then
+  begin
+    Log('Setting USDA API key environment variable...');
+
+    // IMPORTANT: Replace this placeholder with your actual USDA API key before building!
+    if RegWriteStringValue(HKCU, 'Environment', 'USDA_API_KEY', 'YOUR_USDA_API_KEY_HERE') then
+    begin
+      Log('USDA API key configured successfully.');
+    end
+    else
+    begin
+      Log('Warning: Failed to set USDA API key.');
+      MsgBox('Warning: Failed to configure USDA API key. You may need to set it manually.' + #13#10 + #13#10 +
+             'Please set this environment variable:' + #13#10 +
+             'USDA_API_KEY', mbError, MB_OK);
+    end;
+  end;
+end;
+
+[Run]
+; Install Visual C++ Redistributable if needed (BUNDLED - no download required!)
+Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/quiet /norestart"; StatusMsg: "Installing Visual C++ Runtime (required for graphics)..."; Flags: runhidden; Check: VCRedistNeedsInstall
+
+; Launch application after install
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent

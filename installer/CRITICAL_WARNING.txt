@@ -1,0 +1,67 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    IMPORTANT INFORMATION - PLEASE READ
+═══════════════════════════════════════════════════════════════════════════════
+
+Welcome to Freecost v0.9 Beta!
+
+Before installing, please review these important disclaimers about how the
+software should be used.
+
+
+───────────────────────────────────────────────────────────────────────────────
+ALLERGEN INFORMATION
+───────────────────────────────────────────────────────────────────────────────
+
+Freecost's allergen features are designed to help you ORGANIZE and TRACK
+allergen data that you enter. However:
+
+  • Allergen detection is based on keyword matching and may miss items
+  • Always verify allergen information with your ingredient suppliers
+  • This software does not track cross-contamination
+  • You are responsible for ensuring accurate allergen information
+
+⚠️  Brobata is not liable for issues related to allergen information stored
+   or displayed in this software. Always use authoritative sources.
+
+
+───────────────────────────────────────────────────────────────────────────────
+COST CALCULATIONS
+───────────────────────────────────────────────────────────────────────────────
+
+Recipe and entree costs are ESTIMATES based on the ingredient prices you enter.
+
+Keep in mind:
+  • Actual costs may vary due to market prices, waste, and portion sizes
+  • You should verify calculations before making menu pricing decisions
+  • This tool helps with organization, but final pricing is your responsibility
+
+⚠️  Brobata is not liable for financial decisions made using cost information
+   from this software.
+
+
+───────────────────────────────────────────────────────────────────────────────
+BETA SOFTWARE NOTICE
+───────────────────────────────────────────────────────────────────────────────
+
+This is a BETA release (v0.9) provided for testing purposes.
+
+What this means:
+  • The software may contain bugs or incomplete features
+  • We recommend backing up your data regularly
+  • The software is provided "AS IS" for testing and feedback
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📋 NEXT STEPS
+
+The next screen shows the complete license and terms of use.
+You'll need to accept the terms to continue installation.
+
+By accepting, you acknowledge that:
+  ✓ This software is a tool to help organize your recipe data
+  ✓ You'll verify important information (allergens, costs) with other sources
+  ✓ This is beta software and you'll maintain backups of your data
+  ✓ You understand the limitations described above
+
+═══════════════════════════════════════════════════════════════════════════════

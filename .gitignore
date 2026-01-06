@@ -1,0 +1,58 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+publish/
+
+# Visual Studio / Rider
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+.idea/
+
+# NuGet
+*.nupkg
+**/packages/
+project.lock.json
+project.fragment.lock.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment and secrets
+.env
+.env.*
+**/appsettings.json
+**/appsettings.*.json
+
+# Installer
+installer/FreecostSetup.iss
+installer/output/
+installer/*.exe
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.bak2
+*.tmp
+*.backup
+
+# Internal documentation
+docs/
+.archive/
+.claude-context*
+
+# Temporary files
+/nul

@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Projects/ProjectHelpers/**)",
+      "Read(//c/Projects/Freecost.Core/Models/**)",
+      "Read(//c/Projects/Freecost.Core/Enums/**)",
+      "Read(//c/Projects/Freecost.Data/LocalDatabase/**)",
+      "Bash(dotnet build)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File C:\\Projects\\.claude\\session-start-hook.ps1"
+          }
+        ]
+      }
+    ]
+  }
+}

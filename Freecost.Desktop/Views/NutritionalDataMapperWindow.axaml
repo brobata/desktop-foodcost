@@ -1,0 +1,314 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        xmlns:converters="using:Freecost.Desktop.Converters"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
+        x:Class="Freecost.Desktop.Views.NutritionalDataMapperWindow"
+        x:DataType="vm:NutritionalDataMapperViewModel"
+        Title="Map Ingredients to Nutritional Data (USDA FoodData Central)"
+        Width="1200" Height="700"
+        MinWidth="900" MinHeight="600"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="White">
+
+	<Window.Resources>
+		<converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
+		<converters:BoolToStringConverter x:Key="BoolToStringConverter"/>
+	</Window.Resources>
+
+	<Grid RowDefinitions="Auto,Auto,*,Auto" Margin="16">
+
+		<!-- Compact Header -->
+		<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12" Margin="0,0,0,8">
+			<TextBlock Grid.Column="0"
+			          Text="USDA Nutritional Data Mapper"
+			          FontSize="16"
+			          FontWeight="Bold"
+			          Foreground="#2D2D2D"
+			          VerticalAlignment="Center"/>
+
+			<TextBlock Grid.Column="1"
+			          Text="{Binding SummaryText}"
+			          FontSize="12"
+			          Foreground="#666"
+			          VerticalAlignment="Center"
+			          Margin="12,0,0,0"/>
+
+			<!-- Status Message (inline) -->
+			<TextBlock Grid.Column="2"
+			          Text="{Binding StatusMessage}"
+			          FontSize="11"
+			          FontStyle="Italic"
+			          Foreground="#1976D2"
+			          VerticalAlignment="Center"
+			          TextTrimming="CharacterEllipsis"
+			          MaxWidth="300"
+			          IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+			<Button Grid.Column="3"
+			       Command="{Binding SearchAllCommand}"
+			       Padding="12,6"
+			       FontSize="12"
+			       Classes="primary">
+				<Button.IsEnabled>
+					<MultiBinding Converter="{x:Static BoolConverters.And}">
+						<Binding Path="!IsSearching"/>
+						<Binding Path="UnmappedIngredients" Converter="{x:Static ObjectConverters.IsNotNull}"/>
+					</MultiBinding>
+				</Button.IsEnabled>
+				<Panel>
+					<TextBlock Text="Search All" IsVisible="{Binding UnmappedIngredients}"/>
+					<TextBlock Text="✓ All Mapped" IsVisible="{Binding !UnmappedIngredients}"/>
+				</Panel>
+			</Button>
+		</Grid>
+
+		<!-- Compact Progress Bar (non-intrusive) -->
+		<Border Grid.Row="1"
+		        Background="#E3F2FD"
+		        CornerRadius="4"
+		        Padding="12,8"
+		        Margin="0,0,0,12"
+		        IsVisible="{Binding IsSearching}">
+			<Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+				<TextBlock Grid.Column="0"
+				          Text="🔍"
+				          FontSize="14"
+				          VerticalAlignment="Center"/>
+				<StackPanel Grid.Column="1" Spacing="4">
+					<TextBlock Text="Searching for nutritional data..."
+					          FontSize="11"
+					          FontWeight="SemiBold"
+					          Foreground="#1565C0"/>
+					<ProgressBar IsIndeterminate="True"
+					            Height="3"/>
+				</StackPanel>
+				<TextBlock Grid.Column="2"
+				          Text="(UI remains interactive)"
+				          FontSize="9"
+				          FontStyle="Italic"
+				          Foreground="#1976D2"
+				          VerticalAlignment="Center"/>
+			</Grid>
+		</Border>
+
+		<!-- Main Content -->
+		<Grid Grid.Row="2">
+			<!-- Ingredient List -->
+			<ScrollViewer>
+				<ItemsControl ItemsSource="{Binding Ingredients}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border BorderBrush="#E0E0E0"
+							       BorderThickness="0,0,0,1"
+							       Padding="10"
+							       Background="White">
+								<Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+									<!-- Ingredient Header -->
+									<Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+										<StackPanel Grid.Column="0" Spacing="2">
+											<Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
+												<TextBlock Grid.Column="0"
+												          Text="{Binding Ingredient.Name}"
+												          FontWeight="SemiBold"
+												          FontSize="13"
+												          VerticalAlignment="Center"/>
+												<TextBlock Grid.Column="1"
+												          FontSize="10"
+												          Foreground="#999"
+												          VerticalAlignment="Center">
+													<Run Text="$"/>
+													<Run Text="{Binding Ingredient.CurrentPrice, StringFormat='{}{0:F2}'}"/>
+													<Run Text="/"/>
+													<Run Text="{Binding Ingredient.Unit}"/>
+												</TextBlock>
+												<!-- Inline custom search -->
+												<Grid Grid.Column="2" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6" HorizontalAlignment="Right">
+													<TextBlock Grid.Column="0"
+													          Text="Alt:"
+													          FontSize="10"
+													          Foreground="#999"
+													          VerticalAlignment="Center"/>
+													<TextBox Grid.Column="1"
+													        Text="{Binding CustomSearchTerm}"
+													        Width="150"
+													        Watermark="custom search term"
+													        FontSize="10"
+													        Padding="4,2"
+													        Height="22"/>
+													<Button Grid.Column="2"
+													       Content="⟳"
+													       Command="{Binding $parent[Window].((vm:NutritionalDataMapperViewModel)DataContext).SearchIngredientCommand}"
+													       CommandParameter="{Binding}"
+													       Padding="6,2"
+													       FontSize="10"
+													       Width="24"
+													       Height="22"/>
+												</Grid>
+											</Grid>
+										</StackPanel>
+
+										<Border Grid.Column="1"
+										       Background="{Binding IsMapped, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#E8F5E9|#FFF3E0'}"
+										       CornerRadius="2"
+										       Padding="6,3"
+										       VerticalAlignment="Center">
+											<TextBlock Text="{Binding IsMapped, Converter={StaticResource BoolToStringConverter}, ConverterParameter='✓|⚠'}"
+											          FontSize="10"
+											          FontWeight="Bold"
+											          Foreground="{Binding IsMapped, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#2E7D32|#E65100'}"/>
+										</Border>
+
+										<Button Grid.Column="2"
+										       Content="Search"
+										       Command="{Binding $parent[Window].((vm:NutritionalDataMapperViewModel)DataContext).SearchIngredientCommand}"
+										       CommandParameter="{Binding}"
+										       IsVisible="{Binding !Suggestions.Count}"
+										       Padding="8,4"
+										       FontSize="10"
+										       Classes="primary"/>
+
+										<Button Grid.Column="3"
+										       Content="Clear"
+										       Command="{Binding $parent[Window].((vm:NutritionalDataMapperViewModel)DataContext).ClearMappingCommand}"
+										       CommandParameter="{Binding}"
+										       IsVisible="{Binding IsMapped}"
+										       Padding="8,4"
+										       FontSize="10"/>
+									</Grid>
+
+									<!-- Selected Suggestion (when mapped) -->
+									<Border Grid.Row="1"
+									       Background="#E8F5E9"
+									       BorderBrush="#4CAF50"
+									       BorderThickness="2"
+									       CornerRadius="4"
+									       Padding="10"
+									       IsVisible="{Binding IsMapped}">
+										<Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+											<TextBlock Grid.Column="0"
+											          Text="✓"
+											          FontSize="18"
+											          FontWeight="Bold"
+											          Foreground="#2E7D32"
+											          VerticalAlignment="Center"/>
+											<StackPanel Grid.Column="1" Spacing="2">
+												<TextBlock Text="{Binding SelectedSuggestion.Description}"
+												          FontWeight="SemiBold"
+												          FontSize="11"
+												          Foreground="#2E7D32"
+												          TextWrapping="Wrap"/>
+												<TextBlock FontSize="9" Foreground="#388E3C" IsVisible="{Binding SelectedSuggestion.NutritionPer100g, Converter={x:Static ObjectConverters.IsNotNull}}">
+													<Run Text="{Binding SelectedSuggestion.NutritionPer100g.Calories, StringFormat='{}{0:F0}'}"/>
+													<Run Text="cal • "/>
+													<Run Text="{Binding SelectedSuggestion.NutritionPer100g.Protein, StringFormat='{}{0:F1}'}"/>
+													<Run Text="g P • "/>
+													<Run Text="{Binding SelectedSuggestion.NutritionPer100g.Carbohydrates, StringFormat='{}{0:F1}'}"/>
+													<Run Text="g C • "/>
+													<Run Text="{Binding SelectedSuggestion.NutritionPer100g.Fat, StringFormat='{}{0:F1}'}"/>
+													<Run Text="g F"/>
+												</TextBlock>
+											</StackPanel>
+											<TextBlock Grid.Column="2"
+											          Text="MAPPED"
+											          FontSize="9"
+											          FontWeight="Bold"
+											          Foreground="#2E7D32"
+											          VerticalAlignment="Center"/>
+										</Grid>
+									</Border>
+
+									<!-- Suggestions (when not yet mapped) -->
+									<ItemsControl Grid.Row="1" ItemsSource="{Binding Suggestions}" IsVisible="{Binding !IsMapped}">
+										<ItemsControl.ItemTemplate>
+											<DataTemplate>
+												<Button HorizontalAlignment="Stretch"
+												       HorizontalContentAlignment="Stretch"
+												       Padding="8"
+												       Margin="0,0,0,4"
+												       Background="#FAFAFA"
+												       BorderBrush="#E0E0E0"
+												       BorderThickness="1"
+												       Click="OnSuggestionClicked"
+												       Tag="{Binding $parent[Border].DataContext}"
+												       CommandParameter="{Binding}">
+													<Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+														<Border Grid.Column="0"
+														       Background="#E3F2FD"
+														       CornerRadius="2"
+														       Padding="4,2"
+														       VerticalAlignment="Center"
+														       Width="50">
+															<TextBlock Text="{Binding MatchScore, StringFormat='{}{0}%'}"
+															          FontSize="9"
+															          FontWeight="Bold"
+															          Foreground="#1976D2"
+															          HorizontalAlignment="Center"/>
+														</Border>
+
+														<StackPanel Grid.Column="1" Spacing="1">
+															<TextBlock Text="{Binding Description}"
+															          FontWeight="SemiBold"
+															          FontSize="11"
+															          TextTrimming="CharacterEllipsis"/>
+															<TextBlock FontSize="9" Foreground="#666" IsVisible="{Binding NutritionPer100g, Converter={x:Static ObjectConverters.IsNotNull}}">
+																<Run Text="{Binding NutritionPer100g.Calories, StringFormat='{}{0:F0}'}"/>
+																<Run Text="cal • "/>
+																<Run Text="{Binding NutritionPer100g.Protein, StringFormat='{}{0:F1}'}"/>
+																<Run Text="g P • "/>
+																<Run Text="{Binding NutritionPer100g.Carbohydrates, StringFormat='{}{0:F1}'}"/>
+																<Run Text="g C • "/>
+																<Run Text="{Binding NutritionPer100g.Fat, StringFormat='{}{0:F1}'}"/>
+																<Run Text="g F"/>
+															</TextBlock>
+														</StackPanel>
+
+														<TextBlock Grid.Column="2"
+														          Text="Select →"
+														          FontSize="10"
+														          Foreground="#1976D2"
+														          VerticalAlignment="Center"/>
+													</Grid>
+												</Button>
+											</DataTemplate>
+										</ItemsControl.ItemTemplate>
+									</ItemsControl>
+
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</ScrollViewer>
+		</Grid>
+
+		<!-- Action Buttons -->
+		<Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10" Margin="0,12,0,0">
+			<StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+				<TextBlock FontSize="11" Foreground="#666" VerticalAlignment="Center">
+					<Run Text="Progress:"/>
+					<Run Text="{Binding MappedIngredients}" FontWeight="Bold"/>
+					<Run Text="/"/>
+					<Run Text="{Binding TotalIngredients}"/>
+				</TextBlock>
+			</StackPanel>
+			<Button Grid.Column="1"
+			       Content="Skip"
+			       Command="{Binding SkipCommand}"
+			       Padding="20,8"
+			       MinWidth="80"
+			       FontSize="12"/>
+			<Button Grid.Column="2"
+			       Content="Apply Mappings"
+			       Command="{Binding ApplyMappingsCommand}"
+			       IsEnabled="{Binding MappedIngredients}"
+			       Padding="20,8"
+			       MinWidth="120"
+			       FontSize="12"
+			       Classes="primary"/>
+		</Grid>
+	</Grid>
+</Window>

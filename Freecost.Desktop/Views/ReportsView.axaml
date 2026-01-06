@@ -1,0 +1,131 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Freecost.Desktop.ViewModels"
+             x:Class="Freecost.Desktop.Views.ReportsView"
+             x:DataType="vm:ReportsViewModel"
+             Background="#F5F5F5">
+
+	<ScrollViewer Padding="24">
+		<StackPanel Spacing="24" MaxWidth="1200">
+
+			<!-- Header -->
+			<StackPanel Spacing="8">
+				<TextBlock Text="📊 Custom Reports"
+				           FontSize="28"
+				           FontWeight="Bold"
+				           Foreground="#2D2D2D"/>
+				<TextBlock Text="Generate custom reports from your ingredient, recipe, and entree data"
+				           FontSize="14"
+				           Foreground="#666"/>
+			</StackPanel>
+
+			<!-- Report Templates -->
+			<Border Background="White"
+			        CornerRadius="8"
+			        Padding="24"
+			        BoxShadow="0 2 8 0 #10000000">
+				<StackPanel Spacing="16">
+					<Grid ColumnDefinitions="*,Auto">
+						<TextBlock Grid.Column="0"
+						           Text="Report Templates"
+						           FontSize="18"
+						           FontWeight="SemiBold"
+						           Foreground="#2D2D2D"/>
+
+						<Button Grid.Column="1"
+						        Content="🔄 Refresh"
+						        Command="{Binding RefreshTemplatesCommand}"
+						        Background="#7AB51D"
+						        Foreground="White"
+						        Padding="12,6"
+						        CornerRadius="4"
+						        FontSize="12"/>
+					</Grid>
+
+					<TextBlock Text="Select a template to generate a report"
+					           Foreground="#666"
+					           TextWrapping="Wrap"/>
+
+					<ItemsControl ItemsSource="{Binding Templates}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Border Background="#F9F9F9"
+								        BorderBrush="#DDD"
+								        BorderThickness="1"
+								        CornerRadius="6"
+								        Padding="16"
+								        Margin="0,0,0,12">
+									<Grid ColumnDefinitions="*,Auto">
+										<StackPanel Grid.Column="0" Spacing="8">
+											<TextBlock Text="{Binding Name}"
+											           FontSize="16"
+											           FontWeight="SemiBold"
+											           Foreground="#2D2D2D"/>
+											<TextBlock Text="{Binding Description}"
+											           FontSize="13"
+											           Foreground="#666"
+											           TextWrapping="Wrap"/>
+											<TextBlock Text="{Binding Type, StringFormat='Type: {0}'}"
+											           FontSize="11"
+											           Foreground="#999"/>
+										</StackPanel>
+
+										<Button Grid.Column="1"
+										        Content="▶ Generate"
+										        Command="{Binding $parent[ItemsControl].((vm:ReportsViewModel)DataContext).GenerateReportCommand}"
+										        CommandParameter="{Binding}"
+										        Background="#7AB51D"
+										        Foreground="White"
+										        Padding="20,10"
+										        CornerRadius="4"
+										        FontWeight="SemiBold"
+										        VerticalAlignment="Center"/>
+									</Grid>
+								</Border>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+			</Border>
+
+			<!-- Generated Report Display -->
+			<Border IsVisible="{Binding GeneratedReport, Converter={x:Static ObjectConverters.IsNotNull}}"
+			        Background="White"
+			        CornerRadius="8"
+			        Padding="24"
+			        BoxShadow="0 2 8 0 #10000000">
+				<StackPanel Spacing="16">
+					<Grid ColumnDefinitions="*,Auto">
+						<TextBlock Grid.Column="0"
+						           Text="{Binding GeneratedReport.Name, StringFormat='Report: {0}'}"
+						           FontSize="18"
+						           FontWeight="SemiBold"
+						           Foreground="#2D2D2D"/>
+
+						<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+							<TextBlock Text="{Binding GeneratedReport.GeneratedDate, StringFormat='Generated: {0:MM/dd/yy HH:mm}'}"
+							           FontSize="12"
+							           Foreground="#999"
+							           VerticalAlignment="Center"/>
+						</StackPanel>
+					</Grid>
+
+					<DataGrid ItemsSource="{Binding ReportData}"
+					          IsReadOnly="True"
+					          AutoGenerateColumns="True"
+					          GridLinesVisibility="Horizontal"
+					          HeadersVisibility="Column"
+					          MaxHeight="600"
+					          BorderBrush="#DDD"
+					          BorderThickness="1"
+					          CornerRadius="4"/>
+
+					<TextBlock Text="{Binding ReportData.Count, StringFormat='Total Rows: {0}'}"
+					           FontSize="12"
+					           Foreground="#999"/>
+				</StackPanel>
+			</Border>
+
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>

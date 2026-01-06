@@ -1,0 +1,219 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Freecost.Desktop.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="Freecost.Desktop.Views.CostTrendAnalysisView"
+             x:DataType="vm:CostTrendAnalysisViewModel"
+             Background="#F5F5F5">
+
+	<UserControl.Styles>
+		<Style Selector="TabItem">
+			<Setter Property="Foreground" Value="#2D2D2D"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+		</Style>
+		<Style Selector="TabItem:pointerover">
+			<Setter Property="Foreground" Value="#7AB51D"/>
+		</Style>
+		<Style Selector="TabItem:selected">
+			<Setter Property="Foreground" Value="#7AB51D"/>
+		</Style>
+
+		<!-- Prevent text from disappearing on hover -->
+		<Style Selector="DataGridCell">
+			<Setter Property="Foreground" Value="#2D2D2D"/>
+		</Style>
+		<Style Selector="DataGridCell:pointerover">
+			<Setter Property="Foreground" Value="#2D2D2D"/>
+		</Style>
+		<Style Selector="DataGridRow:pointerover DataGridCell">
+			<Setter Property="Foreground" Value="#2D2D2D"/>
+		</Style>
+	</UserControl.Styles>
+
+	<Grid RowDefinitions="Auto,Auto,*" Margin="0,0,0,16">
+
+		<!-- Header -->
+		<StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,16">
+			<TextBlock Text="Analytics &amp; Reports"
+			          FontSize="28"
+			          FontWeight="Bold"
+			          Foreground="#2D2D2D"/>
+			<TextBlock Text="Restaurant profitability insights and cost tracking"
+			          FontSize="14"
+			          Foreground="#666"/>
+		</StackPanel>
+
+		<!-- Summary Stats -->
+		<Border Grid.Row="1"
+		        Background="White"
+		        CornerRadius="8"
+		        Padding="20"
+		        Margin="0,0,0,16"
+		        BoxShadow="0 2 8 0 #10000000">
+			<Grid ColumnDefinitions="*,*,*">
+				<StackPanel Grid.Column="0" Spacing="10">
+					<TextBlock Text="Ingredients" FontSize="16" FontWeight="Bold" Foreground="#2D2D2D"/>
+					<StackPanel Spacing="6">
+						<TextBlock Text="{Binding TotalIngredientCost, StringFormat='Total: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding AverageIngredientCost, StringFormat='Average: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding HighestCostIngredient, StringFormat='Highest: {0}'}" FontSize="13" Foreground="#666" TextWrapping="Wrap"/>
+					</StackPanel>
+				</StackPanel>
+				<StackPanel Grid.Column="1" Spacing="10">
+					<TextBlock Text="Recipes" FontSize="16" FontWeight="Bold" Foreground="#2D2D2D"/>
+					<StackPanel Spacing="6">
+						<TextBlock Text="{Binding TotalRecipeCost, StringFormat='Total: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding AverageRecipeCost, StringFormat='Average: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding HighestCostRecipe, StringFormat='Highest: {0}'}" FontSize="13" Foreground="#666" TextWrapping="Wrap"/>
+					</StackPanel>
+				</StackPanel>
+				<StackPanel Grid.Column="2" Spacing="10">
+					<TextBlock Text="Entrees" FontSize="16" FontWeight="Bold" Foreground="#2D2D2D"/>
+					<StackPanel Spacing="6">
+						<TextBlock Text="{Binding TotalEntreeCost, StringFormat='Total: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding AverageEntreeCost, StringFormat='Average: {0:C2}'}" FontSize="13" Foreground="#666"/>
+						<TextBlock Text="{Binding HighestCostEntree, StringFormat='Highest: {0}'}" FontSize="13" Foreground="#666" TextWrapping="Wrap"/>
+					</StackPanel>
+				</StackPanel>
+			</Grid>
+		</Border>
+
+		<!-- Analytics Tabs -->
+		<TabControl Grid.Row="2">
+			<TabItem Header="Menu Engineering Matrix">
+				<Border Background="White"
+				        CornerRadius="8"
+				        BoxShadow="0 2 8 0 #10000000"
+				        Padding="16">
+					<StackPanel Spacing="12">
+						<TextBlock Text="Categorizes entrees by profitability vs popularity (⭐ Stars, 🐴 Plows, 🧩 Puzzles, 🐶 Dogs)"
+						          FontSize="13"
+						          Foreground="#666"
+						          TextWrapping="Wrap"/>
+						<DataGrid ItemsSource="{Binding MenuEngineeringItems}"
+						         AutoGenerateColumns="False"
+						         IsReadOnly="True"
+						         GridLinesVisibility="Horizontal"
+						         CanUserResizeColumns="True">
+							<DataGrid.Columns>
+								<DataGridTextColumn Header="Entree" Binding="{Binding Name}" Width="*"/>
+								<DataGridTextColumn Header="Quadrant" Binding="{Binding Quadrant}" Width="250"/>
+								<DataGridTextColumn Header="Menu Price" Binding="{Binding DisplayMenuPrice}" Width="100"/>
+								<DataGridTextColumn Header="Food Cost" Binding="{Binding DisplayFoodCost}" Width="100"/>
+								<DataGridTextColumn Header="Food Cost %" Binding="{Binding DisplayFoodCostPercentage}" Width="100"/>
+								<DataGridTextColumn Header="Popularity" Binding="{Binding DisplayPopularity}" Width="100"/>
+							</DataGrid.Columns>
+						</DataGrid>
+					</StackPanel>
+				</Border>
+			</TabItem>
+			<TabItem Header="Food Cost % by Entree">
+				<Border Background="White"
+				        CornerRadius="8"
+				        BoxShadow="0 2 8 0 #10000000"
+				        Padding="16">
+					<StackPanel Spacing="12">
+						<TextBlock Text="Profitability dashboard (🟢 Excellent ≤25%, 🟡 Good ≤35%, 🔴 High >35%)"
+						          FontSize="13"
+						          Foreground="#666"
+						          TextWrapping="Wrap"/>
+						<DataGrid ItemsSource="{Binding EntreeProfitability}"
+						         AutoGenerateColumns="False"
+						         IsReadOnly="True"
+						         GridLinesVisibility="Horizontal"
+						         CanUserResizeColumns="True">
+							<DataGrid.Columns>
+								<DataGridTextColumn Header="Entree" Binding="{Binding Name}" Width="*"/>
+								<DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="150"/>
+								<DataGridTextColumn Header="Menu Price" Binding="{Binding DisplayMenuPrice}" Width="100"/>
+								<DataGridTextColumn Header="Food Cost" Binding="{Binding DisplayFoodCost}" Width="100"/>
+								<DataGridTextColumn Header="Food Cost %" Binding="{Binding DisplayFoodCostPercentage}" Width="100"/>
+							</DataGrid.Columns>
+						</DataGrid>
+					</StackPanel>
+				</Border>
+			</TabItem>
+			<TabItem Header="Recipe Cost Trend">
+				<Border Background="White"
+				        CornerRadius="8"
+				        BoxShadow="0 2 8 0 #10000000"
+				        Padding="16">
+					<StackPanel Spacing="12">
+						<TextBlock Text="Top 5 most expensive recipes showing cost changes over 30/60/90 days"
+						          FontSize="13"
+						          Foreground="#666"
+						          TextWrapping="Wrap"/>
+						<DataGrid ItemsSource="{Binding RecipeCostTrend}"
+						         AutoGenerateColumns="False"
+						         IsReadOnly="True"
+						         GridLinesVisibility="Horizontal"
+						         CanUserResizeColumns="True">
+							<DataGrid.Columns>
+								<DataGridTextColumn Header="Recipe" Binding="{Binding RecipeName}" Width="*"/>
+								<DataGridTextColumn Header="Period" Binding="{Binding Period}" Width="150"/>
+								<DataGridTextColumn Header="Date" Binding="{Binding DisplayDate}" Width="150"/>
+								<DataGridTextColumn Header="Cost" Binding="{Binding DisplayCost}" Width="100"/>
+							</DataGrid.Columns>
+						</DataGrid>
+					</StackPanel>
+				</Border>
+			</TabItem>
+			<TabItem Header="Price Alerts">
+				<Border Background="White"
+				        CornerRadius="8"
+				        BoxShadow="0 2 8 0 #10000000"
+				        Padding="16">
+					<StackPanel Spacing="12">
+						<TextBlock Text="Ingredients with >10% price increase in last 30 days"
+						          FontSize="13"
+						          Foreground="#666"
+						          TextWrapping="Wrap"/>
+						<DataGrid ItemsSource="{Binding PriceAlerts}"
+						         AutoGenerateColumns="False"
+						         IsReadOnly="True"
+						         GridLinesVisibility="Horizontal"
+						         CanUserResizeColumns="True">
+							<DataGrid.Columns>
+								<DataGridTextColumn Header="Ingredient" Binding="{Binding IngredientName}" Width="*"/>
+								<DataGridTextColumn Header="Old Price" Binding="{Binding DisplayOldPrice}" Width="100"/>
+								<DataGridTextColumn Header="New Price" Binding="{Binding DisplayNewPrice}" Width="100"/>
+								<DataGridTextColumn Header="% Change" Binding="{Binding DisplayPercentChange}" Width="100"/>
+								<DataGridTextColumn Header="Recipes Affected" Binding="{Binding DisplayRecipesAffected}" Width="150"/>
+							</DataGrid.Columns>
+						</DataGrid>
+					</StackPanel>
+				</Border>
+			</TabItem>
+			<TabItem Header="Waste &amp; Variance">
+				<Border Background="White"
+				        CornerRadius="8"
+				        BoxShadow="0 2 8 0 #10000000"
+				        Padding="16">
+					<StackPanel Spacing="16" VerticalAlignment="Center">
+						<TextBlock Text="📊 Coming Soon: Variance Tracking"
+						          FontSize="20"
+						          FontWeight="Bold"
+						          Foreground="#2D2D2D"
+						          HorizontalAlignment="Center"/>
+						<TextBlock Text="{Binding VarianceMessage}"
+						          FontSize="14"
+						          Foreground="#666"
+						          TextWrapping="Wrap"
+						          HorizontalAlignment="Center"
+						          MaxWidth="600"
+						          TextAlignment="Center"/>
+						<TextBlock Text="This feature will compare theoretical food cost (from recipes) vs actual food cost (from inventory usage) to identify waste and theft."
+						          FontSize="13"
+						          Foreground="#888"
+						          TextWrapping="Wrap"
+						          HorizontalAlignment="Center"
+						          MaxWidth="600"
+						          TextAlignment="Center"/>
+					</StackPanel>
+				</Border>
+			</TabItem>
+		</TabControl>
+	</Grid>
+</UserControl>

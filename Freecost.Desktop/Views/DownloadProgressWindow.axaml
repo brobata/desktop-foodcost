@@ -1,0 +1,59 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        x:Class="Freecost.Desktop.Views.DownloadProgressWindow"
+        x:DataType="vm:UpdateNotificationViewModel"
+        Title="Downloading Update"
+        Width="500"
+        Height="200"
+        MaxWidth="600"
+        MaxHeight="250"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="White">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="32">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,20">
+            <TextBlock Text="Downloading Update"
+                      FontSize="18"
+                      FontWeight="Bold"
+                      Foreground="#2D2D2D"/>
+            <TextBlock Text="{Binding LatestVersion, StringFormat='Version {0}'}"
+                      FontSize="13"
+                      Foreground="#666"/>
+        </StackPanel>
+
+        <!-- Progress Section -->
+        <StackPanel Grid.Row="1" Spacing="16" VerticalAlignment="Center">
+            <ProgressBar Value="{Binding DownloadProgress}"
+                        Maximum="100"
+                        Height="12"
+                        Foreground="#7AB51D"
+                        Background="#E0E0E0"
+                        CornerRadius="6"/>
+
+            <TextBlock Text="{Binding DownloadProgress, StringFormat='{}{0:F0}%'}"
+                      FontSize="24"
+                      FontWeight="Bold"
+                      Foreground="#7AB51D"
+                      HorizontalAlignment="Center"/>
+
+            <TextBlock Text="{Binding DownloadButtonText}"
+                      FontSize="12"
+                      Foreground="#666"
+                      HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Status Message -->
+        <TextBlock Grid.Row="2"
+                  Text="{Binding StatusMessage}"
+                  FontSize="11"
+                  Foreground="#999"
+                  HorizontalAlignment="Center"
+                  TextWrapping="Wrap"
+                  TextAlignment="Center"
+                  Margin="0,20,0,0"/>
+    </Grid>
+</Window>

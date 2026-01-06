@@ -1,0 +1,603 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        xmlns:views="using:Freecost.Desktop.Views"
+        xmlns:controls="using:Freecost.Desktop.Controls"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="750"
+        x:Class="Freecost.Desktop.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Freecost - Recipe and Food Cost Management"
+        Width="1400" Height="850"
+        MinWidth="950" MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Icon="/Assets/appicon.ico">
+
+	<Grid RowDefinitions="Auto,*,Auto">
+
+		<!-- Header Bar -->
+		<Border Grid.Row="0"
+		        Background="White"
+		        BoxShadow="0 2 6 0 #15000000"
+		        Padding="16,10">
+			<Grid ColumnDefinitions="*,Auto,Auto">
+				<!-- Title Area with Breadcrumbs -->
+				<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="2" VerticalAlignment="Center">
+					<TextBlock Text="Freecost"
+					          FontSize="16"
+					          FontWeight="SemiBold"
+					          Foreground="#7AB51D"/>
+					<TextBlock Text="{Binding CurrentBreadcrumb}"
+					          FontSize="11"
+					          Foreground="#666"
+					          FontStyle="Italic"/>
+				</StackPanel>
+
+				<!-- Current Location Indicator (Online) -->
+				<Border Grid.Column="1"
+				        Background="#E8F5E9"
+				        BorderBrush="#7AB51D"
+				        BorderThickness="1"
+				        CornerRadius="4"
+				        Padding="10,4"
+				        Margin="16,0"
+				        VerticalAlignment="Center"
+				        ToolTip.Tip="Online location - synced with cloud"
+				        IsVisible="{Binding !IsOfflineMode}">
+					<StackPanel Orientation="Horizontal" Spacing="6">
+						<TextBlock Text="☁️" FontSize="13"/>
+						<TextBlock Text="{Binding CurrentLocationName}"
+						          FontSize="12"
+						          FontWeight="SemiBold"
+						          Foreground="#2E7D32"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Current Location Indicator (Offline) -->
+				<Border Grid.Column="1"
+				        Background="#FFF3E0"
+				        BorderBrush="#FF9800"
+				        BorderThickness="1"
+				        CornerRadius="4"
+				        Padding="10,4"
+				        Margin="16,0"
+				        VerticalAlignment="Center"
+				        ToolTip.Tip="Offline location - data stored locally only"
+				        IsVisible="{Binding IsOfflineMode}">
+					<StackPanel Orientation="Horizontal" Spacing="6">
+						<TextBlock Text="💾" FontSize="13"/>
+						<TextBlock Text="{Binding CurrentLocationName}"
+						          FontSize="12"
+						          FontWeight="SemiBold"
+						          Foreground="#E65100"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Action Buttons -->
+				<StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+					<!-- Undo Button -->
+					<Button Command="{Binding UndoCommand}"
+					        IsEnabled="{Binding CanUndo}"
+					        ToolTip.Tip="{Binding UndoTooltip}"
+					        Background="Transparent"
+					        BorderBrush="#DDD"
+					        BorderThickness="1"
+					        Padding="10,6"
+					        CornerRadius="4"
+					        IsVisible="False">
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<TextBlock Text="↶" FontSize="14" FontWeight="Bold"/>
+							<TextBlock Text="Undo" FontSize="12"/>
+						</StackPanel>
+					</Button>
+
+					<!-- Redo Button -->
+					<Button Command="{Binding RedoCommand}"
+					        IsEnabled="{Binding CanRedo}"
+					        ToolTip.Tip="{Binding RedoTooltip}"
+					        Background="Transparent"
+					        BorderBrush="#DDD"
+					        BorderThickness="1"
+					        Padding="10,6"
+					        CornerRadius="4"
+					        IsVisible="False">
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<TextBlock Text="↷" FontSize="14" FontWeight="Bold"/>
+							<TextBlock Text="Redo" FontSize="12"/>
+						</StackPanel>
+					</Button>
+
+					<!-- Global Search Button -->
+					<Button Click="OnGlobalSearchClicked"
+					        ToolTip.Tip="Global Search (Ctrl+K)"
+					        Background="Transparent"
+					        BorderBrush="#DDD"
+					        BorderThickness="1"
+					        Padding="10,6"
+					        CornerRadius="4">
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<TextBlock Text="🔍" FontSize="14"/>
+							<TextBlock Text="Search" FontSize="12"/>
+						</StackPanel>
+					</Button>
+
+					<!-- Recycle Bin Button -->
+					<Button Command="{Binding OpenRecycleBinCommand}"
+					        Background="Transparent"
+					        BorderBrush="#DDD"
+					        BorderThickness="1"
+					        Padding="10,6"
+					        CornerRadius="4"
+					        ToolTip.Tip="View deleted items">
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<TextBlock Text="🗑️" FontSize="14"/>
+							<TextBlock Text="Recycle Bin" FontSize="12"/>
+							<Border Background="#EF5350"
+							        CornerRadius="10"
+							        Padding="4,0"
+							        MinWidth="18"
+							        Height="18"
+							        IsVisible="{Binding HasDeletedItems}">
+								<TextBlock Text="{Binding DeletedItemsCount}"
+								          FontSize="10"
+								          FontWeight="Bold"
+								          Foreground="White"
+								          HorizontalAlignment="Center"
+								          VerticalAlignment="Center"/>
+							</Border>
+						</StackPanel>
+					</Button>
+
+					<!-- Notifications Button -->
+					<Button Command="{Binding OpenNotificationsCommand}"
+					        Background="Transparent"
+					        BorderBrush="#DDD"
+					        BorderThickness="1"
+					        Padding="10,6"
+					        CornerRadius="4"
+					        ToolTip.Tip="View notifications">
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<TextBlock Text="🔔" FontSize="14"/>
+							<Border Background="#FF9800"
+							        CornerRadius="10"
+							        Padding="4,0"
+							        IsVisible="{Binding UnreadNotificationsCount}"
+							        MinWidth="18"
+							        Height="18">
+								<TextBlock Text="{Binding UnreadNotificationsCount}"
+								          FontSize="10"
+								          FontWeight="Bold"
+								          Foreground="White"
+								          HorizontalAlignment="Center"
+								          VerticalAlignment="Center"/>
+							</Border>
+						</StackPanel>
+					</Button>
+
+					<!-- Recent Items Button -->
+					<Button Background="Transparent"
+					        BorderBrush="#DDD"
+					        BorderThickness="1"
+					        Padding="10,6"
+					        CornerRadius="4"
+					        ToolTip.Tip="Recent items">
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<TextBlock Text="🕒" FontSize="14"/>
+							<TextBlock Text="Recent" FontSize="12"/>
+						</StackPanel>
+						<Button.Flyout>
+							<Flyout Placement="Bottom">
+								<StackPanel Width="320" Spacing="0">
+									<TextBlock Text="Recent Items"
+									          FontWeight="Bold"
+									          FontSize="14"
+									          Margin="0,0,0,12"/>
+									<ItemsControl ItemsSource="{Binding RecentItems}">
+										<ItemsControl.ItemTemplate>
+											<DataTemplate>
+												<Border Padding="8"
+												        Background="Transparent"
+												        CornerRadius="4"
+												        Margin="0,0,0,4">
+													<Border.Styles>
+														<Style Selector="Border:pointerover">
+															<Setter Property="Background" Value="#F5F5F5"/>
+														</Style>
+													</Border.Styles>
+													<Grid ColumnDefinitions="Auto,*,Auto">
+														<TextBlock Grid.Column="0"
+														          Text="{Binding Icon}"
+														          FontSize="16"
+														          Margin="0,0,12,0"/>
+														<StackPanel Grid.Column="1" Spacing="2">
+															<TextBlock Text="{Binding Name}"
+															          FontWeight="SemiBold"
+															          FontSize="13"/>
+															<TextBlock Text="{Binding Type}"
+															          FontSize="11"
+															          Foreground="#666"/>
+														</StackPanel>
+														<TextBlock Grid.Column="2"
+														          Text="{Binding Date}"
+														          FontSize="11"
+														          Foreground="#999"
+														          VerticalAlignment="Center"/>
+													</Grid>
+												</Border>
+											</DataTemplate>
+										</ItemsControl.ItemTemplate>
+									</ItemsControl>
+								</StackPanel>
+							</Flyout>
+						</Button.Flyout>
+					</Button>
+
+					<!-- User Profile Button -->
+					<Button Background="Transparent"
+					        BorderBrush="#DDD"
+					        BorderThickness="1"
+					        Padding="10,6"
+					        CornerRadius="4"
+					        ToolTip.Tip="{Binding UserEmail}">
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<TextBlock Text="👤" FontSize="14"/>
+							<TextBlock Text="{Binding SyncStatusIcon}"
+							          FontSize="10"
+							          VerticalAlignment="Center"
+							          IsVisible="{Binding !IsOfflineMode}"/>
+						</StackPanel>
+						<Button.Flyout>
+							<Flyout Placement="Bottom">
+								<StackPanel Width="280" Spacing="12">
+									<!-- User Info -->
+									<Border Background="#F5F7FF"
+									       CornerRadius="6"
+									       Padding="16">
+										<StackPanel Spacing="8">
+											<TextBlock Text="👤"
+											          FontSize="32"
+											          HorizontalAlignment="Center"/>
+											<TextBlock Text="{Binding UserDisplayName}"
+											          FontSize="15"
+											          FontWeight="SemiBold"
+											          HorizontalAlignment="Center"
+											          Foreground="#2D2D2D"/>
+											<TextBlock Text="{Binding UserEmail}"
+											          FontSize="12"
+											          HorizontalAlignment="Center"
+											          Foreground="#666"/>
+											<Border Background="{Binding SyncStatusColor}"
+											       CornerRadius="4"
+											       Padding="8,4"
+											       Margin="0,8,0,0">
+												<StackPanel Orientation="Horizontal"
+												           Spacing="6"
+												           HorizontalAlignment="Center">
+													<TextBlock Text="{Binding SyncStatusIcon}"
+													          FontSize="11"
+													          Foreground="White"/>
+													<TextBlock Text="{Binding SyncStatusText}"
+													          FontSize="11"
+													          Foreground="White"
+													          FontWeight="SemiBold"/>
+												</StackPanel>
+											</Border>
+										</StackPanel>
+									</Border>
+
+									<!-- Sync Actions (only visible when signed in) -->
+									<StackPanel Spacing="8" IsVisible="{Binding !IsOfflineMode}">
+										<Button Content="🔄 Sync Now"
+										       Command="{Binding SyncNowCommand}"
+										       Background="#667EEA"
+										       Foreground="White"
+										       HorizontalAlignment="Stretch"
+										       HorizontalContentAlignment="Center"
+										       Padding="12,8"
+										       CornerRadius="4"
+										       FontWeight="SemiBold">
+											<Button.Styles>
+												<Style Selector="Button:pointerover">
+													<Setter Property="Background" Value="#5568D3"/>
+												</Style>
+											</Button.Styles>
+										</Button>
+
+										<Button Content="🏢 Switch Location"
+										       Command="{Binding SwitchLocationCommand}"
+										       Background="White"
+										       Foreground="#666"
+										       BorderBrush="#DDD"
+										       BorderThickness="1"
+										       HorizontalAlignment="Stretch"
+										       HorizontalContentAlignment="Center"
+										       Padding="12,8"
+										       CornerRadius="4">
+											<Button.Styles>
+												<Style Selector="Button:pointerover">
+													<Setter Property="Background" Value="#F5F5F5"/>
+												</Style>
+											</Button.Styles>
+										</Button>
+									</StackPanel>
+
+									<!-- Sign In Button (only visible when offline) -->
+									<StackPanel Spacing="8" IsVisible="{Binding IsOfflineMode}">
+										<Button Content="🔐 Sign In"
+										       Command="{Binding SignInCommand}"
+										       Background="#2196F3"
+										       Foreground="White"
+										       HorizontalAlignment="Stretch"
+										       HorizontalContentAlignment="Center"
+										       Padding="12,8"
+										       CornerRadius="4"
+										       FontWeight="SemiBold">
+											<Button.Styles>
+												<Style Selector="Button:pointerover">
+													<Setter Property="Background" Value="#1976D2"/>
+												</Style>
+											</Button.Styles>
+										</Button>
+									</StackPanel>
+
+									<Separator Background="#E0E0E0" Height="1" IsVisible="{Binding !IsOfflineMode}"/>
+
+									<!-- Account Actions (only visible when signed in) -->
+									<StackPanel Spacing="8" IsVisible="{Binding !IsOfflineMode}">
+										<Button Content="🚪 Sign Out"
+										       Command="{Binding SignOutCommand}"
+										       Background="Transparent"
+										       Foreground="#EF5350"
+										       HorizontalAlignment="Stretch"
+										       HorizontalContentAlignment="Left"
+										       Padding="12,8"
+										       BorderThickness="0">
+											<Button.Styles>
+												<Style Selector="Button:pointerover">
+													<Setter Property="Background" Value="#FFEBEE"/>
+												</Style>
+											</Button.Styles>
+										</Button>
+									</StackPanel>
+								</StackPanel>
+							</Flyout>
+						</Button.Flyout>
+					</Button>
+				</StackPanel>
+			</Grid>
+		</Border>
+
+		<Grid Grid.Row="1" ColumnDefinitions="250,*" Background="#F8F8F8">
+
+			<!-- Sidebar Navigation -->
+			<Border Grid.Column="0"
+                    Background="White"
+                    BoxShadow="2 0 8 0 #10000000">
+				<StackPanel Margin="0,24,0,0" Spacing="8">
+
+					<!-- Logo Area -->
+					<StackPanel Margin="24,0,24,32" HorizontalAlignment="Center">
+						<Image Source="/Assets/Images/appicon.png"
+						       Width="64"
+						       Height="64"
+						       HorizontalAlignment="Center"
+						       Margin="0,0,0,12"/>
+						<TextBlock Text="Freecost"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   Foreground="#7AB51D"/>
+						<TextBlock Text="Recipe and Food Cost Management"
+                                   FontSize="11"
+                                   HorizontalAlignment="Center"
+                                   Foreground="#666"
+                                   TextWrapping="Wrap"/>
+					</StackPanel>
+
+					<!-- Navigation Buttons -->
+					<Button Classes="nav-button"
+							Command="{Binding NavigateToDashboardCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock Text="📊" FontSize="18"/>
+							<TextBlock Text="Dashboard" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+
+					<Button Classes="nav-button"
+							Command="{Binding NavigateToIngredientsCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock Text="🥕" FontSize="18"/>
+							<TextBlock Text="Ingredients" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+
+					<Button Classes="nav-button"
+							Command="{Binding NavigateToRecipesCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock Text="📖" FontSize="18"/>
+							<TextBlock Text="Recipes" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+
+					<Button Classes="nav-button"
+							Command="{Binding NavigateToEntreesCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock Text="🍽️" FontSize="18"/>
+							<TextBlock Text="Entrees" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+
+					<Button Classes="nav-button"
+							Command="{Binding ViewCostTrendsCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock Text="📈" FontSize="18"/>
+							<TextBlock Text="Analytics &amp; Reports" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+
+					<Button Classes="nav-button"
+							Command="{Binding NavigateToMenuPlanCommand}"
+							IsVisible="False">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock Text="📅" FontSize="18"/>
+							<TextBlock Text="Menu Planning" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+
+					<!-- Admin Button (Only visible for admins) -->
+					<Border Height="24" IsVisible="{Binding IsAdmin}"/>
+
+					<Button Classes="nav-button"
+					        Command="{Binding NavigateToAdminCommand}"
+					        IsVisible="{Binding IsAdmin}">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock Text="👑" FontSize="18"/>
+							<TextBlock Text="Admin" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+
+					<Border Height="24"/>
+
+					<Button Classes="nav-button"
+							Command="{Binding NavigateToReportsCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock Text="📊" FontSize="18"/>
+							<TextBlock Text="Reports" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+
+					<Button Classes="nav-button"
+							Command="{Binding NavigateToHelpCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock Text="❓" FontSize="18"/>
+							<TextBlock Text="Help &amp; Tutorial" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+
+					<Button Classes="nav-button"
+							Command="{Binding NavigateToSettingsCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock Text="⚙️" FontSize="18"/>
+							<TextBlock Text="Settings" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+
+					<Button Classes="nav-button"
+							Command="{Binding NavigateToAboutCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock Text="ℹ️" FontSize="18"/>
+							<TextBlock Text="About" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+
+				</StackPanel>
+			</Border>
+
+			<!-- Content Area with smooth transitions -->
+			<Border Grid.Column="1"
+                    Background="#F5F5F5"
+                    Padding="24">
+				<TransitioningContentControl Content="{Binding CurrentView}">
+					<!-- Crossfade transition for smooth view changes -->
+					<TransitioningContentControl.PageTransition>
+						<CrossFade Duration="0:0:0.25"/>
+					</TransitioningContentControl.PageTransition>
+					<TransitioningContentControl.DataTemplates>
+						<DataTemplate DataType="vm:DashboardViewModel">
+							<views:DashboardView/>
+						</DataTemplate>
+						<DataTemplate DataType="vm:IngredientsViewModel">
+							<views:IngredientsView/>
+						</DataTemplate>
+						<DataTemplate DataType="vm:RecipesViewModel">
+							<views:RecipesView/>
+						</DataTemplate>
+						<DataTemplate DataType="vm:EntreesViewModel">
+							<views:EntreesView/>
+						</DataTemplate>
+						<DataTemplate DataType="vm:SettingsViewModel">
+							<views:SettingsView/>
+						</DataTemplate>
+						<DataTemplate DataType="vm:AdminViewModel">
+							<views:AdminView/>
+						</DataTemplate>
+						<DataTemplate DataType="vm:HelpViewModel">
+							<views:HelpView/>
+						</DataTemplate>
+						<DataTemplate DataType="vm:ReportsViewModel">
+							<views:ReportsView/>
+						</DataTemplate>
+						<DataTemplate DataType="vm:AboutViewModel">
+							<views:AboutView/>
+						</DataTemplate>
+					</TransitioningContentControl.DataTemplates>
+				</TransitioningContentControl>
+			</Border>
+
+			<!-- Spoony Helper (overlays in bottom right) - Hidden for now -->
+			<controls:SpoonyPopup Grid.Column="1"
+			                      x:Name="SpoonyPopup"
+			                      HorizontalAlignment="Right"
+			                      VerticalAlignment="Bottom"
+			                      Margin="0,0,24,24"
+			                      IsVisible="False"/>
+
+		</Grid>
+
+		<!-- Status Notification Bar -->
+		<controls:StatusNotificationBar Grid.Row="2" x:Name="StatusBar"/>
+
+	</Grid>
+
+	<Window.Styles>
+		<!-- Navigation Button Style with Smooth Animations -->
+		<Style Selector="Button.nav-button">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Foreground" Value="#444"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Padding" Value="24,12"/>
+			<Setter Property="HorizontalAlignment" Value="Stretch"/>
+			<Setter Property="HorizontalContentAlignment" Value="Left"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+					<BrushTransition Property="Foreground" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+		<Style Selector="Button.nav-button:pointerover">
+			<Setter Property="Background" Value="#F0F8FF"/>
+		</Style>
+		<Style Selector="Button.nav-button:pressed">
+			<Setter Property="Background" Value="#E8F5E9"/>
+		</Style>
+
+		<!-- Smooth transitions for all buttons -->
+		<Style Selector="Button">
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.15"/>
+					<BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+					<TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+				</Transitions>
+			</Setter>
+		</Style>
+
+		<!-- Subtle scale animation on button press -->
+		<Style Selector="Button:pressed">
+			<Setter Property="RenderTransform" Value="scale(0.98)"/>
+		</Style>
+
+		<!-- Smooth fade-in animation for notification badges -->
+		<Style Selector="Border.notification-badge">
+			<Setter Property="Transitions">
+				<Transitions>
+					<DoubleTransition Property="Opacity" Duration="0:0:0.3"/>
+				</Transitions>
+			</Setter>
+		</Style>
+	</Window.Styles>
+</Window>

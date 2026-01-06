@@ -1,0 +1,133 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        x:Class="Freecost.Desktop.Views.DonationReminderWindow"
+        x:DataType="vm:DonationReminderViewModel"
+        Title="Support Freecost"
+        Width="600"
+        Height="500"
+        MaxWidth="700"
+        MaxHeight="600"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        Background="White">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="32">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,24">
+            <TextBlock Text="☕ Support Freecost"
+                      FontSize="24"
+                      FontWeight="Bold"
+                      Foreground="#7AB51D"
+                      HorizontalAlignment="Center"/>
+
+            <TextBlock Text="Made by a chef, for chefs"
+                      FontSize="14"
+                      Foreground="#666"
+                      HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Spacing="20">
+
+                <!-- Stats Card -->
+                <Border Background="#F5F5F5"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Your Freecost Journey"
+                                  FontSize="16"
+                                  FontWeight="Bold"
+                                  Foreground="#2D2D2D"/>
+
+                        <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto,Auto">
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <TextBlock Text="{Binding Stats.IngredientCount}"
+                                          FontSize="32"
+                                          FontWeight="Bold"
+                                          Foreground="#7AB51D"
+                                          HorizontalAlignment="Center"/>
+                                <TextBlock Text="Ingredients"
+                                          FontSize="12"
+                                          Foreground="#666"
+                                          HorizontalAlignment="Center"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Spacing="4">
+                                <TextBlock Text="{Binding Stats.RecipeCount}"
+                                          FontSize="32"
+                                          FontWeight="Bold"
+                                          Foreground="#7AB51D"
+                                          HorizontalAlignment="Center"/>
+                                <TextBlock Text="Recipes"
+                                          FontSize="12"
+                                          Foreground="#666"
+                                          HorizontalAlignment="Center"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" Spacing="4">
+                                <TextBlock Text="{Binding Stats.EntreeCount}"
+                                          FontSize="32"
+                                          FontWeight="Bold"
+                                          Foreground="#7AB51D"
+                                          HorizontalAlignment="Center"/>
+                                <TextBlock Text="Plates"
+                                          FontSize="12"
+                                          Foreground="#666"
+                                          HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Message -->
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Hey there, Chef! 👨‍🍳"
+                              FontSize="16"
+                              FontWeight="SemiBold"
+                              Foreground="#2D2D2D"/>
+
+                    <TextBlock TextWrapping="Wrap"
+                              Foreground="#444"
+                              LineHeight="22">
+                        <Run Text="If Freecost has helped you manage your costs and recipes, consider buying me a coffee! Every contribution helps me keep improving this tool for our culinary community."/>
+                    </TextBlock>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Actions -->
+        <Grid Grid.Row="2"
+              ColumnDefinitions="*,*"
+              ColumnSpacing="16"
+              Margin="0,24,0,0">
+
+            <Button Grid.Column="0"
+                    Content="☕ Buy Me a Coffee"
+                    Command="{Binding OpenPayPalCommand}"
+                    Background="#7AB51D"
+                    Foreground="White"
+                    Padding="24,16"
+                    CornerRadius="6"
+                    FontSize="16"
+                    FontWeight="SemiBold"
+                    HorizontalContentAlignment="Center"/>
+
+            <Button Grid.Column="1"
+                    Content="Maybe Later"
+                    Command="{Binding CloseCommand}"
+                    Background="White"
+                    Foreground="#666"
+                    BorderBrush="#DDD"
+                    BorderThickness="1"
+                    Padding="24,16"
+                    CornerRadius="6"
+                    FontSize="16"
+                    HorizontalContentAlignment="Center"/>
+        </Grid>
+
+    </Grid>
+</Window>

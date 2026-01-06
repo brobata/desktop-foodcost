@@ -1,0 +1,366 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Freecost.Desktop.ViewModels"
+        xmlns:controls="using:Freecost.Desktop.Controls"
+        xmlns:converters="using:Freecost.Desktop.Converters"
+        x:Class="Freecost.Desktop.Views.AddEditEntreeWindow"
+        x:DataType="vm:AddEditEntreeViewModel"
+        Title="{Binding DialogTitle}"
+        Width="750" Height="640"
+        MinWidth="650" MinHeight="500"
+        MaxWidth="1400" MaxHeight="900"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="White">
+
+	<Window.Resources>
+		<converters:BoolToLinkIconConverter x:Key="BoolToLinkIconConverter"/>
+		<converters:BoolToLinkColorConverter x:Key="BoolToLinkColorConverter"/>
+		<converters:BoolToLinkTooltipConverter x:Key="BoolToLinkTooltipConverter"/>
+	</Window.Resources>
+
+	<Window.Styles>
+		<Style Selector="TabItem">
+			<Setter Property="Foreground" Value="#2D2D2D"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+		</Style>
+		<Style Selector="TabItem:pointerover">
+			<Setter Property="Foreground" Value="#7AB51D"/>
+		</Style>
+		<Style Selector="TabItem:selected">
+			<Setter Property="Foreground" Value="#7AB51D"/>
+		</Style>
+	</Window.Styles>
+
+	<Grid RowDefinitions="*,Auto" Margin="24">
+
+		<!-- Tab Content -->
+		<TabControl Grid.Row="0">
+
+			<!-- TAB 1: ENTREE INFO -->
+			<TabItem Header="Entree Info">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<StackPanel Spacing="18" Margin="0,16,0,0">
+
+						<!-- Validation Panel -->
+						<controls:ValidationPanel ValidationResult="{Binding ValidationResult}"/>
+
+						<!-- PHOTO UPLOAD -->
+						<controls:PhotoUploadControl PhotoUrl="{Binding PhotoUrl}"
+						                            PhotoService="{Binding PhotoService}"
+						                            PhotoChanged="OnPhotoChanged"/>
+
+						<!-- Entree Name -->
+						<StackPanel Spacing="7">
+							<TextBlock Text="Entree Name *" FontWeight="SemiBold" FontSize="14" Foreground="#2D2D2D"/>
+							<TextBox Text="{Binding Name}" Watermark="Enter entree name..." Padding="12,10" FontSize="14"/>
+						</StackPanel>
+
+						<!-- Menu Price -->
+						<StackPanel Spacing="7">
+							<TextBlock Text="Menu Price *" FontWeight="SemiBold" FontSize="14" Foreground="#2D2D2D"/>
+							<TextBox Text="{Binding MenuPrice}" Watermark="e.g., 24.99" Padding="12,10" FontSize="14"/>
+						</StackPanel>
+
+						<!-- Components Section -->
+						<StackPanel Spacing="12">
+							<Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="12">
+								<TextBlock Grid.Column="0" Text="Components" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
+								<TextBlock Grid.Column="1" Text="{Binding FoodCostDisplay}" FontWeight="SemiBold" FontSize="14" Foreground="#7AB51D" VerticalAlignment="Center"/>
+								<TextBlock Grid.Column="2" Text="{Binding TotalCostDisplay}" FontWeight="SemiBold" FontSize="14" Foreground="#666" VerticalAlignment="Center"/>
+								<Button Grid.Column="3" Content="➕ Add Recipe" Command="{Binding AddRecipeComponentCommand}" Background="#7AB51D" Foreground="White" Padding="12,8" CornerRadius="4" FontSize="13" FontWeight="SemiBold"/>
+								<Button Grid.Column="4" Content="🥕 Add Ingredient" Command="{Binding AddIngredientComponentCommand}" Background="#4CAF50" Foreground="White" Padding="12,8" CornerRadius="4" FontSize="13" FontWeight="SemiBold"/>
+							</Grid>
+
+							<Border BorderBrush="#D0D0D0" BorderThickness="1" CornerRadius="6" MinHeight="200">
+								<ItemsControl ItemsSource="{Binding Components}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Border BorderBrush="#E5E5E5" BorderThickness="0,0,0,1" Padding="12,10">
+												<Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+													<TextBlock Grid.Column="0"
+															   Text="{Binding Name}"
+															   FontWeight="SemiBold"
+															   Foreground="#2D2D2D"
+															   VerticalAlignment="Center"/>
+													<TextBlock Grid.Column="1"
+															   Text="{Binding QuantityDisplay}"
+															   Foreground="#666"
+															   VerticalAlignment="Center"/>
+
+													<!-- Link Status Icon -->
+													<Button Grid.Column="2"
+															Content="{Binding IsConnected, Converter={StaticResource BoolToLinkIconConverter}}"
+															Command="{Binding $parent[Window].DataContext.RelinkComponentCommand}"
+															CommandParameter="{Binding}"
+															Background="{Binding IsConnected, Converter={StaticResource BoolToLinkColorConverter}}"
+															Foreground="White"
+															BorderThickness="0"
+															Padding="8,4"
+															CornerRadius="4"
+															ToolTip.Tip="{Binding IsConnected, Converter={StaticResource BoolToLinkTooltipConverter}}">
+														<Button.Styles>
+															<Style Selector="Button:pointerover">
+																<Setter Property="Opacity" Value="0.8"/>
+															</Style>
+														</Button.Styles>
+													</Button>
+
+													<Button Grid.Column="3"
+															Content="✏️"
+															Command="{Binding $parent[Window].DataContext.EditComponentCommand}"
+															CommandParameter="{Binding}"
+															Background="Transparent"
+															BorderThickness="0"
+															ToolTip.Tip="Edit component">
+														<Button.Styles>
+															<Style Selector="Button:pointerover">
+																<Setter Property="Background" Value="#E8F5E9"/>
+															</Style>
+														</Button.Styles>
+													</Button>
+													<Button Grid.Column="4"
+															Content="🗑️"
+															Command="{Binding $parent[Window].DataContext.RemoveComponentCommand}"
+															CommandParameter="{Binding}"
+															Background="Transparent"
+															BorderThickness="0"
+															ToolTip.Tip="Remove component">
+														<Button.Styles>
+															<Style Selector="Button:pointerover">
+																<Setter Property="Background" Value="#FFEBEE"/>
+															</Style>
+														</Button.Styles>
+													</Button>
+												</Grid>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</Border>
+						</StackPanel>
+
+						<!-- Preparation Steps -->
+						<StackPanel Spacing="12">
+							<Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+								<TextBlock Grid.Column="0" Text="Preparation Steps" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
+								<Button Grid.Column="1" Content="➕ Add Step" Command="{Binding AddPreparationStepCommand}" Background="#2196F3" Foreground="White" Padding="12,8" CornerRadius="4" FontSize="13" FontWeight="SemiBold"/>
+							</Grid>
+
+							<Border BorderBrush="#D0D0D0" BorderThickness="1" CornerRadius="6" MinHeight="100">
+								<ItemsControl ItemsSource="{Binding PreparationSteps}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Border BorderBrush="#E5E5E5" BorderThickness="0,0,0,1" Padding="12,10">
+												<Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+													<TextBlock Grid.Column="0"
+													           Text="{Binding StepNumber}"
+													           FontWeight="Bold"
+													           FontSize="14"
+													           Foreground="#7AB51D"
+													           VerticalAlignment="Top"
+													           Margin="0,8,0,0"/>
+
+													<!-- Dual-mode: TextBlock for display, TextBox for editing -->
+													<Panel Grid.Column="1">
+														<!-- Display Mode: TextBlock (auto-expanding, wraps perfectly) -->
+														<Border Background="Transparent"
+														        Padding="10,8"
+														        CornerRadius="4"
+														        IsVisible="{Binding !IsEditing}"
+														        Cursor="Hand">
+															<Border.Styles>
+																<Style Selector="Border:pointerover">
+																	<Setter Property="Background" Value="#F5F5F5"/>
+																</Style>
+															</Border.Styles>
+															<TextBlock Text="{Binding Description}"
+															           TextWrapping="Wrap"
+															           FontSize="14"
+															           Foreground="#2D2D2D"
+															           VerticalAlignment="Center"
+															           Tapped="OnStepTextTapped">
+																<TextBlock.Styles>
+																	<Style Selector="TextBlock">
+																		<Setter Property="Foreground" Value="#2D2D2D"/>
+																	</Style>
+																	<Style Selector="TextBlock:pointerover">
+																		<Setter Property="Foreground" Value="#7AB51D"/>
+																	</Style>
+																</TextBlock.Styles>
+															</TextBlock>
+														</Border>
+
+														<!-- Edit Mode: TextBox (shown when IsEditing=true) -->
+														<TextBox Text="{Binding Description}"
+														         Watermark="Enter step description..."
+														         TextWrapping="Wrap"
+														         AcceptsReturn="True"
+														         MinHeight="40"
+														         MaxHeight="200"
+														         Padding="10,8"
+														         FontSize="14"
+														         VerticalAlignment="Stretch"
+														         IsVisible="{Binding IsEditing}"
+														         LostFocus="OnStepTextBoxLostFocus"
+														         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+														         ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+													</Panel>
+
+													<Button Grid.Column="2"
+													        Content="🗑️"
+													        Command="{Binding $parent[Window].DataContext.RemovePreparationStepCommand}"
+													        CommandParameter="{Binding}"
+													        Background="Transparent"
+													        BorderThickness="0"
+													        VerticalAlignment="Top"
+													        Margin="0,4,0,0"
+													        ToolTip.Tip="Remove step">
+														<Button.Styles>
+															<Style Selector="Button:pointerover">
+																<Setter Property="Background" Value="#FFEBEE"/>
+															</Style>
+														</Button.Styles>
+													</Button>
+												</Grid>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</Border>
+						</StackPanel>
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
+
+			<!-- TAB 2: ALLERGENS -->
+			<TabItem Header="Allergens">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<StackPanel Spacing="20" Margin="0,16,0,0">
+						<Border Background="#FFF9E6" BorderBrush="#FFE082" BorderThickness="1" CornerRadius="6" Padding="16">
+							<StackPanel Spacing="8">
+								<TextBlock Text="💡 Allergens are automatically detected from ingredients and recipes"
+								          FontWeight="SemiBold"
+								          FontSize="13"
+								          Foreground="#F57F17"/>
+								<TextBlock Text="Auto-detected allergens will show which ingredients contain them. You can manually check/uncheck any allergen."
+								          FontSize="12"
+								          Foreground="#666"
+								          TextWrapping="Wrap"/>
+							</StackPanel>
+						</Border>
+						<controls:AllergenSelectorControl x:Name="AllergenSelector"/>
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
+
+			<!-- TAB 3: NUTRITION -->
+			<TabItem Header="Nutrition">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<StackPanel Spacing="20" Margin="0,16,0,0">
+
+						<!-- Calculated Nutrition (Read-only) -->
+						<Border Background="#F3E5F5" BorderBrush="#9C27B0" BorderThickness="2" CornerRadius="6" Padding="16">
+							<StackPanel Spacing="12">
+								<TextBlock Text="📊 Calculated Nutrition (from components)" FontWeight="Bold" FontSize="15" Foreground="#6A1B9A"/>
+								<TextBlock Text="Nutrition is automatically calculated from the recipes and ingredients you add. To edit nutrition, update the ingredient nutrition values."
+								          FontSize="12"
+								          Foreground="#7B1FA2"
+								          FontStyle="Italic"
+								          TextWrapping="Wrap"/>
+
+								<!-- Nutrition Grid -->
+								<Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" RowDefinitions="Auto,Auto,Auto" RowSpacing="8" Margin="0,8,0,0">
+
+									<!-- Row 1 -->
+									<StackPanel Grid.Column="0" Grid.Row="0" Spacing="4">
+										<TextBlock Text="Calories" FontWeight="SemiBold" FontSize="13" Foreground="#6A1B9A"/>
+										<Border Background="White" BorderBrush="#9C27B0" BorderThickness="1" CornerRadius="4" Padding="8,6">
+											<TextBlock Text="{Binding CalculatedCalories}" FontSize="14" FontWeight="SemiBold"/>
+										</Border>
+									</StackPanel>
+
+									<StackPanel Grid.Column="1" Grid.Row="0" Spacing="4">
+										<TextBlock Text="Protein (g)" FontWeight="SemiBold" FontSize="13" Foreground="#6A1B9A"/>
+										<Border Background="White" BorderBrush="#9C27B0" BorderThickness="1" CornerRadius="4" Padding="8,6">
+											<TextBlock Text="{Binding CalculatedProtein}" FontSize="14" FontWeight="SemiBold"/>
+										</Border>
+									</StackPanel>
+
+									<StackPanel Grid.Column="2" Grid.Row="0" Spacing="4">
+										<TextBlock Text="Fat (g)" FontWeight="SemiBold" FontSize="13" Foreground="#6A1B9A"/>
+										<Border Background="White" BorderBrush="#9C27B0" BorderThickness="1" CornerRadius="4" Padding="8,6">
+											<TextBlock Text="{Binding CalculatedFat}" FontSize="14" FontWeight="SemiBold"/>
+										</Border>
+									</StackPanel>
+
+									<!-- Row 2 -->
+									<StackPanel Grid.Column="0" Grid.Row="1" Spacing="4">
+										<TextBlock Text="Carbs (g)" FontWeight="SemiBold" FontSize="13" Foreground="#6A1B9A"/>
+										<Border Background="White" BorderBrush="#9C27B0" BorderThickness="1" CornerRadius="4" Padding="8,6">
+											<TextBlock Text="{Binding CalculatedCarbohydrates}" FontSize="14" FontWeight="SemiBold"/>
+										</Border>
+									</StackPanel>
+
+									<StackPanel Grid.Column="1" Grid.Row="1" Spacing="4">
+										<TextBlock Text="Fiber (g)" FontWeight="SemiBold" FontSize="13" Foreground="#6A1B9A"/>
+										<Border Background="White" BorderBrush="#9C27B0" BorderThickness="1" CornerRadius="4" Padding="8,6">
+											<TextBlock Text="{Binding CalculatedFiber}" FontSize="14" FontWeight="SemiBold"/>
+										</Border>
+									</StackPanel>
+
+									<StackPanel Grid.Column="2" Grid.Row="1" Spacing="4">
+										<TextBlock Text="Sugar (g)" FontWeight="SemiBold" FontSize="13" Foreground="#6A1B9A"/>
+										<Border Background="White" BorderBrush="#9C27B0" BorderThickness="1" CornerRadius="4" Padding="8,6">
+											<TextBlock Text="{Binding CalculatedSugar}" FontSize="14" FontWeight="SemiBold"/>
+										</Border>
+									</StackPanel>
+
+									<!-- Row 3 -->
+									<StackPanel Grid.Column="0" Grid.Row="2" Spacing="4">
+										<TextBlock Text="Sodium (mg)" FontWeight="SemiBold" FontSize="13" Foreground="#6A1B9A"/>
+										<Border Background="White" BorderBrush="#9C27B0" BorderThickness="1" CornerRadius="4" Padding="8,6">
+											<TextBlock Text="{Binding CalculatedSodium}" FontSize="14" FontWeight="SemiBold"/>
+										</Border>
+									</StackPanel>
+
+								</Grid>
+							</StackPanel>
+						</Border>
+
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
+
+		<!-- TAB 4: ADVANCED -->
+		<TabItem Header="Advanced">
+			<ScrollViewer VerticalScrollBarVisibility="Auto">
+				<StackPanel Spacing="18" Margin="0,16,0,0">
+
+					<!-- Category -->
+					<StackPanel Spacing="7">
+						<TextBlock Text="Category" FontWeight="SemiBold" FontSize="14" Foreground="#2D2D2D"/>
+						<TextBox Text="{Binding Category}" Watermark="e.g., Appetizers, Mains, Desserts, Beverages..." Padding="12,10" FontSize="14"/>
+					</StackPanel>
+
+					<!-- Plating Equipment -->
+					<StackPanel Spacing="7">
+						<TextBlock Text="Plating Equipment (optional)" FontWeight="SemiBold" FontSize="14" Foreground="#2D2D2D"/>
+						<TextBox Text="{Binding PlatingEquipment}" Watermark="e.g., 9.5&quot; Oval, Ramekin, Soup Bowl" Padding="12,10" FontSize="14"/>
+					</StackPanel>
+
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+		</TabControl>
+
+		<!-- Action Buttons -->
+		<Border Grid.Row="1" Margin="0,24,0,0" Padding="0,20,0,0" BorderBrush="#E5E5E5" BorderThickness="0,1,0,0">
+			<Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+				<TextBlock Grid.Column="0" Text="* Required fields" VerticalAlignment="Center" Foreground="#666" FontSize="13"/>
+				<Button Grid.Column="1" Content="Cancel" Command="{Binding CancelCommand}" Padding="28,11" MinWidth="110"/>
+				<Button Grid.Column="2" Content="Save Entree" Command="{Binding SaveCommand}" Padding="28,11" MinWidth="130" Classes="primary"/>
+			</Grid>
+		</Border>
+	</Grid>
+</Window>

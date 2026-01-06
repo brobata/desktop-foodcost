@@ -1,0 +1,562 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2025-11-14",
+  "description": "Built-in conversion database for universal unit conversion system",
+
+  "densityProfiles": [
+    {
+      "category": "Flour-AllPurpose",
+      "keywords": ["flour", "all-purpose", "ap flour", "wheat flour", "plain flour", "unbleached"],
+      "gramsPerCup": 120.0,
+      "gramsPerTablespoon": 7.5,
+      "gramsPerTeaspoon": 2.5,
+      "source": "USDA",
+      "notes": "Spooned and leveled, not packed"
+    },
+    {
+      "category": "Flour-Bread",
+      "keywords": ["bread flour", "high-gluten flour"],
+      "gramsPerCup": 127.0,
+      "gramsPerTablespoon": 8.0,
+      "gramsPerTeaspoon": 2.7,
+      "source": "USDA",
+      "notes": "Slightly denser than all-purpose"
+    },
+    {
+      "category": "Flour-Cake",
+      "keywords": ["cake flour", "pastry flour"],
+      "gramsPerCup": 114.0,
+      "gramsPerTablespoon": 7.1,
+      "gramsPerTeaspoon": 2.4,
+      "source": "USDA",
+      "notes": "Lighter than all-purpose flour"
+    },
+    {
+      "category": "Sugar-White",
+      "keywords": ["sugar", "white sugar", "granulated sugar", "cane sugar", "table sugar"],
+      "gramsPerCup": 200.0,
+      "gramsPerTablespoon": 12.5,
+      "gramsPerTeaspoon": 4.2,
+      "source": "USDA",
+      "notes": "Granulated white sugar"
+    },
+    {
+      "category": "Sugar-Brown",
+      "keywords": ["brown sugar", "light brown", "dark brown"],
+      "gramsPerCup": 220.0,
+      "gramsPerTablespoon": 13.8,
+      "gramsPerTeaspoon": 4.6,
+      "source": "USDA",
+      "notes": "Packed measurement"
+    },
+    {
+      "category": "Sugar-Powdered",
+      "keywords": ["powdered sugar", "confectioners sugar", "icing sugar", "10x sugar"],
+      "gramsPerCup": 120.0,
+      "gramsPerTablespoon": 7.5,
+      "gramsPerTeaspoon": 2.5,
+      "source": "USDA",
+      "notes": "Sifted"
+    },
+    {
+      "category": "Liquid-Water",
+      "keywords": ["water", "stock", "broth", "bouillon", "juice", "milk", "cream", "wine", "beer"],
+      "gramsPerCup": 237.0,
+      "gramsPerTablespoon": 14.8,
+      "gramsPerTeaspoon": 4.9,
+      "gramsPerFluidOunce": 29.6,
+      "source": "USDA",
+      "notes": "Standard liquid measurement"
+    },
+    {
+      "category": "Oil-Vegetable",
+      "keywords": ["oil", "vegetable oil", "canola oil", "olive oil", "cooking oil"],
+      "gramsPerCup": 218.0,
+      "gramsPerTablespoon": 13.6,
+      "gramsPerTeaspoon": 4.5,
+      "gramsPerFluidOunce": 27.2,
+      "source": "USDA",
+      "notes": "Liquid fats"
+    },
+    {
+      "category": "Butter",
+      "keywords": ["butter", "margarine", "shortening"],
+      "gramsPerCup": 227.0,
+      "gramsPerTablespoon": 14.2,
+      "gramsPerTeaspoon": 4.7,
+      "source": "USDA",
+      "notes": "Solid fat, softened"
+    },
+    {
+      "category": "Honey",
+      "keywords": ["honey", "agave", "corn syrup", "maple syrup", "molasses"],
+      "gramsPerCup": 340.0,
+      "gramsPerTablespoon": 21.0,
+      "gramsPerTeaspoon": 7.0,
+      "source": "USDA",
+      "notes": "Thick liquid sweeteners"
+    },
+    {
+      "category": "Salt",
+      "keywords": ["salt", "table salt", "sea salt", "kosher salt"],
+      "gramsPerCup": 292.0,
+      "gramsPerTablespoon": 18.0,
+      "gramsPerTeaspoon": 6.0,
+      "source": "USDA",
+      "notes": "Fine table salt"
+    },
+    {
+      "category": "Rice-White",
+      "keywords": ["white rice", "long grain rice", "jasmine rice", "basmati"],
+      "gramsPerCup": 185.0,
+      "gramsPerTablespoon": 11.6,
+      "source": "USDA",
+      "notes": "Uncooked white rice"
+    },
+    {
+      "category": "Pasta-Dry",
+      "keywords": ["pasta", "dry pasta", "spaghetti", "penne", "macaroni", "noodles"],
+      "gramsPerCup": 100.0,
+      "gramsPerTablespoon": 6.25,
+      "source": "USDA",
+      "notes": "Dry pasta, varies by shape"
+    },
+    {
+      "category": "Oats-Rolled",
+      "keywords": ["oats", "rolled oats", "old fashioned oats", "oatmeal"],
+      "gramsPerCup": 80.0,
+      "gramsPerTablespoon": 5.0,
+      "source": "USDA"
+    },
+    {
+      "category": "Nuts-Chopped",
+      "keywords": ["nuts", "chopped nuts", "almonds", "walnuts", "pecans"],
+      "gramsPerCup": 120.0,
+      "gramsPerTablespoon": 7.5,
+      "source": "USDA",
+      "notes": "Chopped nuts, varies by type"
+    },
+    {
+      "category": "Cheese-Shredded",
+      "keywords": ["shredded cheese", "grated cheese", "cheese shreds"],
+      "gramsPerCup": 113.0,
+      "gramsPerTablespoon": 7.0,
+      "source": "USDA",
+      "notes": "Loosely packed shredded cheese"
+    },
+    {
+      "category": "Cocoa-Powder",
+      "keywords": ["cocoa powder", "cacao powder", "cocoa"],
+      "gramsPerCup": 118.0,
+      "gramsPerTablespoon": 7.4,
+      "gramsPerTeaspoon": 2.5,
+      "source": "USDA",
+      "notes": "Unsweetened cocoa powder"
+    },
+    {
+      "category": "BakingPowder",
+      "keywords": ["baking powder"],
+      "gramsPerTablespoon": 13.8,
+      "gramsPerTeaspoon": 4.6,
+      "source": "USDA"
+    },
+    {
+      "category": "BakingSoda",
+      "keywords": ["baking soda", "sodium bicarbonate"],
+      "gramsPerTablespoon": 18.0,
+      "gramsPerTeaspoon": 6.0,
+      "source": "USDA"
+    },
+    {
+      "category": "Cornstarch",
+      "keywords": ["cornstarch", "corn starch"],
+      "gramsPerCup": 128.0,
+      "gramsPerTablespoon": 8.0,
+      "gramsPerTeaspoon": 2.7,
+      "source": "USDA"
+    }
+  ],
+
+  "standardConversions": [
+    {
+      "keywords": ["egg", "eggs", "whole egg", "large egg"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 50.0,
+      "toUnit": 9,
+      "notes": "Large egg (most common)",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["egg", "eggs", "medium egg"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 44.0,
+      "toUnit": 9,
+      "notes": "Medium egg",
+      "source": "USDA"
+    },
+    {
+      "keywords": ["egg", "eggs", "extra large", "xl egg"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 56.0,
+      "toUnit": 9,
+      "notes": "Extra large egg",
+      "source": "USDA"
+    },
+    {
+      "keywords": ["onion", "yellow onion", "white onion", "sweet onion"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 150.0,
+      "toUnit": 9,
+      "notes": "Medium onion",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["onion", "large onion"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 200.0,
+      "toUnit": 9,
+      "notes": "Large onion",
+      "source": "USDA"
+    },
+    {
+      "keywords": ["garlic", "garlic clove", "clove garlic"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 3.0,
+      "toUnit": 9,
+      "notes": "Medium garlic clove",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["tomato", "medium tomato"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 123.0,
+      "toUnit": 9,
+      "notes": "Medium tomato",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["potato", "medium potato", "russet potato"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 213.0,
+      "toUnit": 9,
+      "notes": "Medium potato",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["carrot", "medium carrot"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 61.0,
+      "toUnit": 9,
+      "notes": "Medium carrot (7-8 inches)",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["apple", "medium apple"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 182.0,
+      "toUnit": 9,
+      "notes": "Medium apple (3 inch diameter)",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["banana", "medium banana"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 118.0,
+      "toUnit": 9,
+      "notes": "Medium banana (7-8 inches)",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["lemon", "medium lemon"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 58.0,
+      "toUnit": 9,
+      "notes": "Medium lemon",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["lime", "medium lime"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 67.0,
+      "toUnit": 9,
+      "notes": "Medium lime",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["orange", "medium orange"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 131.0,
+      "toUnit": 9,
+      "notes": "Medium orange",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["avocado", "medium avocado", "hass avocado"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 136.0,
+      "toUnit": 9,
+      "notes": "Medium Hass avocado",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["chicken breast", "chicken breast boneless", "boneless chicken"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 227.0,
+      "toUnit": 9,
+      "notes": "8 oz chicken breast (standard)",
+      "source": "Industry standard",
+      "isDefault": true
+    },
+    {
+      "keywords": ["chicken breast", "large chicken breast"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 284.0,
+      "toUnit": 9,
+      "notes": "10 oz chicken breast (large)",
+      "source": "Industry standard"
+    },
+    {
+      "keywords": ["chicken thigh", "boneless chicken thigh"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 113.0,
+      "toUnit": 9,
+      "notes": "4 oz chicken thigh (boneless)",
+      "source": "Industry standard",
+      "isDefault": true
+    },
+    {
+      "keywords": ["beef patty", "burger patty", "hamburger patty"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 113.0,
+      "toUnit": 9,
+      "notes": "Quarter pound burger (4 oz)",
+      "source": "Industry standard",
+      "isDefault": true
+    },
+    {
+      "keywords": ["beef patty", "third pound burger"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 151.0,
+      "toUnit": 9,
+      "notes": "Third pound burger (5.33 oz)",
+      "source": "Industry standard"
+    },
+    {
+      "keywords": ["pork chop", "bone-in pork chop"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 170.0,
+      "toUnit": 9,
+      "notes": "6 oz pork chop (bone-in)",
+      "source": "Industry standard",
+      "isDefault": true
+    },
+    {
+      "keywords": ["salmon fillet", "salmon portion"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 170.0,
+      "toUnit": 9,
+      "notes": "6 oz salmon fillet",
+      "source": "Industry standard",
+      "isDefault": true
+    },
+    {
+      "keywords": ["shrimp", "large shrimp"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 15.0,
+      "toUnit": 9,
+      "notes": "Large shrimp (21/25 count)",
+      "source": "Industry standard",
+      "isDefault": true
+    },
+    {
+      "keywords": ["bell pepper", "medium bell pepper"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 119.0,
+      "toUnit": 9,
+      "notes": "Medium bell pepper",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["jalapeno", "jalapeño", "jalapeno pepper"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 14.0,
+      "toUnit": 9,
+      "notes": "Medium jalapeño pepper",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["zucchini", "medium zucchini"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 196.0,
+      "toUnit": 9,
+      "notes": "Medium zucchini",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["cucumber", "medium cucumber"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 301.0,
+      "toUnit": 9,
+      "notes": "Medium cucumber",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["celery stalk", "celery"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 40.0,
+      "toUnit": 9,
+      "notes": "Medium celery stalk",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["mushroom", "button mushroom", "white mushroom"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 18.0,
+      "toUnit": 9,
+      "notes": "Medium button mushroom",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["bun", "hamburger bun", "burger bun"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 43.0,
+      "toUnit": 9,
+      "notes": "Standard hamburger bun",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["hot dog bun", "hotdog bun"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 43.0,
+      "toUnit": 9,
+      "notes": "Hot dog bun",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["tortilla", "flour tortilla", "8 inch tortilla"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 49.0,
+      "toUnit": 9,
+      "notes": "8-inch flour tortilla",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["tortilla", "10 inch tortilla", "burrito tortilla"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 72.0,
+      "toUnit": 9,
+      "notes": "10-inch flour tortilla",
+      "source": "USDA"
+    },
+    {
+      "keywords": ["bacon", "bacon strip", "slice bacon"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 13.0,
+      "toUnit": 9,
+      "notes": "One slice of bacon (cooked weight ~8g)",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["hot dog", "hotdog", "frankfurter"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 45.0,
+      "toUnit": 9,
+      "notes": "Standard hot dog",
+      "source": "USDA",
+      "isDefault": true
+    },
+    {
+      "keywords": ["sausage link", "breakfast sausage"],
+      "fromQuantity": 1.0,
+      "fromUnit": 11,
+      "toQuantity": 13.0,
+      "toUnit": 9,
+      "notes": "Breakfast sausage link",
+      "source": "USDA",
+      "isDefault": true
+    }
+  ],
+
+  "unitTypeEnum": {
+    "NotSet": 0,
+    "Teaspoon": 1,
+    "Tablespoon": 2,
+    "FluidOunce": 3,
+    "Cup": 4,
+    "Pint": 5,
+    "Quart": 6,
+    "Gallon": 7,
+    "Ounce": 8,
+    "Gram": 9,
+    "Kilogram": 10,
+    "Each": 11,
+    "Pound": 12,
+    "Count": 13,
+    "Dozen": 14
+  },
+
+  "notes": [
+    "fromUnit and toUnit use integer values from the UnitType enum",
+    "Density profiles support fuzzy keyword matching (case-insensitive)",
+    "standardConversions with isDefault=true are preferred for ambiguous matches",
+    "All weights in grams for consistency with USDA data",
+    "Conversion values sourced from USDA FoodData Central and industry standards"
+  ]
+}
