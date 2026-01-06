@@ -1,0 +1,192 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 0.9.010625)'
+        required: true
+        default: '0.9.010625'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Determine version
+      id: version
+      shell: bash
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+        else
+          # Extract version from tag (remove 'v' prefix)
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Update version in project
+      shell: pwsh
+      run: |
+        $version = "${{ steps.version.outputs.VERSION }}"
+        $csproj = "dfc.desktop/dfc.desktop.csproj"
+        $content = Get-Content $csproj -Raw
+        $content = $content -replace '<Version>.*</Version>', "<Version>$version</Version>"
+        $content = $content -replace '<AssemblyVersion>.*</AssemblyVersion>', "<AssemblyVersion>$version.0</AssemblyVersion>"
+        $content = $content -replace '<FileVersion>.*</FileVersion>', "<FileVersion>$version.0</FileVersion>"
+        $content = $content -replace '<InformationalVersion>.*</InformationalVersion>', "<InformationalVersion>$version</InformationalVersion>"
+        Set-Content $csproj $content
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test --no-restore --verbosity normal
+      continue-on-error: true
+
+    - name: Publish Windows x64 (self-contained)
+      run: |
+        dotnet publish dfc.desktop/dfc.desktop.csproj `
+          --configuration Release `
+          --runtime win-x64 `
+          --self-contained true `
+          --output ./publish/win-x64 `
+          -p:PublishSingleFile=false `
+          -p:IncludeNativeLibrariesForSelfExtract=true
+
+    - name: Create portable zip
+      shell: pwsh
+      run: |
+        $version = "${{ steps.version.outputs.VERSION }}"
+        Compress-Archive -Path ./publish/win-x64/* -DestinationPath "./DesktopFoodCost-v$version-win-x64-portable.zip"
+
+    - name: Download Inno Setup
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "innosetup.exe"
+        Start-Process -FilePath "innosetup.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-" -Wait
+
+    - name: Download VC++ Redistributable
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Force -Path "./installer"
+        Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x64.exe" -OutFile "./installer/vc_redist.x64.exe"
+
+    - name: Create Inno Setup script
+      shell: pwsh
+      run: |
+        $version = "${{ steps.version.outputs.VERSION }}"
+        $script = @"
+        #define MyAppName "Desktop Food Cost"
+        #define MyAppVersion "$version"
+        #define MyAppPublisher "Desktop Food Cost"
+        #define MyAppURL "https://github.com/disdiqqq/desktop-foodcost"
+        #define MyAppExeName "dfc.desktop.exe"
+
+        [Setup]
+        AppId={{8F9A7B2C-3D4E-5F6A-7B8C-9D0E1F2A3B4C}
+        AppName={#MyAppName}
+        AppVersion={#MyAppVersion}
+        AppPublisher={#MyAppPublisher}
+        AppPublisherURL={#MyAppURL}
+        AppSupportURL={#MyAppURL}
+        AppUpdatesURL={#MyAppURL}
+        DefaultDirName={autopf}\{#MyAppName}
+        DefaultGroupName={#MyAppName}
+        AllowNoIcons=yes
+        LicenseFile=LICENSE.txt
+        OutputDir=installer\output
+        OutputBaseFilename=DesktopFoodCost-v{#MyAppVersion}-win-x64-Setup
+        Compression=lzma
+        SolidCompression=yes
+        WizardStyle=modern
+        PrivilegesRequired=lowest
+        ArchitecturesAllowed=x64compatible
+        ArchitecturesInstallIn64BitMode=x64compatible
+        DisableProgramGroupPage=yes
+        UsePreviousAppDir=yes
+        CloseApplications=yes
+        CloseApplicationsFilter=*.exe
+        RestartApplications=no
+
+        [Languages]
+        Name: "english"; MessagesFile: "compiler:Default.isl"
+
+        [Tasks]
+        Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
+        [Files]
+        Source: "publish\win-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+        Source: "publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+        Source: "installer\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall
+        Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+
+        [Icons]
+        Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+        Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
+        Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+
+        [Code]
+        function VCRedistNeedsInstall: Boolean;
+        var
+          Version: String;
+        begin
+          if RegQueryStringValue(HKEY_LOCAL_MACHINE,
+            'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64', 'Version', Version) then
+            Result := False
+          else
+            Result := True;
+        end;
+
+        [Run]
+        Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/quiet /norestart"; StatusMsg: "Installing Visual C++ Runtime..."; Flags: runhidden; Check: VCRedistNeedsInstall
+        Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+        "@
+        Set-Content -Path "setup.iss" -Value $script
+
+    - name: Create installer output directory
+      run: mkdir -p installer/output
+      shell: bash
+
+    - name: Build installer
+      shell: cmd
+      run: |
+        "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
+
+    - name: Upload portable zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: portable-zip
+        path: ./DesktopFoodCost-v*.zip
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v4
+      with:
+        name: installer
+        path: ./installer/output/*.exe
+
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./DesktopFoodCost-v*.zip
+          ./installer/output/*.exe
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
