@@ -10,7 +10,6 @@ public interface IUserRepository
 {
     Task<User?> GetByIdAsync(Guid id);
     Task<User?> GetUserByEmailAsync(string email);
-    Task<User?> GetUserBySupabaseAuthUidAsync(string supabaseAuthUid);
     Task<List<User>> GetAllUsersAsync();
     Task<List<User>> GetUsersByRoleAsync(UserRole role);
     Task<List<User>> GetActiveUsersAsync();

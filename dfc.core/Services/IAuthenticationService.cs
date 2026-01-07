@@ -3,8 +3,7 @@ using Dfc.Core.Models;
 namespace Dfc.Core.Services;
 
 /// <summary>
-/// Generic authentication service interface
-/// TODO: Currently using SupabaseAuthService for authentication
+/// Authentication service interface for local-only mode
 /// </summary>
 public interface IAuthenticationService
 {

@@ -33,13 +33,6 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync(u => u.Email == email);
     }
 
-    public async Task<User?> GetUserBySupabaseAuthUidAsync(string supabaseAuthUid)
-    {
-        return await _context.Users
-            .Include(u => u.Location)
-            .FirstOrDefaultAsync(u => u.SupabaseAuthUid == supabaseAuthUid);
-    }
-
     public async Task<List<User>> GetAllUsersAsync()
     {
         return await _context.Users
