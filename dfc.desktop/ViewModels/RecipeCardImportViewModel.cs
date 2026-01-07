@@ -560,7 +560,7 @@ public partial class RecipeCardImportViewModel : ViewModelBase
                                 Id = Guid.NewGuid(),
                                 Name = ingredientPreview.IngredientName ?? "Unknown Ingredient",
                                 LocationId = _locationId,
-                                Unit = ingredientPreview.Unit ?? "each",
+                                Unit = ingredientPreview.Unit,
                                 CurrentPrice = 0, // Placeholder - needs to be set later
                                 Category = "[UNMATCHED - Import]",
                                 CreatedAt = DateTime.UtcNow,
