@@ -7,6 +7,17 @@ A professional cross-platform recipe costing and menu management application for
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+## Download
+
+[![Download Latest](https://img.shields.io/github/v/release/brobata/desktop-foodcost?label=Download&style=for-the-badge)](https://github.com/brobata/desktop-foodcost/releases/latest)
+
+| Platform | Download | Notes |
+|----------|----------|-------|
+| Windows (Installer) | [Download .exe](https://github.com/brobata/desktop-foodcost/releases/latest/download/DesktopFoodCost-v0.9.010625-win-x64-Setup.exe) | Recommended - includes auto VC++ runtime |
+| Windows (Portable) | [Download .zip](https://github.com/brobata/desktop-foodcost/releases/latest/download/DesktopFoodCost-v0.9.010625-win-x64-portable.zip) | No install required - extract and run |
+
+> macOS and Linux builds coming soon
+
 ## Overview
 
 Desktop Food Cost helps restaurant owners, chefs, and kitchen managers calculate accurate food costs, manage recipes, and make data-driven menu pricing decisions. The application runs entirely locally with multi-location support, making it ideal for managing multiple restaurants or kitchen operations.
