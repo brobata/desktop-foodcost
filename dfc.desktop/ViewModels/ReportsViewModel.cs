@@ -86,11 +86,11 @@ public partial class ReportsViewModel : ViewModelBase
             foreach (var row in report.Rows)
             {
                 var expandoObj = new ExpandoObject();
-                var expandoDict = (IDictionary<string, object>)expandoObj;
+                var expandoDict = expandoObj as IDictionary<string, object?>;
 
                 foreach (var kvp in row)
                 {
-                    expandoDict[kvp.Key] = kvp.Value ?? "";
+                    expandoDict![kvp.Key] = kvp.Value ?? "";
                 }
 
                 ReportData.Add(expandoObj);

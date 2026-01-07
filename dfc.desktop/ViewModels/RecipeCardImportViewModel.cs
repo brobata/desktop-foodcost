@@ -558,9 +558,9 @@ public partial class RecipeCardImportViewModel : ViewModelBase
                             var placeholderIngredient = new Ingredient
                             {
                                 Id = Guid.NewGuid(),
-                                Name = ingredientPreview.IngredientName,
+                                Name = ingredientPreview.IngredientName ?? "Unknown Ingredient",
                                 LocationId = _locationId,
-                                Unit = ingredientPreview.Unit,
+                                Unit = ingredientPreview.Unit ?? "each",
                                 CurrentPrice = 0, // Placeholder - needs to be set later
                                 Category = "[UNMATCHED - Import]",
                                 CreatedAt = DateTime.UtcNow,

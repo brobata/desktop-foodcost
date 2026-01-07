@@ -869,21 +869,23 @@ public partial class App : Application
 
     private bool CheckRegistryForEnvironmentVariables()
     {
+        // Only check registry on Windows
+        if (!OperatingSystem.IsWindows())
+        {
+            return false;
+        }
+
         try
         {
             using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Environment");
             if (key == null) return false;
 
-            var supabaseUrl = key.GetValue("SUPABASE_URL") as string;
-            var supabaseKey = key.GetValue("SUPABASE_ANON_KEY") as string;
             var usdaKey = key.GetValue("USDA_API_KEY") as string;
 
-            bool allInRegistry = !string.IsNullOrEmpty(supabaseUrl) &&
-                                !string.IsNullOrEmpty(supabaseKey) &&
-                                !string.IsNullOrEmpty(usdaKey);
+            bool hasUsdaKey = !string.IsNullOrEmpty(usdaKey);
 
-            System.Diagnostics.Debug.WriteLine($"[REGISTRY CHECK] Variables in registry: {allInRegistry}");
-            return allInRegistry;
+            System.Diagnostics.Debug.WriteLine($"[REGISTRY CHECK] USDA key in registry: {hasUsdaKey}");
+            return hasUsdaKey;
         }
         catch (Exception ex)
         {

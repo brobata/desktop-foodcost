@@ -24,9 +24,9 @@ public interface ICurrentLocationService
     event EventHandler? CurrentLocationChanged;
 
     /// <summary>
-    /// Set the current location
+    /// Set the current location (null to clear)
     /// </summary>
-    void SetCurrentLocation(Location location);
+    void SetCurrentLocation(Location? location);
 
     /// <summary>
     /// Check if a location is set

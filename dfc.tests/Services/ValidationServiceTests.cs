@@ -113,7 +113,7 @@ public class ValidationServiceTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    public void ValidateRecipe_WithEmptyYieldUnit_ShouldReturnError(string? yieldUnit)
+    public void ValidateRecipe_WithEmptyYieldUnit_ShouldReturnError(string yieldUnit)
     {
         // Arrange
         var recipe = CreateValidRecipe();
