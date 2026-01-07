@@ -860,10 +860,12 @@ public partial class App : Application
 
         try
         {
+#pragma warning disable CA1416 // Platform-specific code - guarded by OperatingSystem.IsWindows()
             using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Environment");
             if (key == null) return false;
 
             var usdaKey = key.GetValue("USDA_API_KEY") as string;
+#pragma warning restore CA1416
 
             bool hasUsdaKey = !string.IsNullOrEmpty(usdaKey);
 

@@ -117,7 +117,7 @@ public class ValidationServiceTests
     {
         // Arrange
         var recipe = CreateValidRecipe();
-        recipe.YieldUnit = yieldUnit;
+        recipe.YieldUnit = yieldUnit!;
 
         // Act
         var result = _sut.ValidateRecipe(recipe);

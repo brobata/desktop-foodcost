@@ -1,6 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:services="clr-namespace:Dfc.Core.Services;assembly=Dfc.Core"
+             xmlns:models="clr-namespace:Dfc.Core.Models;assembly=Dfc.Core"
              x:Class="Dfc.Desktop.Controls.ValidationPanel">
 
 	<StackPanel Spacing="8">
@@ -19,7 +19,7 @@
 				          Foreground="#C62828"/>
 				<ItemsControl Name="ErrorsList">
 					<ItemsControl.ItemTemplate>
-						<DataTemplate DataType="services:ValidationError">
+						<DataTemplate DataType="models:ValidationError">
 							<TextBlock FontSize="12" Foreground="#D32F2F" Margin="0,2">
 								<Run Text="• "/>
 								<Run Text="{Binding Field}" FontWeight="SemiBold"/>
@@ -47,7 +47,7 @@
 				          Foreground="#F57F17"/>
 				<ItemsControl Name="WarningsList">
 					<ItemsControl.ItemTemplate>
-						<DataTemplate DataType="services:ValidationWarning">
+						<DataTemplate DataType="models:ValidationWarning">
 							<TextBlock FontSize="12" Foreground="#F57F17" Margin="0,2" TextWrapping="Wrap">
 								<Run Text="• "/>
 								<Run Text="{Binding Field}" FontWeight="SemiBold"/>
@@ -75,7 +75,7 @@
 				          Foreground="#1976D2"/>
 				<ItemsControl Name="InfosList">
 					<ItemsControl.ItemTemplate>
-						<DataTemplate DataType="services:ValidationInfo">
+						<DataTemplate DataType="models:ValidationInfo">
 							<TextBlock FontSize="12" Foreground="#1565C0" Margin="0,2" TextWrapping="Wrap">
 								<Run Text="• "/>
 								<Run Text="{Binding Field}" FontWeight="SemiBold"/>
