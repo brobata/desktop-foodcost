@@ -127,18 +127,3 @@ public class LocalBugReportService : IBugReportService
         }
     }
 }
-
-/// <summary>
-/// Bug report model for local storage
-/// </summary>
-public class BugReport
-{
-    public Guid Id { get; set; }
-    public string WhatWereYouDoing { get; set; } = string.Empty;
-    public string? AdditionalNotes { get; set; }
-    public string? ExceptionMessage { get; set; }
-    public string? ExceptionStackTrace { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public string? AppVersion { get; set; }
-    public string? OsVersion { get; set; }
-}
