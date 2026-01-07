@@ -1,4 +1,4 @@
-using Desktop Food CostUser = Dfc.Core.Models.User;
+using DfcUser = Dfc.Core.Models.User;
 using SupabaseUser = Supabase.Gotrue.User;
 using SupabaseClient = Supabase.Client;
 using System;
@@ -21,7 +21,7 @@ public class SupabaseAuthService : IAuthenticationService
     private readonly IUserRepository _userRepository;
     private readonly ILogger<SupabaseAuthService>? _logger;
 
-    private Desktop Food CostUser? _currentUser;
+    private DfcUser? _currentUser;
     private SupabaseClient? _supabaseClient;
 
     public SupabaseAuthService(
@@ -37,7 +37,7 @@ public class SupabaseAuthService : IAuthenticationService
     /// <summary>
     /// Sign in with email and password using Supabase Auth
     /// </summary>
-    public async Task<Desktop Food CostUser> SignInAsync(string email, string password)
+    public async Task<DfcUser> SignInAsync(string email, string password)
     {
         Debug.WriteLine($"[Auth] SignInAsync called for email: {email}");
 
@@ -93,7 +93,7 @@ public class SupabaseAuthService : IAuthenticationService
                 var isFirstUser = existingUsers.Count == 0;
                 Debug.WriteLine($"[Auth] Existing users count: {existingUsers.Count}, isFirstUser: {isFirstUser}");
 
-                user = new Desktop Food CostUser
+                user = new DfcUser
                 {
                     Id = Guid.NewGuid(),
                     Email = email,
@@ -139,7 +139,7 @@ public class SupabaseAuthService : IAuthenticationService
 
             if (!user.IsActive)
             {
-                Debug.WriteLine("[Auth] ERROR: Desktop Food CostUser account is disabled");
+                Debug.WriteLine("[Auth] ERROR: DfcUser account is disabled");
                 throw new UnauthorizedAccessException("User account is disabled");
             }
 
@@ -179,7 +179,7 @@ public class SupabaseAuthService : IAuthenticationService
     /// <summary>
     /// Sign up a new user with email and password
     /// </summary>
-    public async Task<Desktop Food CostUser> SignUpAsync(string email, string password, string displayName)
+    public async Task<DfcUser> SignUpAsync(string email, string password, string displayName)
     {
         Debug.WriteLine($"[Auth] SignUpAsync called for email: {email}");
 
@@ -209,7 +209,7 @@ public class SupabaseAuthService : IAuthenticationService
             var isFirstUser = existingUsers.Count == 0;
             Debug.WriteLine($"[Auth] Existing users count: {existingUsers.Count}, isFirstUser: {isFirstUser}");
 
-            var user = new Desktop Food CostUser
+            var user = new DfcUser
             {
                 Id = Guid.NewGuid(),
                 Email = email,
@@ -313,7 +313,7 @@ public class SupabaseAuthService : IAuthenticationService
     /// <summary>
     /// Get the current authenticated user
     /// </summary>
-    public async Task<Desktop Food CostUser?> GetCurrentUserAsync()
+    public async Task<DfcUser?> GetCurrentUserAsync()
     {
         // If we already have a current user, return it
         if (_currentUser != null)
@@ -444,7 +444,7 @@ public class SupabaseAuthService : IAuthenticationService
     /// <summary>
     /// Restore session from stored refresh token
     /// </summary>
-    public async Task<Desktop Food CostUser?> RestoreSessionAsync(string refreshToken, string? accessToken = null)
+    public async Task<DfcUser?> RestoreSessionAsync(string refreshToken, string? accessToken = null)
     {
         Debug.WriteLine("[AUTH] RestoreSessionAsync called with stored refresh token");
         _logger?.LogInformation("[AUTH] RestoreSessionAsync called (token length: {TokenLength})", refreshToken?.Length ?? 0);
