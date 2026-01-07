@@ -69,7 +69,19 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
       continue-on-error: true
 
-    - name: Publish
+    - name: Publish (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        dotnet publish dfc.desktop/dfc.desktop.csproj `
+          --configuration Release `
+          --runtime ${{ matrix.runtime }} `
+          --self-contained true `
+          --output ./publish/${{ matrix.runtime }} `
+          -p:PublishSingleFile=false `
+          -p:IncludeNativeLibrariesForSelfExtract=true
+
+    - name: Publish (macOS/Linux)
+      if: matrix.os != 'windows-latest'
       run: |
         dotnet publish dfc.desktop/dfc.desktop.csproj \
           --configuration Release \
