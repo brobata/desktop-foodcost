@@ -1056,14 +1056,8 @@ public partial class App : Application
         services.AddScoped<IRecipeVersionService, RecipeVersionService>();
         services.AddScoped<IEntreeService, EntreeService>();
         services.AddScoped<IPriceHistoryService, PriceHistoryService>();
-        // Local-only mode: LocationService without Supabase
-        services.AddScoped<ILocationService, LocationService>(sp =>
-            new LocationService(
-                sp.GetRequiredService<ILocationRepository>(),
-                sp.GetService<IUserSessionService>(),
-                null, // No SupabaseDataService in local-only mode
-                sp.GetService<ILogger<LocationService>>()
-            ));
+        // Local-only mode: LocationService without cloud sync
+        services.AddScoped<ILocationService, LocationService>();
         services.AddScoped<ILocationUserService, LocationUserService>();
 
         // Delta Sync Optimization
@@ -1205,7 +1199,6 @@ public partial class App : Application
             sp.GetRequiredService<IIngredientRepository>(),
             sp.GetRequiredService<IRecipeRepository>(),
             sp.GetRequiredService<IEntreeRepository>(),
-            sp.GetRequiredService<IUserSessionService>(),
             sp.GetRequiredService<ICurrentLocationService>()
         ));
 

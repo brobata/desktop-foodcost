@@ -88,7 +88,7 @@ public class RecipeRepository : IRecipeRepository
             _context.ChangeTracker.Clear();
             System.Diagnostics.Debug.WriteLine("      [RECIPE REPO] Change tracker cleared");
 
-            // CRITICAL: Only generate new ID if not set (preserve Supabase IDs)
+            // CRITICAL: Only generate new ID if not set
 
 
             if (recipe.Id == Guid.Empty)

@@ -61,7 +61,7 @@ public class IngredientRepository : IIngredientRepository
 
     public async Task<Ingredient> AddAsync(Ingredient ingredient)
     {
-        // CRITICAL: Only generate new ID if not already set (preserve Supabase IDs during sync)
+        // CRITICAL: Only generate new ID if not already set
         if (ingredient.Id == Guid.Empty)
         {
             ingredient.Id = Guid.NewGuid();

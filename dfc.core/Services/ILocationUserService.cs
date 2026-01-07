@@ -8,7 +8,7 @@ namespace Dfc.Core.Services;
 
 /// <summary>
 /// Service for managing user access to locations (multi-user location sharing)
-/// Handles sync between local SQLite and Supabase
+/// Local-only implementation
 /// </summary>
 public interface ILocationUserService
 {
@@ -24,19 +24,16 @@ public interface ILocationUserService
 
     /// <summary>
     /// Grant a user access to a location with a specific role
-    /// Syncs to both local DB and Supabase
     /// </summary>
     Task AddUserToLocationAsync(Guid locationId, string userId, LocationUserRole role);
 
     /// <summary>
     /// Remove a user's access to a location
-    /// Syncs to both local DB and Supabase
     /// </summary>
     Task RemoveUserFromLocationAsync(Guid locationId, string userId);
 
     /// <summary>
     /// Update a user's role for a location
-    /// Syncs to both local DB and Supabase
     /// </summary>
     Task UpdateUserRoleAsync(Guid locationId, string userId, LocationUserRole newRole);
 }

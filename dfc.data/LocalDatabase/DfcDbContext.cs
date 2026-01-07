@@ -74,7 +74,7 @@ public class DfcDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Address).HasMaxLength(500);
-            entity.Property(e => e.UserId).HasMaxLength(128); // Supabase Auth UID - NULL for offline locations
+            entity.Property(e => e.UserId).HasMaxLength(128); // User ID - NULL for offline locations
             entity.HasIndex(e => e.Name);
             entity.HasIndex(e => e.UserId);
         });
@@ -84,9 +84,7 @@ public class DfcDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.SupabaseAuthUid).HasMaxLength(128);
             entity.HasIndex(e => e.Email).IsUnique();
-            entity.HasIndex(e => e.SupabaseAuthUid);
 
             entity.HasOne(e => e.Location)
                 .WithMany(l => l.Users)

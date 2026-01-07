@@ -640,8 +640,8 @@ public partial class MainWindowViewModel : ViewModelBase
             // Refresh UI after sign-in completes
             UpdateUserSessionState();
 
-            // Using Supabase/local config
-            _logger?.LogInformation("Using Supabase/local configuration");
+            // Using local config
+            _logger?.LogInformation("Using local configuration");
 
             await RefreshCurrentViewAsync();
 

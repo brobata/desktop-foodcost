@@ -14,8 +14,7 @@ public class LocationUser : BaseEntity
     public Guid LocationId { get; set; }
 
     /// <summary>
-    /// Supabase Auth UID of the user being granted access
-    /// Stored as string to match Supabase Auth system
+    /// ID of the user being granted access
     /// </summary>
     public string UserId { get; set; } = string.Empty;
 

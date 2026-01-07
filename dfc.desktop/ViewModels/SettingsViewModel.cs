@@ -36,7 +36,6 @@ public partial class SettingsViewModel : ViewModelBase
     private readonly ICurrentLocationService _currentLocationService;
     private readonly IStatusNotificationService _notificationService;
     private readonly IIngredientConversionRepository? _conversionRepository;
-    private readonly SupabasePhotoService? _photoService;
     private readonly ISpoonyService? _spoonyService;
     private readonly ILogger<SettingsViewModel>? _logger;
     private Window? _ownerWindow;
@@ -105,8 +104,7 @@ public partial class SettingsViewModel : ViewModelBase
         IDatabaseBackupService? backupService = null,
         IAutoUpdateService? updateService = null,
         ILogger<SettingsViewModel>? logger = null,
-        IIngredientConversionRepository? conversionRepository = null,
-        SupabasePhotoService? photoService = null)
+        IIngredientConversionRepository? conversionRepository = null)
     {
         _serviceProvider = serviceProvider;
         _excelExportService = excelExportService;
@@ -123,7 +121,6 @@ public partial class SettingsViewModel : ViewModelBase
         _sessionService = (IUserSessionService)serviceProvider.GetRequiredService(typeof(IUserSessionService));
         _syncService = serviceProvider.GetService(typeof(ISyncService)) as ISyncService;
         _currentLocationService = (ICurrentLocationService)serviceProvider.GetRequiredService(typeof(ICurrentLocationService));
-        _photoService = photoService;
         _spoonyService = serviceProvider.GetService(typeof(ISpoonyService)) as ISpoonyService;
 
         // Initialize Spoony setting from service

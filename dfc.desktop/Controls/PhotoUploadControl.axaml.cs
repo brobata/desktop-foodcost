@@ -169,8 +169,8 @@ public partial class PhotoUploadControl : UserControl
         {
             try
             {
-                // Check if it's a Supabase URL
-                if (PhotoUrl.Contains("supabase.co") || PhotoUrl.Contains("/storage/v1/object/public/"))
+                // Check if it's a remote URL
+                if (PhotoUrl.StartsWith("http://") || PhotoUrl.StartsWith("https://"))
                 {
                     // Generate cache file path from URL
                     var cacheFileName = GenerateCacheFileName(PhotoUrl);
@@ -188,8 +188,8 @@ public partial class PhotoUploadControl : UserControl
                     }
                     else
                     {
-                        // Download from Supabase and cache
-                        System.Diagnostics.Debug.WriteLine($"[PhotoPreview] Downloading photo from Supabase: {PhotoUrl}");
+                        // Download from remote URL and cache
+                        System.Diagnostics.Debug.WriteLine($"[PhotoPreview] Downloading photo from remote URL: {PhotoUrl}");
                         using var httpClient = new HttpClient();
                         var photoBytes = await httpClient.GetByteArrayAsync(PhotoUrl);
                         
@@ -244,7 +244,7 @@ public partial class PhotoUploadControl : UserControl
 
     private string GenerateCacheFileName(string photoUrl)
     {
-        // Extract filename from Supabase URL
+        // Extract filename from remote URL
         // Example: https://.../photos/Entree/abc-123/photo.jpg -> Entree_abc-123_photo.jpg
         try
         {

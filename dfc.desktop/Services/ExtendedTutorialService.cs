@@ -563,12 +563,12 @@ public class ExtendedTutorialService : IExtendedTutorialService
                 },
                 new Dfc.Desktop.Models.TutorialStep
                 {
-                    Id = "cloud-sync",
-                    Title = "Cloud Sync with Supabase",
-                    Description = "Sign in to enable Cloud Sync:\n\n1. Go to Settings\n2. Click 'Sign In'\n3. Create or sign in to your account\n4. Your data syncs automatically\n\nBenefits:\n• Access from multiple computers\n• Automatic backup to cloud\n• Share with team members\n• Work from home or office\n\nYour data syncs in the background. Look for the sync icon in the status bar to see sync status.",
-                    ScreenshotPath = "cloud-sync.png",
+                    Id = "data-management",
+                    Title = "Data Management",
+                    Description = "Desktop Food Cost stores your data locally:\n\n• All your data is stored on your computer\n• Use the Backup feature to protect your data\n• Export to Excel for sharing\n• Import from invoices and spreadsheets\n\nBenefits:\n• Fast and reliable\n• Works offline\n• Your data stays private\n• No subscription required",
+                    ScreenshotPath = "data-management.png",
                     StepNumber = 2,
-                    ProTip = "Cloud sync also backs up your data automatically!"
+                    ProTip = "Regular backups protect your data!"
                 },
                 new Dfc.Desktop.Models.TutorialStep
                 {

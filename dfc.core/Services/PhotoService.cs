@@ -1,6 +1,3 @@
-// Location: Dfc.Core/Services/PhotoService.cs
-// Action: CREATE NEW FILE
-
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -28,16 +25,17 @@ public interface IPhotoService
     Task<string> OptimizeImageAsync(string sourceFilePath, int maxWidth = 1920, int maxHeight = 1080, int quality = 85);
 }
 
+/// <summary>
+/// Local-only photo service that saves photos to the local file system
+/// </summary>
 public class PhotoService : IPhotoService
 {
     private readonly string _basePhotosPath;
     private readonly string _entreePhotosPath;
     private readonly string _recipePhotosPath;
-    private readonly SupabasePhotoService _supabasePhotoService;
 
-    public PhotoService(SupabasePhotoService supabasePhotoService)
+    public PhotoService()
     {
-        _supabasePhotoService = supabasePhotoService ?? throw new ArgumentNullException(nameof(supabasePhotoService));
         _basePhotosPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "Desktop Food Cost",
@@ -57,44 +55,36 @@ public class PhotoService : IPhotoService
         if (string.IsNullOrEmpty(sourceFilePath) || !File.Exists(sourceFilePath))
             throw new FileNotFoundException("Source photo file not found", sourceFilePath);
 
-        // Validate file type
         var extension = Path.GetExtension(sourceFilePath).ToLowerInvariant();
         if (extension != ".jpg" && extension != ".jpeg" && extension != ".png")
             throw new InvalidOperationException("Only JPG and PNG files are supported");
 
         try
         {
-            // Optimize the image first (resize/compress if needed)
             var optimizedPath = await OptimizeImageAsync(sourceFilePath);
 
-            // Upload to Supabase Storage
-            var tempEntityId = Guid.NewGuid();
-            var result = await _supabasePhotoService.UploadPhotoAsync(
-                optimizedPath,
-                "Entree",
-                tempEntityId,
-                caption: null
-            );
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var destPath = Path.Combine(_entreePhotosPath, fileName);
 
-            // Clean up temp optimized file if it's different from source
-            if (optimizedPath != sourceFilePath && File.Exists(optimizedPath))
+            await Task.Run(() =>
             {
-                await Task.Run(() => File.Delete(optimizedPath));
-            }
+                if (optimizedPath != sourceFilePath)
+                {
+                    File.Move(optimizedPath, destPath);
+                }
+                else
+                {
+                    File.Copy(sourceFilePath, destPath);
+                }
+            });
 
-            if (!result.IsSuccess || result.Photo == null)
-            {
-                throw new InvalidOperationException($"Photo upload failed: {result.ErrorMessage}");
-            }
+            Debug.WriteLine($"[PhotoService] Photo saved locally: {destPath}");
 
-            Debug.WriteLine($"[PhotoService] Photo uploaded to Supabase: {result.Photo.PublicUrl}");
-
-            // Return the public URL from Supabase Storage
-            return result.Photo.PublicUrl;
+            return fileName;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[PhotoService] Failed to upload entree photo: {ex.Message}");
+            Debug.WriteLine($"[PhotoService] Failed to save entree photo: {ex.Message}");
             throw;
         }
     }
@@ -104,44 +94,36 @@ public class PhotoService : IPhotoService
         if (string.IsNullOrEmpty(sourceFilePath) || !File.Exists(sourceFilePath))
             throw new FileNotFoundException("Source photo file not found", sourceFilePath);
 
-        // Validate file type
         var extension = Path.GetExtension(sourceFilePath).ToLowerInvariant();
         if (extension != ".jpg" && extension != ".jpeg" && extension != ".png")
             throw new InvalidOperationException("Only JPG and PNG files are supported");
 
         try
         {
-            // Optimize the image first (resize/compress if needed)
             var optimizedPath = await OptimizeImageAsync(sourceFilePath);
 
-            // Upload to Supabase Storage
-            var tempEntityId = Guid.NewGuid();
-            var result = await _supabasePhotoService.UploadPhotoAsync(
-                optimizedPath,
-                "Recipe",
-                tempEntityId,
-                caption: null
-            );
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var destPath = Path.Combine(_recipePhotosPath, fileName);
 
-            // Clean up temp optimized file if it's different from source
-            if (optimizedPath != sourceFilePath && File.Exists(optimizedPath))
+            await Task.Run(() =>
             {
-                await Task.Run(() => File.Delete(optimizedPath));
-            }
+                if (optimizedPath != sourceFilePath)
+                {
+                    File.Move(optimizedPath, destPath);
+                }
+                else
+                {
+                    File.Copy(sourceFilePath, destPath);
+                }
+            });
 
-            if (!result.IsSuccess || result.Photo == null)
-            {
-                throw new InvalidOperationException($"Photo upload failed: {result.ErrorMessage}");
-            }
+            Debug.WriteLine($"[PhotoService] Photo saved locally: {destPath}");
 
-            Debug.WriteLine($"[PhotoService] Photo uploaded to Supabase: {result.Photo.PublicUrl}");
-
-            // Return the public URL from Supabase Storage
-            return result.Photo.PublicUrl;
+            return fileName;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[PhotoService] Failed to upload recipe photo: {ex.Message}");
+            Debug.WriteLine($"[PhotoService] Failed to save recipe photo: {ex.Message}");
             throw;
         }
     }
@@ -156,6 +138,7 @@ public class PhotoService : IPhotoService
         if (File.Exists(fullPath))
         {
             await Task.Run(() => File.Delete(fullPath));
+            Debug.WriteLine($"[PhotoService] Photo deleted: {fullPath}");
         }
     }
 
@@ -235,7 +218,7 @@ public class PhotoService : IPhotoService
             var needsResize = original.Width > maxWidth || original.Height > maxHeight;
             var originalSize = new FileInfo(sourceFilePath).Length;
 
-            // If image is already small enough and file size is reasonable, just copy it
+            // If image is already small enough and file size is reasonable, just return the source
             if (!needsResize && originalSize < 2 * 1024 * 1024) // 2MB threshold
             {
                 return sourceFilePath;

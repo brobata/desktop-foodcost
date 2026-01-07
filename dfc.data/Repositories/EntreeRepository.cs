@@ -67,7 +67,7 @@ public class EntreeRepository : IEntreeRepository
 
     public async Task<Entree> CreateAsync(Entree entree)
     {
-        // CRITICAL: Only generate new ID if not set (preserve Supabase IDs)
+        // CRITICAL: Only generate new ID if not set
 
         if (entree.Id == Guid.Empty)
 

@@ -1,4 +1,4 @@
-﻿namespace Dfc.Core.Models;
+namespace Dfc.Core.Models;
 
 public class Location : BaseEntity
 {
@@ -8,9 +8,7 @@ public class Location : BaseEntity
     public bool IsActive { get; set; } = true;
 
     /// <summary>
-    /// Supabase Auth UID of the user who owns this location.
-    /// NULL = offline-only location (not synced to cloud)
-    /// NOT NULL = online location synced to/from Supabase
+    /// Optional user ID associated with this location
     /// </summary>
     public string? UserId { get; set; }
 

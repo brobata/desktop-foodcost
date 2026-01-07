@@ -90,11 +90,11 @@ public partial class LocationSelectorViewModel : ObservableObject
             }
             LogDebug($"Current user: {user.Email}");
 
-            // CRITICAL: Sync restaurants from Supabase before loading locations
+            // Sync restaurants before loading locations (if sync service is available)
             // This ensures we only show locations the user currently has access to
             if (_sessionService.IsAuthenticated && _syncService != null)
             {
-                LogDebug("Syncing restaurants from Supabase...");
+                LogDebug("Syncing restaurants...");
                 var syncResult = await _syncService.SyncRestaurantsAsync();
 
                 if (syncResult.IsSuccess)

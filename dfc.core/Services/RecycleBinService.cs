@@ -18,8 +18,6 @@ public class RecycleBinService : IRecycleBinService
     private readonly IRecipeRepository _recipeRepository;
     private readonly IEntreeRepository _entreeRepository;
     private readonly ILocalModificationService _localModificationService;
-    private readonly IUserSessionService? _sessionService;
-    private readonly SupabaseDataService? _dataService;
     private readonly ILogger<RecycleBinService>? _logger;
 
     private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
@@ -35,8 +33,6 @@ public class RecycleBinService : IRecycleBinService
         IRecipeRepository recipeRepository,
         IEntreeRepository entreeRepository,
         ILocalModificationService localModificationService,
-        IUserSessionService? sessionService = null,
-        SupabaseDataService? dataService = null,
         ILogger<RecycleBinService>? logger = null)
     {
         _deletedItemRepository = deletedItemRepository;
@@ -44,8 +40,6 @@ public class RecycleBinService : IRecycleBinService
         _recipeRepository = recipeRepository;
         _entreeRepository = entreeRepository;
         _localModificationService = localModificationService;
-        _sessionService = sessionService;
-        _dataService = dataService;
         _logger = logger;
     }
 
@@ -53,14 +47,12 @@ public class RecycleBinService : IRecycleBinService
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] Starting MoveToRecycleBinAsync");
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] Entity Type: {typeof(T).Name}");
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] Item Type: {type}");
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] Location ID: {locationId}");
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] Entity ID: {entity.Id}");
+            Debug.WriteLine($"  [RECYCLE BIN] Starting MoveToRecycleBinAsync");
+            Debug.WriteLine($"  [RECYCLE BIN] Entity Type: {typeof(T).Name}");
+            Debug.WriteLine($"  [RECYCLE BIN] Item Type: {type}");
+            Debug.WriteLine($"  [RECYCLE BIN] Location ID: {locationId}");
+            Debug.WriteLine($"  [RECYCLE BIN] Entity ID: {entity.Id}");
 
-            // CRITICAL: Clear navigation properties before serialization to avoid circular references
-            // and serialization issues, especially for online locations with User→Location references
             string itemName = type switch
             {
                 DeletedItemType.Ingredient => (entity as Ingredient)?.Name ?? "Unknown",
@@ -68,96 +60,93 @@ public class RecycleBinService : IRecycleBinService
                 DeletedItemType.Entree => (entity as Entree)?.Name ?? "Unknown",
                 _ => "Unknown"
             };
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] Item Name: {itemName}");
+            Debug.WriteLine($"  [RECYCLE BIN] Item Name: {itemName}");
 
-        // Clear navigation properties based on type to avoid serialization issues
-        switch (type)
-        {
-            case DeletedItemType.Ingredient when entity is Ingredient ingredient:
-                ingredient.Location = null!;
-                ingredient.PriceHistory = new List<PriceHistory>();
-                ingredient.RecipeIngredients = new List<RecipeIngredient>();
-                ingredient.EntreeIngredients = new List<EntreeIngredient>();
+            // Clear navigation properties based on type to avoid serialization issues
+            switch (type)
+            {
+                case DeletedItemType.Ingredient when entity is Ingredient ingredient:
+                    ingredient.Location = null!;
+                    ingredient.PriceHistory = new List<PriceHistory>();
+                    ingredient.RecipeIngredients = new List<RecipeIngredient>();
+                    ingredient.EntreeIngredients = new List<EntreeIngredient>();
 
-                // Keep allergens and aliases for restoration, but clear their navigation properties
-                if (ingredient.IngredientAllergens != null)
-                {
-                    foreach (var allergen in ingredient.IngredientAllergens)
+                    if (ingredient.IngredientAllergens != null)
                     {
-                        allergen.Ingredient = null!;
-                        allergen.Allergen = null!;
+                        foreach (var allergen in ingredient.IngredientAllergens)
+                        {
+                            allergen.Ingredient = null!;
+                            allergen.Allergen = null!;
+                        }
                     }
-                }
-                if (ingredient.Aliases != null)
-                {
-                    foreach (var alias in ingredient.Aliases)
+                    if (ingredient.Aliases != null)
                     {
-                        alias.Ingredient = null!;
+                        foreach (var alias in ingredient.Aliases)
+                        {
+                            alias.Ingredient = null!;
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case DeletedItemType.Recipe when entity is Recipe recipe:
-                recipe.Location = null!;
-                recipe.EntreeRecipes = new List<EntreeRecipe>();
-                recipe.Photos = new List<Photo>();
+                case DeletedItemType.Recipe when entity is Recipe recipe:
+                    recipe.Location = null!;
+                    recipe.EntreeRecipes = new List<EntreeRecipe>();
+                    recipe.Photos = new List<Photo>();
 
-                // Keep ingredients and allergens for restoration, but clear their navigation properties
-                if (recipe.RecipeIngredients != null)
-                {
-                    foreach (var ingredient in recipe.RecipeIngredients)
+                    if (recipe.RecipeIngredients != null)
                     {
-                        ingredient.Recipe = null!;
-                        ingredient.Ingredient = null!;
+                        foreach (var ingredient in recipe.RecipeIngredients)
+                        {
+                            ingredient.Recipe = null!;
+                            ingredient.Ingredient = null!;
+                        }
                     }
-                }
-                if (recipe.RecipeAllergens != null)
-                {
-                    foreach (var allergen in recipe.RecipeAllergens)
+                    if (recipe.RecipeAllergens != null)
                     {
-                        allergen.Recipe = null!;
-                        allergen.Allergen = null!;
+                        foreach (var allergen in recipe.RecipeAllergens)
+                        {
+                            allergen.Recipe = null!;
+                            allergen.Allergen = null!;
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case DeletedItemType.Entree when entity is Entree entree:
-                entree.Location = null!;
-                entree.Photos = new List<Photo>();
+                case DeletedItemType.Entree when entity is Entree entree:
+                    entree.Location = null!;
+                    entree.Photos = new List<Photo>();
 
-                // Keep recipes, ingredients, and allergens for restoration, but clear their navigation properties
-                if (entree.EntreeRecipes != null)
-                {
-                    foreach (var recipe in entree.EntreeRecipes)
+                    if (entree.EntreeRecipes != null)
                     {
-                        recipe.Entree = null!;
-                        recipe.Recipe = null!;
+                        foreach (var recipe in entree.EntreeRecipes)
+                        {
+                            recipe.Entree = null!;
+                            recipe.Recipe = null!;
+                        }
                     }
-                }
-                if (entree.EntreeIngredients != null)
-                {
-                    foreach (var ingredient in entree.EntreeIngredients)
+                    if (entree.EntreeIngredients != null)
                     {
-                        ingredient.Entree = null!;
-                        ingredient.Ingredient = null!;
+                        foreach (var ingredient in entree.EntreeIngredients)
+                        {
+                            ingredient.Entree = null!;
+                            ingredient.Ingredient = null!;
+                        }
                     }
-                }
-                if (entree.EntreeAllergens != null)
-                {
-                    foreach (var allergen in entree.EntreeAllergens)
+                    if (entree.EntreeAllergens != null)
                     {
-                        allergen.Entree = null!;
-                        allergen.Allergen = null!;
+                        foreach (var allergen in entree.EntreeAllergens)
+                        {
+                            allergen.Entree = null!;
+                            allergen.Allergen = null!;
+                        }
                     }
-                }
-                break;
-        }
+                    break;
+            }
 
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] Clearing navigation properties complete");
+            Debug.WriteLine($"  [RECYCLE BIN] Clearing navigation properties complete");
 
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] Serializing entity to JSON...");
+            Debug.WriteLine($"  [RECYCLE BIN] Serializing entity to JSON...");
             var serializedData = JsonSerializer.Serialize(entity, _jsonOptions);
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] Serialization complete. Length: {serializedData.Length} chars");
+            Debug.WriteLine($"  [RECYCLE BIN] Serialization complete. Length: {serializedData.Length} chars");
 
             var deletedItem = new DeletedItem
             {
@@ -168,28 +157,28 @@ public class RecycleBinService : IRecycleBinService
                 LocationId = locationId,
                 DeletedDate = DateTime.UtcNow
             };
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] DeletedItem created. ItemId: {deletedItem.ItemId}");
+            Debug.WriteLine($"  [RECYCLE BIN] DeletedItem created. ItemId: {deletedItem.ItemId}");
 
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] Adding to DeletedItemRepository...");
+            Debug.WriteLine($"  [RECYCLE BIN] Adding to DeletedItemRepository...");
             var result = await _deletedItemRepository.AddAsync(deletedItem);
-            System.Diagnostics.Debug.WriteLine($"  [RECYCLE BIN] Successfully added. Result Id: {result.Id}");
+            Debug.WriteLine($"  [RECYCLE BIN] Successfully added. Result Id: {result.Id}");
 
             return result;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine("  ╔═══════════════════════════════════════════════════╗");
-            System.Diagnostics.Debug.WriteLine("  ║ [RECYCLE BIN EXCEPTION]                           ║");
-            System.Diagnostics.Debug.WriteLine("  ╠═══════════════════════════════════════════════════╣");
-            System.Diagnostics.Debug.WriteLine($"  Exception Type: {ex.GetType().Name}");
-            System.Diagnostics.Debug.WriteLine($"  Message: {ex.Message}");
-            System.Diagnostics.Debug.WriteLine($"  Stack Trace:\n{ex.StackTrace}");
+            Debug.WriteLine("  ╔═══════════════════════════════════════════════════╗");
+            Debug.WriteLine("  ║ [RECYCLE BIN EXCEPTION]                           ║");
+            Debug.WriteLine("  ╠═══════════════════════════════════════════════════╣");
+            Debug.WriteLine($"  Exception Type: {ex.GetType().Name}");
+            Debug.WriteLine($"  Message: {ex.Message}");
+            Debug.WriteLine($"  Stack Trace:\n{ex.StackTrace}");
             if (ex.InnerException != null)
             {
-                System.Diagnostics.Debug.WriteLine($"  Inner Exception: {ex.InnerException.Message}");
-                System.Diagnostics.Debug.WriteLine($"  Inner Stack Trace:\n{ex.InnerException.StackTrace}");
+                Debug.WriteLine($"  Inner Exception: {ex.InnerException.Message}");
+                Debug.WriteLine($"  Inner Stack Trace:\n{ex.InnerException.StackTrace}");
             }
-            System.Diagnostics.Debug.WriteLine("  ╚═══════════════════════════════════════════════════╝");
+            Debug.WriteLine("  ╚═══════════════════════════════════════════════════╝");
             throw;
         }
     }
@@ -215,74 +204,37 @@ public class RecycleBinService : IRecycleBinService
             switch (deletedItem.ItemType)
             {
                 case DeletedItemType.Ingredient when entity is Ingredient ingredient:
-                    // Clear ALL navigation property references to avoid EF Core tracking conflicts
-                    ingredient.Location = null!; // CRITICAL: Clear Location to avoid tracking conflict
+                    ingredient.Location = null!;
                     ingredient.RecipeIngredients?.Clear();
                     ingredient.EntreeIngredients?.Clear();
                     ingredient.PriceHistory?.Clear();
 
-                    // Reset allergen IDs if present
                     if (ingredient.IngredientAllergens != null)
                     {
                         foreach (var allergen in ingredient.IngredientAllergens)
                         {
                             allergen.Id = Guid.NewGuid();
-                            allergen.IngredientId = Guid.Empty; // Will be set by repository
-                            allergen.Ingredient = null!; // Clear navigation property
-                            allergen.Allergen = null!; // Clear navigation property
+                            allergen.IngredientId = Guid.Empty;
+                            allergen.Ingredient = null!;
+                            allergen.Allergen = null!;
                         }
                     }
 
                     await _ingredientRepository.AddAsync(ingredient);
-
-                    // Auto-sync restored ingredient to Supabase if authenticated
-                    if (_sessionService?.IsAuthenticated == true && _dataService != null)
-                    {
-                        try
-                        {
-                            var userId = _sessionService.CurrentUser?.SupabaseAuthUid;
-                            if (!string.IsNullOrEmpty(userId))
-                            {
-                                Debug.WriteLine($"[RecycleBinService] Auto-syncing restored ingredient '{ingredient.Name}' to Supabase");
-                                SyncDebugLogger.WriteInfo($"Auto-syncing restored ingredient '{ingredient.Name}' to Supabase");
-
-                                var supabaseIngredient = ingredient.ToSupabase();
-                                var result = await _dataService.UpsertAsync(supabaseIngredient);
-
-                                if (result.IsSuccess)
-                                {
-                                    SyncDebugLogger.WriteSuccess($"Restored ingredient '{ingredient.Name}' synced to Supabase");
-                                    Debug.WriteLine($"[RecycleBinService] Successfully synced restored ingredient to Supabase");
-                                }
-                                else
-                                {
-                                    SyncDebugLogger.WriteError("Auto-sync restored ingredient failed", new Exception(result.Error ?? "Unknown"));
-                                    _logger?.LogWarning("Failed to auto-sync restored ingredient to Supabase: {Error}", result.Error);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            SyncDebugLogger.WriteError("Auto-sync restore ingredient exception", ex);
-                            Debug.WriteLine($"[RecycleBinService] Exception auto-syncing restored ingredient: {ex.Message}");
-                            _logger?.LogWarning(ex, "Failed to auto-sync restored ingredient to Supabase");
-                        }
-                    }
-
+                    Debug.WriteLine($"[RecycleBinService] Restored ingredient '{ingredient.Name}'");
                     break;
+
                 case DeletedItemType.Recipe when entity is Recipe recipe:
-                    // Clear Location navigation property to avoid EF Core tracking conflicts
                     recipe.Location = null!;
 
-                    // Preserve allergens and ingredients but reset their IDs and clear navigation properties
                     if (recipe.RecipeAllergens != null)
                     {
                         foreach (var allergen in recipe.RecipeAllergens)
                         {
                             allergen.Id = Guid.NewGuid();
-                            allergen.RecipeId = Guid.Empty; // Will be set by EF Core
-                            allergen.Recipe = null!; // Clear navigation property to avoid tracking conflicts
-                            allergen.Allergen = null!; // Clear navigation property
+                            allergen.RecipeId = Guid.Empty;
+                            allergen.Recipe = null!;
+                            allergen.Allergen = null!;
                         }
                     }
 
@@ -291,67 +243,30 @@ public class RecycleBinService : IRecycleBinService
                         foreach (var ingredient in recipe.RecipeIngredients)
                         {
                             ingredient.Id = Guid.NewGuid();
-                            ingredient.RecipeId = Guid.Empty; // Will be set by EF Core
-                            ingredient.Recipe = null!; // Clear navigation property to avoid tracking conflicts
-                            ingredient.Ingredient = null!; // Clear navigation property
+                            ingredient.RecipeId = Guid.Empty;
+                            ingredient.Recipe = null!;
+                            ingredient.Ingredient = null!;
                         }
                     }
 
-                    // Clear EntreeRecipes to avoid conflicts (these are references, not core data)
                     recipe.EntreeRecipes?.Clear();
-                    // Clear photos to avoid file path conflicts
                     recipe.Photos?.Clear();
 
                     await _recipeRepository.CreateRecipeAsync(recipe);
-
-                    // Auto-sync restored recipe to Supabase if authenticated
-                    if (_sessionService?.IsAuthenticated == true && _dataService != null)
-                    {
-                        try
-                        {
-                            var userId = _sessionService.CurrentUser?.SupabaseAuthUid;
-                            if (!string.IsNullOrEmpty(userId))
-                            {
-                                Debug.WriteLine($"[RecycleBinService] Auto-syncing restored recipe '{recipe.Name}' to Supabase");
-                                SyncDebugLogger.WriteInfo($"Auto-syncing restored recipe '{recipe.Name}' to Supabase");
-
-                                var supabaseRecipe = recipe.ToSupabase();
-                                var result = await _dataService.UpsertAsync(supabaseRecipe);
-
-                                if (result.IsSuccess)
-                                {
-                                    SyncDebugLogger.WriteSuccess($"Restored recipe '{recipe.Name}' synced to Supabase");
-                                    Debug.WriteLine($"[RecycleBinService] Successfully synced restored recipe to Supabase");
-                                }
-                                else
-                                {
-                                    SyncDebugLogger.WriteError("Auto-sync restored recipe failed", new Exception(result.Error ?? "Unknown"));
-                                    _logger?.LogWarning("Failed to auto-sync restored recipe to Supabase: {Error}", result.Error);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            SyncDebugLogger.WriteError("Auto-sync restore recipe exception", ex);
-                            Debug.WriteLine($"[RecycleBinService] Exception auto-syncing restored recipe: {ex.Message}");
-                            _logger?.LogWarning(ex, "Failed to auto-sync restored recipe to Supabase");
-                        }
-                    }
-
+                    Debug.WriteLine($"[RecycleBinService] Restored recipe '{recipe.Name}'");
                     break;
+
                 case DeletedItemType.Entree when entity is Entree entree:
-                    // Clear Location navigation property to avoid EF Core tracking conflicts
                     entree.Location = null!;
 
-                    // Preserve allergens, recipes, and ingredients but reset their IDs and clear navigation properties
                     if (entree.EntreeAllergens != null)
                     {
                         foreach (var allergen in entree.EntreeAllergens)
                         {
                             allergen.Id = Guid.NewGuid();
-                            allergen.EntreeId = Guid.Empty; // Will be set by EF Core
-                            allergen.Entree = null!; // Clear navigation property to avoid tracking conflicts
-                            allergen.Allergen = null!; // Clear navigation property
+                            allergen.EntreeId = Guid.Empty;
+                            allergen.Entree = null!;
+                            allergen.Allergen = null!;
                         }
                     }
 
@@ -360,9 +275,9 @@ public class RecycleBinService : IRecycleBinService
                         foreach (var recipe in entree.EntreeRecipes)
                         {
                             recipe.Id = Guid.NewGuid();
-                            recipe.EntreeId = Guid.Empty; // Will be set by EF Core
-                            recipe.Entree = null!; // Clear navigation property to avoid tracking conflicts
-                            recipe.Recipe = null!; // Clear navigation property
+                            recipe.EntreeId = Guid.Empty;
+                            recipe.Entree = null!;
+                            recipe.Recipe = null!;
                         }
                     }
 
@@ -371,52 +286,18 @@ public class RecycleBinService : IRecycleBinService
                         foreach (var ingredient in entree.EntreeIngredients)
                         {
                             ingredient.Id = Guid.NewGuid();
-                            ingredient.EntreeId = Guid.Empty; // Will be set by EF Core
-                            ingredient.Entree = null!; // Clear navigation property to avoid tracking conflicts
-                            ingredient.Ingredient = null!; // Clear navigation property
+                            ingredient.EntreeId = Guid.Empty;
+                            ingredient.Entree = null!;
+                            ingredient.Ingredient = null!;
                         }
                     }
 
-                    // Clear photos to avoid file path conflicts
                     entree.Photos?.Clear();
 
                     await _entreeRepository.CreateAsync(entree);
-
-                    // Auto-sync restored entree to Supabase if authenticated
-                    if (_sessionService?.IsAuthenticated == true && _dataService != null)
-                    {
-                        try
-                        {
-                            var userId = _sessionService.CurrentUser?.SupabaseAuthUid;
-                            if (!string.IsNullOrEmpty(userId))
-                            {
-                                Debug.WriteLine($"[RecycleBinService] Auto-syncing restored entree '{entree.Name}' to Supabase");
-                                SyncDebugLogger.WriteInfo($"Auto-syncing restored entree '{entree.Name}' to Supabase");
-
-                                var supabaseEntree = entree.ToSupabase();
-                                var result = await _dataService.UpsertAsync(supabaseEntree);
-
-                                if (result.IsSuccess)
-                                {
-                                    SyncDebugLogger.WriteSuccess($"Restored entree '{entree.Name}' synced to Supabase");
-                                    Debug.WriteLine($"[RecycleBinService] Successfully synced restored entree to Supabase");
-                                }
-                                else
-                                {
-                                    SyncDebugLogger.WriteError("Auto-sync restored entree failed", new Exception(result.Error ?? "Unknown"));
-                                    _logger?.LogWarning("Failed to auto-sync restored entree to Supabase: {Error}", result.Error);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            SyncDebugLogger.WriteError("Auto-sync restore entree exception", ex);
-                            Debug.WriteLine($"[RecycleBinService] Exception auto-syncing restored entree: {ex.Message}");
-                            _logger?.LogWarning(ex, "Failed to auto-sync restored entree to Supabase");
-                        }
-                    }
-
+                    Debug.WriteLine($"[RecycleBinService] Restored entree '{entree.Name}'");
                     break;
+
                 default:
                     return null;
             }
@@ -428,30 +309,23 @@ public class RecycleBinService : IRecycleBinService
         }
         catch (Exception ex)
         {
-            // Log the error for debugging
-            System.Diagnostics.Debug.WriteLine($"Error restoring item: {ex.Message}");
+            Debug.WriteLine($"Error restoring item: {ex.Message}");
             return null;
         }
     }
 
     public async Task PermanentlyDeleteAsync(Guid deletedItemId)
     {
-        // Get the deleted item to find the original entity ID
         var deletedItem = await _deletedItemRepository.GetByIdAsync(deletedItemId);
         if (deletedItem == null)
             return;
 
-        // Clean up LocalModification records for this entity before deleting from recycle bin
-        // This prevents foreign key constraint violations
         await CleanupModificationRecordsAsync(deletedItem.ItemId, deletedItem.ItemType);
-
-        // Now delete from recycle bin
         await _deletedItemRepository.DeleteAsync(deletedItemId);
     }
 
     private async Task CleanupModificationRecordsAsync(Guid entityId, DeletedItemType itemType)
     {
-        // Map DeletedItemType to entity type string
         string entityType = itemType switch
         {
             DeletedItemType.Ingredient => "Ingredient",
@@ -460,7 +334,6 @@ public class RecycleBinService : IRecycleBinService
             _ => throw new ArgumentException($"Unknown item type: {itemType}")
         };
 
-        // Clean up all modification records for this entity
         await _localModificationService.ClearEntityModificationsAsync(entityType, entityId);
     }
 

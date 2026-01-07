@@ -15,7 +15,6 @@ public class DonationReminderService : IDonationReminderService
     private readonly IIngredientRepository _ingredientRepository;
     private readonly IRecipeRepository _recipeRepository;
     private readonly IEntreeRepository _entreeRepository;
-    private readonly IUserSessionService _userSessionService;
     private readonly ICurrentLocationService _currentLocationService;
 
     // Configuration
@@ -26,13 +25,11 @@ public class DonationReminderService : IDonationReminderService
         IIngredientRepository ingredientRepository,
         IRecipeRepository recipeRepository,
         IEntreeRepository entreeRepository,
-        IUserSessionService userSessionService,
         ICurrentLocationService currentLocationService)
     {
         _ingredientRepository = ingredientRepository;
         _recipeRepository = recipeRepository;
         _entreeRepository = entreeRepository;
-        _userSessionService = userSessionService;
         _currentLocationService = currentLocationService;
     }
 
@@ -40,14 +37,6 @@ public class DonationReminderService : IDonationReminderService
     {
         try
         {
-            // Don't show if user is logged in to Supabase (they're a supporter!)
-            var isAuthenticated = _userSessionService.IsAuthenticated;
-            if (isAuthenticated)
-            {
-                System.Diagnostics.Debug.WriteLine("[DonationReminder] User is authenticated - skipping reminder");
-                return false;
-            }
-
             // Get launch count from app settings
             var launchCount = GetLaunchCount();
             System.Diagnostics.Debug.WriteLine($"[DonationReminder] Launch count: {launchCount}");
