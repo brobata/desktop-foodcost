@@ -73,21 +73,10 @@ jobs:
         $version = "${{ steps.version.outputs.VERSION }}"
         Compress-Archive -Path ./publish/win-x64/* -DestinationPath "./DesktopFoodCost-v$version-win-x64-portable.zip"
 
-    - name: Cache Inno Setup
-      id: cache-inno
-      uses: actions/cache@v4
-      with:
-        path: C:\Program Files (x86)\Inno Setup 6
-        key: inno-setup-6
-
-    - name: Download Inno Setup
-      if: steps.cache-inno.outputs.cache-hit != 'true'
+    - name: Install Inno Setup via Chocolatey
       shell: pwsh
       run: |
-        # Use faster mirror with timeout
-        $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri "https://files.jrsoftware.org/is/6/innosetup-6.2.2.exe" -OutFile "innosetup.exe" -TimeoutSec 120
-        Start-Process -FilePath "innosetup.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-" -Wait
+        choco install innosetup --yes --no-progress
 
     - name: Download VC++ Redistributable
       shell: pwsh
