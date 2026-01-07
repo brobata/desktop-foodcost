@@ -1647,19 +1647,27 @@ Unsynced Modifications: {unsyncedCount}
         await RefreshConversionStats();
     }
 
-    // Photo Cache Management
+    // Photo Cache Management (local-only mode - minimal cache functionality)
     private async Task LoadCacheSizeAsync()
     {
-        if (_photoService == null)
-        {
-            CacheSize = "Not available";
-            return;
-        }
-
         try
         {
-            var sizeBytes = _photoService.GetCacheSize();
-            CacheSize = FormatBytes(sizeBytes);
+            var cachePath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Desktop Food Cost",
+                "PhotoCache"
+            );
+
+            if (System.IO.Directory.Exists(cachePath))
+            {
+                var dirInfo = new System.IO.DirectoryInfo(cachePath);
+                var sizeBytes = dirInfo.EnumerateFiles("*", System.IO.SearchOption.AllDirectories).Sum(f => f.Length);
+                CacheSize = FormatBytes(sizeBytes);
+            }
+            else
+            {
+                CacheSize = "0 B";
+            }
         }
         catch (Exception ex)
         {
@@ -1673,16 +1681,21 @@ Unsynced Modifications: {unsyncedCount}
     [RelayCommand]
     private async Task ClearCacheAsync()
     {
-        if (_photoService == null)
-        {
-            _notificationService.ShowWarning("Photo service not available");
-            return;
-        }
-
         IsCacheClearing = true;
         try
         {
-            _photoService.ClearLocalCache();
+            var cachePath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Desktop Food Cost",
+                "PhotoCache"
+            );
+
+            if (System.IO.Directory.Exists(cachePath))
+            {
+                System.IO.Directory.Delete(cachePath, true);
+                System.IO.Directory.CreateDirectory(cachePath);
+            }
+
             await LoadCacheSizeAsync();
             _notificationService.ShowSuccess("Photo cache cleared successfully!");
             _logger?.LogInformation("User cleared photo cache");

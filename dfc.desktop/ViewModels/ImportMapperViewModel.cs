@@ -27,6 +27,7 @@ public partial class ImportMapperViewModel : ViewModelBase
     private readonly IStorageProvider? _storageProvider;
     private readonly Timer _undoTimer;
     private readonly Action? _onClose;
+    private readonly Action? _onImportSuccess;
 
     #region File State
 
@@ -188,7 +189,8 @@ public partial class ImportMapperViewModel : ViewModelBase
         ICurrentLocationService currentLocationService,
         IStatusNotificationService notificationService,
         Action? onClose = null,
-        IStorageProvider? storageProvider = null)
+        IStorageProvider? storageProvider = null,
+        Action? onImportSuccess = null)
     {
         _importMapService = importMapService;
         _importMapRepository = importMapRepository;
@@ -199,6 +201,7 @@ public partial class ImportMapperViewModel : ViewModelBase
         _notificationService = notificationService;
         _onClose = onClose;
         _storageProvider = storageProvider;
+        _onImportSuccess = onImportSuccess;
 
         // Initialize undo timer
         _undoTimer = new Timer(1000); // Update every second

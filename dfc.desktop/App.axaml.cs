@@ -143,8 +143,8 @@ public partial class App : Application
                 try
                 {
                     // Show onboarding wizard
-                    var settingsService = Services.GetRequiredService<ILocalSettingsService>();
-                    var locationRepository = Services.GetRequiredService<ILocationRepository>();
+                    var settingsService = Services!.GetRequiredService<ILocalSettingsService>();
+                    var locationRepository = Services!.GetRequiredService<ILocationRepository>();
                     var onboardingViewModel = new OnboardingViewModel(settingsService, locationRepository);
                     var onboardingWindow = new OnboardingWindow(onboardingViewModel);
 
@@ -229,7 +229,7 @@ public partial class App : Application
 
             // Show main window directly (offline-first)
             System.Diagnostics.Debug.WriteLine("Creating MainWindowViewModel...");
-            var mainViewModel = Services.GetRequiredService<MainWindowViewModel>();
+            var mainViewModel = Services!.GetRequiredService<MainWindowViewModel>();
             System.Diagnostics.Debug.WriteLine("MainWindowViewModel created");
 
             System.Diagnostics.Debug.WriteLine("Creating MainWindow...");

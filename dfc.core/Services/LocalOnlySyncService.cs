@@ -9,8 +9,11 @@ public class LocalOnlySyncService : ISyncService
     public bool IsSyncing => false;
     public DateTime? LastSyncTime => null;
 
+    // Events required by interface but not used in local-only mode
+#pragma warning disable CS0067 // Event is never used
     public event EventHandler<SyncProgressEventArgs>? SyncProgressChanged;
     public event EventHandler<SyncCompletedEventArgs>? SyncCompleted;
+#pragma warning restore CS0067
 
     public Task<SyncResult> SyncAsync()
     {

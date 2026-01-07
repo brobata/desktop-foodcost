@@ -396,7 +396,7 @@ public class ValidationService : IValidationService
         if (hasRecipes)
         {
             // Check for zero portion quantities
-            var zeroQuantities = entree.EntreeRecipes
+            var zeroQuantities = entree.EntreeRecipes!
                 .Where(er => er.Quantity <= 0)
                 .Select(er => er.Recipe?.Name ?? "Unknown")
                 .ToList();
@@ -412,7 +412,7 @@ public class ValidationService : IValidationService
         if (hasIngredients)
         {
             // Check for zero quantities
-            var zeroIngredientQuantities = entree.EntreeIngredients
+            var zeroIngredientQuantities = entree.EntreeIngredients!
                 .Where(ei => ei.Quantity <= 0)
                 .Select(ei => ei.Ingredient?.Name ?? "Unknown")
                 .ToList();

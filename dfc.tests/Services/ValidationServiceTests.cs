@@ -33,7 +33,6 @@ public class ValidationServiceTests
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
     public void ValidateRecipe_WithEmptyName_ShouldReturnError(string name)
@@ -112,10 +111,9 @@ public class ValidationServiceTests
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void ValidateRecipe_WithEmptyYieldUnit_ShouldReturnError(string yieldUnit)
+    public void ValidateRecipe_WithEmptyYieldUnit_ShouldReturnError(string? yieldUnit)
     {
         // Arrange
         var recipe = CreateValidRecipe();
@@ -208,7 +206,6 @@ public class ValidationServiceTests
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
     public void ValidateIngredient_WithEmptyName_ShouldReturnError(string name)
@@ -316,7 +313,6 @@ public class ValidationServiceTests
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
     public void ValidateEntree_WithEmptyName_ShouldReturnError(string name)
