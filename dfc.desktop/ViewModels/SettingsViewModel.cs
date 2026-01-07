@@ -886,7 +886,7 @@ public partial class SettingsViewModel : ViewModelBase
             else
             {
                 Debug.WriteLine($"[SYNC DIAGNOSTIC]   ⚠️ WARNING: No unsynced modifications found!");
-                Debug.WriteLine($"[SYNC DIAGNOSTIC]   This means no data will be uploaded to Firebase.");
+                Debug.WriteLine($"[SYNC DIAGNOSTIC]   No unsynced modifications (local-only mode).");
             }
             Debug.WriteLine("═══════════════════════════════════════════════════");
         }
@@ -941,7 +941,7 @@ public partial class SettingsViewModel : ViewModelBase
         if (result.IsSuccess)
         {
             SyncStatus = "Synced";
-            _notificationService.ShowSuccess($"Force upload completed!\n{result.ItemsUploaded} items uploaded to Firebase.\n\nOther devices can now sync to download this data.");
+            _notificationService.ShowSuccess($"Data saved successfully!\n{result.ItemsUploaded} items processed.");
         }
         else
         {
@@ -982,7 +982,7 @@ Location ID: {locationId}
 Is Signed In: {IsSignedIn}
 Sync Status: {SyncStatus}
 Unsynced Modifications: {unsyncedCount}
-{(unsyncedCount == 0 ? "⚠️ WARNING: No unsynced modifications! Nothing will be uploaded to Firebase." : "")}
+{(unsyncedCount == 0 ? "No pending modifications (local-only mode)." : "")}
 ═══════════════════════════════════════════════════════════════
 
 ";

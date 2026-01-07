@@ -218,9 +218,8 @@ public partial class App : Application
             // No cloud auth needed - we're local only
             bool isAuthenticated = false;
 
-            // LOCAL-ONLY MODE: Skip environment variable validation
-            // Cloud sync is disabled, so Supabase credentials are not required
-            System.Diagnostics.Debug.WriteLine("[APP STARTUP] Running in local-only mode - skipping cloud credential validation");
+            // LOCAL-ONLY MODE: No cloud credential validation needed
+            System.Diagnostics.Debug.WriteLine("[APP STARTUP] Running in local-only mode");
 
             // Ensure default location exists (only if onboarding was skipped or not run)
             System.Diagnostics.Debug.WriteLine("Ensuring default location...");
@@ -835,30 +834,14 @@ public partial class App : Application
     {
         try
         {
-            var supabaseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL");
-            var supabaseKey = Environment.GetEnvironmentVariable("SUPABASE_ANON_KEY");
+            // Local-only mode: only USDA API key is optional (for nutritional data lookups)
             var usdaKey = Environment.GetEnvironmentVariable("USDA_API_KEY");
 
-            System.Diagnostics.Debug.WriteLine("[ENV CHECK] SUPABASE_URL: " + (string.IsNullOrEmpty(supabaseUrl) ? "NOT FOUND" : "FOUND"));
-            System.Diagnostics.Debug.WriteLine("[ENV CHECK] SUPABASE_ANON_KEY: " + (string.IsNullOrEmpty(supabaseKey) ? "NOT FOUND" : "FOUND"));
-            System.Diagnostics.Debug.WriteLine("[ENV CHECK] USDA_API_KEY: " + (string.IsNullOrEmpty(usdaKey) ? "NOT FOUND" : "FOUND"));
+            System.Diagnostics.Debug.WriteLine("[ENV CHECK] USDA_API_KEY: " + (string.IsNullOrEmpty(usdaKey) ? "NOT FOUND (optional)" : "FOUND"));
 
-            // All three required environment variables must be present
-            bool allPresent = !string.IsNullOrEmpty(supabaseUrl) &&
-                            !string.IsNullOrEmpty(supabaseKey) &&
-                            !string.IsNullOrEmpty(usdaKey);
-
-            if (!allPresent)
-            {
-                // Check if they exist in registry (installer set them but system hasn't loaded them yet)
-                if (CheckRegistryForEnvironmentVariables())
-                {
-                    System.Diagnostics.Debug.WriteLine("[ENV CHECK] Variables found in registry but not in environment - RESTART REQUIRED");
-                    return false; // Need restart
-                }
-            }
-
-            return allPresent;
+            // In local-only mode, no environment variables are strictly required
+            // USDA API key is optional and only used for nutritional data lookups
+            return true; // Always valid in local-only mode
         }
         catch (Exception ex)
         {
@@ -927,7 +910,7 @@ public partial class App : Application
                             },
                             new TextBlock
                             {
-                                Text = "The required environment variables (Supabase credentials and USDA API) have been configured but are not yet loaded by the system.",
+                                Text = "The application settings have been configured but are not yet loaded by the system.",
                                 TextWrapping = TextWrapping.Wrap,
                                 FontSize = 12,
                                 Foreground = Brushes.Gray
@@ -1000,8 +983,6 @@ public partial class App : Application
         {
             System.Diagnostics.Debug.WriteLine($"Error in USDA API key diagnostic: {diagEx.Message}");
         }
-
-        // Supabase credentials are loaded from .env file automatically
 
         var dbPath = System.IO.Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -1095,7 +1076,7 @@ public partial class App : Application
         // Ingredient Match Mapping Service (Scoped) - Manages persistent ingredient match mappings
         services.AddScoped<IIngredientMatchMappingService, IngredientMatchMappingService>();
 
-        // Global Config Service (Singleton) - Manages ALL global configuration from Firebase
+        // Global Config Service (Singleton) - Manages global configuration (local hardcoded data)
         // Includes: ingredient/recipe mappings, vendor import maps, unit conversions, allergen keywords
         services.AddSingleton<IGlobalConfigService, GlobalConfigService>();
 
@@ -1112,17 +1093,7 @@ public partial class App : Application
         services.AddSingleton<IAllergenDetectionService, AllergenDetectionService>();
 
         // ========================================
-        // SUPABASE SERVICES - DISABLED (Local-only mode)
-        // ========================================
-        // All Supabase services are disabled in local-only mode
-        // Uncomment these if re-enabling cloud sync
-
-        // services.AddSingleton<SupabaseDataService>();
-        // services.AddSingleton<SupabasePhotoService>();
-        // services.AddSingleton<Supabase.Client>(sp => SupabaseClientProvider.GetClientAsync().GetAwaiter().GetResult());
-
-        // ========================================
-        // AUTHENTICATION SERVICES
+        // AUTHENTICATION SERVICES (Local-only mode)
         // ========================================
 
         // Local-only mode: Use mock authentication (no cloud auth)

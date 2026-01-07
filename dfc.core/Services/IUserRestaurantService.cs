@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 namespace Dfc.Core.Services;
 
 /// <summary>
-/// Service for managing user-restaurant relationships
-/// (Firebase removed - stub for compatibility)
+/// Service for managing user-restaurant relationships (local-only mode)
 /// </summary>
 public interface IUserRestaurantService
 {
-    Task<List<string>> GetUserRestaurantsAsync(string supabaseAuthUid);
+    Task<List<string>> GetUserRestaurantsAsync(string userId);
     Task<List<string>> GetAllRestaurantsAsync();
-    Task<bool> AddUserToRestaurantAsync(string supabaseAuthUid, string restaurantId);
-    Task<bool> RemoveUserFromRestaurantAsync(string supabaseAuthUid, string restaurantId);
+    Task<bool> AddUserToRestaurantAsync(string userId, string restaurantId);
+    Task<bool> RemoveUserFromRestaurantAsync(string userId, string restaurantId);
     Task<List<string>> GetRestaurantUsersAsync(string restaurantId);
 }

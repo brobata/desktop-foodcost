@@ -4,8 +4,8 @@ using System;
 namespace Dfc.Core.Models;
 
 /// <summary>
-/// Tracks local modifications that need to be synced to Firebase.
-/// Used for delta sync optimization to reduce Firebase API calls.
+/// Tracks local modifications for change tracking purposes.
+/// Used for delta sync optimization in local database.
 /// </summary>
 public class LocalModification
 {
@@ -22,7 +22,7 @@ public class LocalModification
     public Guid EntityId { get; set; }
 
     /// <summary>
-    /// The name of the entity that was modified (used for duplicate detection during sync)
+    /// The name of the entity that was modified (used for duplicate detection)
     /// </summary>
     public string? EntityName { get; set; }
 
@@ -42,22 +42,22 @@ public class LocalModification
     public DateTime ModifiedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
-    /// Whether this modification has been synced to Firebase
+    /// Whether this modification has been processed
     /// </summary>
     public bool IsSynced { get; set; }
 
     /// <summary>
-    /// When this modification was synced to Firebase (null if not synced yet)
+    /// When this modification was processed (null if not processed yet)
     /// </summary>
     public DateTime? SyncedAt { get; set; }
 
     /// <summary>
-    /// Number of times we've attempted to sync this modification
+    /// Number of times we've attempted to process this modification
     /// </summary>
     public int SyncAttempts { get; set; }
 
     /// <summary>
-    /// Last error message if sync failed
+    /// Last error message if processing failed
     /// </summary>
     public string? LastSyncError { get; set; }
 
