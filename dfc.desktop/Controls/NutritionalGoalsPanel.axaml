@@ -1,6 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:models="clr-namespace:Dfc.Core.Models;assembly=Dfc.Core"
              xmlns:controls="clr-namespace:Dfc.Desktop.Controls"
              x:Class="Dfc.Desktop.Controls.NutritionalGoalsPanel"
              x:DataType="controls:NutritionalGoalsPanel">
@@ -19,7 +18,7 @@
 
 			<ItemsControl ItemsSource="{Binding Comparisons, RelativeSource={RelativeSource AncestorType=controls:NutritionalGoalsPanel}}">
 				<ItemsControl.ItemTemplate>
-					<DataTemplate DataType="models:NutritionalGoalComparison">
+					<DataTemplate>
 						<StackPanel Spacing="4" Margin="0,4">
 							<!-- Nutrient Name and Values -->
 							<Grid ColumnDefinitions="*,Auto">
