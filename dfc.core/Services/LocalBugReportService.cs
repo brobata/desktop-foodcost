@@ -10,6 +10,22 @@ using Microsoft.Extensions.Logging;
 namespace Dfc.Core.Services;
 
 /// <summary>
+/// Service for submitting bug reports
+/// </summary>
+public interface IBugReportService
+{
+    /// <summary>
+    /// Submit a bug report with user description and optional exception info
+    /// </summary>
+    Task<bool> SubmitBugReportAsync(string whatWereYouDoing, string? additionalNotes = null, Exception? exception = null);
+
+    /// <summary>
+    /// Get all bug reports
+    /// </summary>
+    Task<List<BugReport>> GetAllBugReportsAsync();
+}
+
+/// <summary>
 /// Local-only bug report service that saves reports to a local file.
 /// No cloud submission - reports are stored locally for user review.
 /// </summary>
