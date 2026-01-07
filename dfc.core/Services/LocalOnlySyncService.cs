@@ -1,5 +1,3 @@
-using Dfc.Core.Interfaces;
-
 namespace Dfc.Core.Services;
 
 /// <summary>
