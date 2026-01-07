@@ -13,10 +13,13 @@ A professional cross-platform recipe costing and menu management application for
 
 | Platform | Download | Notes |
 |----------|----------|-------|
-| Windows (Installer) | [Download .exe](https://github.com/brobata/desktop-foodcost/releases/latest/download/DesktopFoodCost-v0.9.010625-win-x64-Setup.exe) | Recommended - includes auto VC++ runtime |
-| Windows (Portable) | [Download .zip](https://github.com/brobata/desktop-foodcost/releases/latest/download/DesktopFoodCost-v0.9.010625-win-x64-portable.zip) | No install required - extract and run |
+| Windows (Installer) | [Download .exe](https://github.com/brobata/desktop-foodcost/releases/latest) | Recommended - includes auto VC++ runtime |
+| Windows (Portable) | [Download .zip](https://github.com/brobata/desktop-foodcost/releases/latest) | No install required - extract and run |
+| macOS (Intel) | [Download .zip](https://github.com/brobata/desktop-foodcost/releases/latest) | Untested - should work* |
+| macOS (Apple Silicon) | [Download .zip](https://github.com/brobata/desktop-foodcost/releases/latest) | Untested - should work* |
+| Linux (x64) | [Download .zip](https://github.com/brobata/desktop-foodcost/releases/latest) | Untested - should work* |
 
-> macOS and Linux builds coming soon
+> *macOS and Linux builds are generated automatically but have not been tested as we don't have access to those platforms. The code is cross-platform Avalonia UI and should work. Please report any issues!
 
 ## Overview
 
