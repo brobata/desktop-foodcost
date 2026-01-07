@@ -18,7 +18,7 @@
 				          Foreground="#C62828"/>
 				<ItemsControl Name="ErrorsList">
 					<ItemsControl.ItemTemplate>
-						<DataTemplate>
+						<DataTemplate x:CompileBindings="False">
 							<TextBlock FontSize="12" Foreground="#D32F2F" Margin="0,2">
 								<Run Text="• "/>
 								<Run Text="{Binding Field}" FontWeight="SemiBold"/>
@@ -46,7 +46,7 @@
 				          Foreground="#F57F17"/>
 				<ItemsControl Name="WarningsList">
 					<ItemsControl.ItemTemplate>
-						<DataTemplate>
+						<DataTemplate x:CompileBindings="False">
 							<TextBlock FontSize="12" Foreground="#F57F17" Margin="0,2" TextWrapping="Wrap">
 								<Run Text="• "/>
 								<Run Text="{Binding Field}" FontWeight="SemiBold"/>
@@ -74,7 +74,7 @@
 				          Foreground="#1976D2"/>
 				<ItemsControl Name="InfosList">
 					<ItemsControl.ItemTemplate>
-						<DataTemplate>
+						<DataTemplate x:CompileBindings="False">
 							<TextBlock FontSize="12" Foreground="#1565C0" Margin="0,2" TextWrapping="Wrap">
 								<Run Text="• "/>
 								<Run Text="{Binding Field}" FontWeight="SemiBold"/>

@@ -18,7 +18,7 @@
 
 			<ItemsControl ItemsSource="{Binding Comparisons, RelativeSource={RelativeSource AncestorType=controls:NutritionalGoalsPanel}}">
 				<ItemsControl.ItemTemplate>
-					<DataTemplate>
+					<DataTemplate x:CompileBindings="False">
 						<StackPanel Spacing="4" Margin="0,4">
 							<!-- Nutrient Name and Values -->
 							<Grid ColumnDefinitions="*,Auto">
